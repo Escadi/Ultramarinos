@@ -1,0 +1,273 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Login Page — Layout tarjeta centrada (todas las resoluciones)
+// ─────────────────────────────────────────────────────────────────────────────
+
+$verde: #1a7a4a;
+$verde-dark: #145f39;
+$gris: #6b7280;
+$gris-fondo: #f4f6f9;
+$blanco: #ffffff;
+$borde: #e2e8f0;
+$sombra-md: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+// ─── Content ─────────────────────────────────────────────────────────────────
+
+.login-content {
+  --background: #{$gris-fondo};
+}
+
+// ─── Wrapper centrador ────────────────────────────────────────────────────────
+
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 24px 16px;
+}
+
+// ─── Tarjeta del formulario ───────────────────────────────────────────────────
+
+.login-form-card {
+  width: 100%;
+  max-width: 400px;
+  background: $blanco;
+  border-radius: 20px;
+  border: 1px solid $borde;
+  box-shadow: $sombra-md;
+  padding: 36px 32px 28px;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 480px) {
+    padding: 28px 20px 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+// ─── Logo ────────────────────────────────────────────────────────────────────
+
+.logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.logo {
+  height: 56px;
+  object-fit: contain;
+
+  @media (max-width: 480px) {
+    height: 46px;
+  }
+}
+
+// ─── Cabecera ────────────────────────────────────────────────────────────────
+
+.form-header {
+  margin-bottom: 24px;
+  text-align: center;
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 6px;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: $gris;
+    margin: 0;
+  }
+}
+
+// ─── Campos del formulario ────────────────────────────────────────────────────
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.campo-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.3px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid $borde;
+  border-radius: 10px;
+  background: $blanco;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &.input-focused {
+    border-color: $verde;
+    box-shadow: 0 0 0 3px rgba($verde, 0.1);
+  }
+
+  .input-icon {
+    padding: 0 12px;
+    color: $gris;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  .campo-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 13px 4px 13px 0;
+    font-size: 0.9rem;
+    color: #111827;
+    background: transparent;
+    min-width: 0;
+
+    &::placeholder { color: #d1d5db; }
+  }
+
+  .btn-toggle-pass {
+    background: transparent;
+    border: none;
+    padding: 0 12px;
+    color: $gris;
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+    flex-shrink: 0;
+
+    &:hover { color: $verde; }
+  }
+}
+
+// Estado error en el campo
+.campo-grupo.campo-error {
+  .input-wrap {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  }
+
+  .campo-label { color: #dc2626; }
+}
+
+// Mensaje de error
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+
+  ion-icon { font-size: 1rem; flex-shrink: 0; }
+}
+
+// Fila "olvidaste contraseña"
+.forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  margin-top: -6px;
+}
+
+.btn-forgot {
+  background: transparent;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $verde;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+
+  &:hover { color: $verde-dark; text-decoration: underline; }
+}
+
+// ─── Botón de login ───────────────────────────────────────────────────────────
+
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: $verde;
+  color: $blanco;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba($verde, 0.35);
+  letter-spacing: 0.3px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    ion-icon { font-size: 1.1rem; }
+  }
+
+  &:hover:not(:disabled) {
+    background: $verde-dark;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba($verde, 0.45);
+  }
+
+  &:active:not(:disabled) { transform: scale(0.98); }
+
+  &:disabled, &.btn-loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.loading-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  --color: #{$blanco};
+}
+
+// ─── Pie del formulario ───────────────────────────────────────────────────────
+
+.form-footer {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid $borde;
+  text-align: center;
+
+  span {
+    font-size: 0.72rem;
+    color: #9ca3af;
+  }
+}

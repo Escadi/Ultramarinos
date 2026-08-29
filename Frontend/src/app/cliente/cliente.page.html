@@ -1,0 +1,129 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="clientes-toolbar">
+    <ion-title class="clientes-title">
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="clientes-content">
+  <div class="clientes-container">
+
+    <!-- ─── Filtros ─── -->
+    <div class="filtros-card">
+      <div class="filtros-row">
+
+        <!-- Nombre -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Nombre del Cliente</label>
+          <div class="input-wrap">
+            <ion-icon name="search-outline" class="input-icon"></ion-icon>
+            <input type="text" class="filtro-input" placeholder="Buscar por nombre..." [(ngModel)]="filtros.nombre"
+              (keyup.enter)="aplicarFiltros()" />
+          </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Contacto (Tel/Email)</label>
+          <div class="input-wrap">
+            <ion-icon name="id-card-outline" class="input-icon"></ion-icon>
+            <input type="text" class="filtro-input" placeholder="Buscar contacto..." [(ngModel)]="filtros.contacto"
+              (keyup.enter)="aplicarFiltros()" />
+          </div>
+        </div>
+
+        <!-- Tipo de Cliente -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Tipo de Cliente</label>
+          <div class="select-wrap">
+            <select class="filtro-select" [(ngModel)]="filtros.tipo" (change)="aplicarFiltros()">
+              <option value="">Todos los tipos</option>
+              <option value="Fiel">Fiel</option>
+              <option value="Profesional">Profesional</option>
+              <option value="Ocasional">Ocasional</option>
+            </select>
+            <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Acciones filtros -->
+      <div class="filtros-acciones">
+        <button class="btn-limpiar" (click)="limpiarFiltros()">
+          Limpiar Filtros
+        </button>
+        <button class="btn-aplicar" (click)="aplicarFiltros()">
+          <ion-icon name="filter-outline"></ion-icon>
+          Aplicar
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Tabla ─── -->
+    <div class="tabla-card">
+      <!-- Cabecera -->
+      <div class="tabla-cabecera">
+        <div class="col-id">ID Cliente</div>
+        <div class="col-nombre">Nombre</div>
+        <div class="col-apellidos">Apellidos</div>
+        <div class="col-contacto">Contacto</div>
+        <div class="col-tipo">Tipo</div>
+        <div class="col-fecha">Fecha de Creación</div>
+        <div class="col-acciones">Acciones</div>
+      </div>
+
+      <!-- Filas vacías -->
+      <div class="tabla-vacia" *ngIf="clientesFiltrados.length === 0">
+        <ion-icon name="people-outline"></ion-icon>
+        <p>No se encontraron clientes con esos filtros.</p>
+      </div>
+
+      <!-- Filas de datos -->
+      <div class="tabla-fila" *ngFor="let cliente of clientesFiltrados">
+        <div class="col-id">
+          <span class="id-badge">{{ cliente.idString }}</span>
+        </div>
+        <div class="col-nombre">
+          <span class="nombre-texto">{{ cliente.nombre }}</span>
+        </div>
+        <div class="col-apellidos">
+          <span class="apellidos-texto">{{ cliente.apellidos }}</span>
+        </div>
+        <div class="col-contacto">
+          <span class="contacto-texto">{{ cliente.contacto }}</span>
+        </div>
+        <div class="col-tipo">
+          <span class="badge-tipo" [ngClass]="{
+            'badge-fiel': cliente.tipo === 'Fiel',
+            'badge-profesional': cliente.tipo === 'Profesional',
+            'badge-ocasional': cliente.tipo === 'Ocasional'
+          }">{{ cliente.tipo }}</span>
+        </div>
+        <div class="col-fecha">
+          <span class="fecha-texto">{{ cliente.fechaCreacion }}</span>
+        </div>
+        <div class="col-acciones">
+          <button class="btn-accion btn-ver">
+            <ion-icon name="eye-outline"></ion-icon>
+          </button>
+          <button class="btn-accion btn-editar">
+            <ion-icon name="pencil-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Paginación Footer -->
+      <div class="tabla-footer">
+        <div class="paginacion">
+          <button class="page-btn"><ion-icon name="chevron-back-outline"></ion-icon></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span class="page-dots">...</span>
+          <button class="page-btn"><ion-icon name="chevron-forward-outline"></ion-icon></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

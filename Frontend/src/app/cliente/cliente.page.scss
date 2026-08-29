@@ -1,0 +1,545 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Clientes — Gestión de Clientes
+// ─────────────────────────────────────────────────────────────────────────────
+
+$verde: #1a7a4a;
+$verde-claro: #e8f5ee;
+$gris: #6b7280;
+$gris-fondo: #f4f6f9;
+$blanco: #ffffff;
+$borde: #e2e8f0;
+$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.clientes-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+  --min-height: 80px;
+  padding: 0 24px;
+  box-shadow: $sombra;
+}
+
+.clientes-title {
+  padding: 0;
+
+  >ion-title,
+  &.ios,
+  &.md {
+    padding: 0;
+  }
+}
+
+// Override ion-title's internal flex
+ion-toolbar.clientes-toolbar ion-title {
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+}
+
+.clientes-title,
+ion-toolbar.clientes-toolbar ion-title::part(native) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.title-left {
+  h1 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: $gris;
+    margin: 0;
+    font-weight: 400;
+  }
+}
+
+// ─── KPI Card ────────────────────────────────────────────────────────────────
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $blanco;
+  border: 1.5px solid $borde;
+  border-radius: 14px;
+  padding: 12px 20px;
+  box-shadow: $sombra;
+  min-width: 220px;
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  background: $verde-claro;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $verde;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .kpi-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: $gris;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .kpi-valor {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.5px;
+  }
+}
+
+// ─── Content ─────────────────────────────────────────────────────────────────
+
+.clientes-content {
+  --background: #{$gris-fondo};
+}
+
+.clientes-container {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ─── Filtros ─────────────────────────────────────────────────────────────────
+
+.filtros-card {
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  padding: 20px;
+  box-shadow: $sombra;
+}
+
+.filtros-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 16px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filtro-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+// Input con ícono
+.input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid $borde;
+  border-radius: 8px;
+  background: $blanco;
+  overflow: hidden;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: $verde;
+    box-shadow: 0 0 0 3px rgba($verde, 0.09);
+  }
+
+  .input-icon {
+    padding: 0 10px;
+    color: $gris;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .filtro-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 9px 10px 9px 0;
+    font-size: 0.85rem;
+    color: #111827;
+    background: transparent;
+    min-width: 0;
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+}
+
+// Select
+.select-wrap {
+  position: relative;
+
+  .filtro-select {
+    width: 100%;
+    padding: 10px 36px 10px 12px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #374151;
+    background: $blanco;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $verde;
+      box-shadow: 0 0 0 3px rgba($verde, 0.09);
+    }
+  }
+
+  .select-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $gris;
+    font-size: 0.9rem;
+    pointer-events: none;
+  }
+}
+
+// Acciones de filtros
+.filtros-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid $borde;
+}
+
+.btn-limpiar {
+  padding: 9px 16px;
+  border: 1.5px solid $borde;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $gris;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #9ca3af;
+    color: #374151;
+    background: $gris-fondo;
+  }
+}
+
+.btn-aplicar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: $verde;
+  color: $blanco;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 3px 10px rgba($verde, 0.3);
+
+  ion-icon {
+    font-size: 0.95rem;
+  }
+
+  &:hover {
+    background: darken($verde, 6%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba($verde, 0.35);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// ─── Tabla ───────────────────────────────────────────────────────────────────
+
+$col-template: 120px 2fr 2fr 200px 120px 140px 90px;
+
+.tabla-card {
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  box-shadow: $sombra;
+  overflow: hidden;
+}
+
+.tabla-cabecera {
+  display: grid;
+  grid-template-columns: $col-template;
+  padding: 10px 20px;
+  background: $gris-fondo;
+  border-bottom: 2px solid $borde;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $gris;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+
+  >div {
+    padding: 0 6px;
+  }
+
+  .col-acciones {
+    text-align: right;
+  }
+}
+
+.tabla-fila {
+  display: grid;
+  grid-template-columns: $col-template;
+  padding: 12px 20px;
+  align-items: center;
+  border-bottom: 1px solid $gris-fondo;
+  cursor: pointer;
+  transition: background 0.15s;
+  animation: fadeInRow 0.2s ease;
+
+  &:hover {
+    background: lighten($verde-claro, 3%);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  >div {
+    padding: 0 6px;
+  }
+
+  .col-acciones {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+// Columnas específicas
+.id-badge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: $verde;
+}
+
+.nombre-texto,
+.apellidos-texto {
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.contacto-texto {
+  font-size: 0.85rem;
+  color: $gris;
+}
+
+.fecha-texto {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+// Badges de tipo
+.badge-tipo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  &.badge-fiel {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  &.badge-profesional {
+    background: #ffedd5;
+    color: #c2410c;
+  }
+
+  &.badge-ocasional {
+    background: #f1f5f9;
+    color: #475569;
+  }
+}
+
+// Botones de acción
+.col-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.btn-accion {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  &.btn-ver {
+    background: $verde-claro;
+    color: $verde;
+
+    &:hover {
+      background: $verde;
+      color: $blanco;
+    }
+  }
+
+  &.btn-editar {
+    background: #f1f5f9;
+    color: #475569;
+
+    &:hover {
+      background: #475569;
+      color: $blanco;
+    }
+  }
+}
+
+.tabla-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 24px;
+  color: #9ca3af;
+
+  ion-icon {
+    font-size: 2.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+// ─── Paginación ──────────────────────────────────────────────────────────────
+
+.tabla-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: $blanco;
+  border-top: 1px solid $borde;
+}
+
+.footer-info {
+  font-size: 0.8rem;
+  color: $gris;
+  font-weight: 500;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.page-btn {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid $borde;
+  border-radius: 8px;
+  background: $blanco;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: $verde;
+    color: $verde;
+    background: $verde-claro;
+  }
+
+  &.active {
+    background: $verde;
+    color: $blanco;
+    border-color: $verde;
+    box-shadow: 0 2px 8px rgba($verde, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.page-dots {
+  border: none;
+  background: transparent;
+  cursor: default;
+  color: $gris;
+  padding: 0 4px;
+}
+
+// ─── Animaciones ─────────────────────────────────────────────────────────────
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

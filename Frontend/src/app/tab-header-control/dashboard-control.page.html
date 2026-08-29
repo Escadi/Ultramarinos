@@ -1,0 +1,94 @@
+<!-- ═════════════════════════════════════════════════════════════
+     MENÚ LATERAL (MOBILE)
+══════════════════════════════════════════════════════════════ -->
+<ion-menu contentId="main-content" side="start" menuId="mobileMenu" class="mobile-menu">
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="mobile-menu-toolbar">
+      <div class="mobile-menu-header">
+        <img src="assets/icon/InnventoryLogoLogistics.png" alt="Logo" class="mobile-logo"
+          routerLink="/dashboard-control/dashboard-page" />
+        <ion-button fill="clear" class="btn-logout-mobile" (click)="getOut()">
+          <ion-icon name="log-out-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="mobile-menu-content">
+    <div class="user-profile-mobile">
+      <div class="avatar-mobile">
+        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+      </div>
+      <div class="user-info">
+        <p class="user-name">Administrador</p>
+        <p class="user-role" routerLink="/dashboard-control/setting-page">Ver perfil</p>
+      </div>
+    </div>
+
+    <div class="nav-links-mobile">
+      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/dashboard-page"
+        routerLinkActive="active-tab">
+        <ion-icon name="home-outline" slot="start"></ion-icon> Dashboard
+      </ion-button>
+      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/tpv"
+        routerLinkActive="active-tab">
+        <ion-icon name="storefront-outline" slot="start"></ion-icon> TPV
+      </ion-button>
+      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/caja"
+        routerLinkActive="active-tab">
+        <ion-icon name="cash-outline" slot="start"></ion-icon> Caja
+      </ion-button>
+      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/delivery-page"
+        routerLinkActive="active-tab">
+        <ion-icon name="car-outline" slot="start"></ion-icon> Pedido Cliente
+      </ion-button>
+    </div>
+  </ion-content>
+</ion-menu>
+
+<!-- ═════════════════════════════════════════════════════════════
+     CONTENEDOR PRINCIPAL
+══════════════════════════════════════════════════════════════ -->
+<div id="main-content" class="app-layout">
+
+  <!-- ─── TOPBAR DE NAVEGACIÓN ─── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <ion-menu-button class="btn-menu-mobile"></ion-menu-button>
+      <img src="assets/icon/minimarketLogo.png" alt="Logo" class="topbar-logo"
+        routerLink="/dashboard-control/dashboard-page" />
+    </div>
+
+    <nav class="topbar-nav">
+      <a class="nav-item" routerLink="/dashboard-control/dashboard-page" routerLinkActive="active">
+        <ion-icon name="home-outline"></ion-icon> Dashboard
+      </a>
+      <a class="nav-item" routerLink="/dashboard-control/tpv" routerLinkActive="active">
+        <ion-icon name="storefront-outline"></ion-icon> TPV
+      </a>
+      <a class="nav-item" routerLink="/dashboard-control/caja" routerLinkActive="active">
+        <ion-icon name="cash-outline"></ion-icon> Caja
+      </a>
+      <a class="nav-item" routerLink="/dashboard-control/delivery-page" routerLinkActive="active">
+        <ion-icon name="car-outline"></ion-icon> Pedido Cliente
+      </a>
+    </nav>
+
+    <div class="topbar-right">
+      <div class="user-dropdown">
+        <div class="user-avatar" routerLink="/dashboard-control/setting-page">
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        </div>
+        <button class="btn-logout-top" (click)="getOut()">
+          <ion-icon name="log-out-outline"></ion-icon>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── ROUTER OUTLET ─── -->
+  <main class="main-router-container">
+    <ion-router-outlet></ion-router-outlet>
+  </main>
+</div>

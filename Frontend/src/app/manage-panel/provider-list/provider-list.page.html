@@ -1,0 +1,204 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modern-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goToAdminHome()" class="btn-back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Gestión de Proveedores</ion-title>
+    <ion-buttons slot="end">
+      <button class="btn-primary" (click)="openModal()">
+        <ion-icon name="add-outline"></ion-icon>
+        <span>Nuevo Proveedor</span>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modern-content">
+  <div class="content-wrapper">
+
+    <!-- BARRA DE ACCIONES Y BÚSQUEDA -->
+    <div class="actions-bar">
+      <div class="search-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <input type="text" placeholder="Buscar por CIF, Nombre, Categoría..." [(ngModel)]="searchTerm" (input)="filterProveedores()">
+      </div>
+      <div class="stats-badge">
+        <ion-icon name="business-outline"></ion-icon>
+        {{ filteredProveedores.length }} Proveedores
+      </div>
+    </div>
+
+    <!-- TABLA PRINCIPAL -->
+    <div class="tabla-card">
+      <div class="tabla-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>CIF</th>
+              <th>Proveedor</th>
+              <th>Contacto</th>
+              <th>Dirección</th>
+              <th>Categoría</th>
+              <th class="acciones-col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Fila Vacía -->
+            <tr *ngIf="paginatedProveedores.length === 0">
+              <td colspan="6" class="empty-state">
+                <ion-icon name="business-outline"></ion-icon>
+                <p>No se encontraron proveedores</p>
+              </td>
+            </tr>
+
+            <!-- Filas con datos -->
+            <tr *ngFor="let p of paginatedProveedores">
+              <td class="id-col">
+                <span class="id-badge">{{ p.CifProveedor }}</span>
+              </td>
+              
+              <td>
+                <div class="empleado-info">
+                  <div class="avatar-sm">
+                    <ion-icon name="storefront"></ion-icon>
+                  </div>
+                  <div>
+                    <span class="nombre">{{ p.nombre }}</span>
+                  </div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="contacto-info">
+                  <span class="contact-item"><ion-icon name="mail-outline"></ion-icon> {{ p.email || 'N/A' }}</span>
+                  <span class="contact-item"><ion-icon name="call-outline"></ion-icon> {{ p.telefono || 'N/A' }}</span>
+                </div>
+              </td>
+              
+              <td>
+                <span class="direccion-text">{{ p.direccion || 'No especificada' }}</span>
+              </td>
+              
+              <td>
+                <span class="estado-badge bg-categoria">
+                  <ion-icon name="pricetag-outline"></ion-icon>
+                  {{ p.categoria?.nombreCategoria || 'Sin categorizar' }}
+                </span>
+              </td>
+
+              <td class="acciones-col">
+                <div class="acciones-grupo">
+                  <button class="btn-icon btn-edit" (click)="editProveedor(p)" title="Editar">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deleteProveedor(p.CifProveedor)" title="Eliminar">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <div class="paginacion" *ngIf="totalPages > 1">
+        <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon> Anterior
+        </button>
+        <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Siguiente <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- MODAL FORMULARIO PROVEEDOR -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modern-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>{{ updateProveedor ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-body">
+      <div class="form-container">
+        
+        <div class="form-row split">
+          <div class="form-group">
+            <label>CIF / NIF</label>
+            <div class="input-with-icon">
+              <ion-icon name="id-card-outline"></ion-icon>
+              <input type="text" [(ngModel)]="Proveedor.CifProveedor" placeholder="B12345678" [disabled]="!!updateProveedor">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nombre del Proveedor</label>
+            <div class="input-with-icon">
+              <ion-icon name="business-outline"></ion-icon>
+              <input type="text" [(ngModel)]="Proveedor.nombre" placeholder="Ej. Logística Global S.L.">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Email de Contacto</label>
+            <div class="input-with-icon">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" [(ngModel)]="Proveedor.email" placeholder="contacto@empresa.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <div class="input-with-icon">
+              <ion-icon name="call-outline"></ion-icon>
+              <input type="tel" [(ngModel)]="Proveedor.telefono" placeholder="600 000 000">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Categoría</label>
+          <div class="select-wrapper">
+            <ion-icon name="pricetag-outline"></ion-icon>
+            <select [(ngModel)]="Proveedor.idCategoria">
+              <option value="0" disabled>Seleccione una categoría</option>
+              <option *ngFor="let cat of selectedCategory" [value]="cat.idCategoria">
+                {{ cat.nombreCategoria }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Dirección</label>
+          <div class="textarea-with-icon">
+            <ion-icon name="location-outline"></ion-icon>
+            <textarea [(ngModel)]="Proveedor.direccion" placeholder="Calle, Número, Ciudad, Código Postal..." rows="3"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+      <button class="btn-save" (click)="createProveedor()" [disabled]="!Proveedor.CifProveedor || !Proveedor.nombre">
+        <ion-icon name="save-outline"></ion-icon>
+        {{ updateProveedor ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,524 @@
+<ion-header>
+  <ion-toolbar class="caja-toolbar">
+    <ion-title class="caja-main-title">
+      <div class="caja-status-wrap">
+        <!-- SELECTOR DE CAJA ACTIVA (Solo si hay cajas abiertas) -->
+        <div class="selector-caja" *ngIf="cajasActivas.length > 0">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <select [(ngModel)]="cajaActiva" (ngModelChange)="seleccionarCajaDe($event?.empleado)" class="select-caja">
+            <option *ngFor="let c of cajasActivas" [ngValue]="c">{{ c.empleado }}</option>
+          </select>
+        </div>
+        <div class="caja-status" [class.caja-cerrada]="!cajaActiva">
+          <span class="status-dot"></span>
+          {{ cajaActiva ? 'Caja Abierta' : 'Caja Cerrada' }}
+        </div>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="caja-content">
+  <div class="caja-layout">
+
+    <!-- ═════════════════════════════════════════════
+         COLUMNA IZQUIERDA
+    ═════════════════════════════════════════════ -->
+    <div class="col-izquierda">
+
+      <!-- Tarjetas Apertura / Cierre -->
+      <div class="acciones-grid">
+
+        <div class="accion-card" (click)="abrirCaja()">
+          <div class="accion-icon icono-apertura">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <h3>Apertura de Caja</h3>
+          <p>Registrar fondo inicial</p>
+        </div>
+
+        <div class="accion-card accion-destacada" (click)="iniciarCierre()">
+          <div class="accion-icon icono-cierre">
+            <ion-icon name="lock-open-outline"></ion-icon>
+          </div>
+          <h3>Cierre de Caja</h3>
+        </div>
+
+      </div>
+
+      <!-- Resumen del Turno -->
+      <div class="resumen-card">
+        <div class="resumen-header">
+          <div class="resumen-titulo">
+            <ion-icon name="trending-up-outline"></ion-icon>
+            <span>Resumen del Turno</span>
+            <!-- MENSAGE SI NO HAY CAJA -->
+            <div class="card-vacia" *ngIf="!cajaActiva">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <h2>No hay cajas abiertas</h2>
+              <p>Abre una caja nueva para empezar el turno y registrar movimientos.</p>
+              <button class="btn-abrir-centro" (click)="abrirCaja()">
+                <ion-icon name="key-outline"></ion-icon> Apertura de Caja
+              </button>
+            </div>
+          </div>
+
+          <div class="panel-derecho" *ngIf="cajaActiva">
+            <div class="resumen-fecha">
+              <span>Hoy, {{ horaApertura }}</span>
+              <span class="actualidad-badge">· Actualidad</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="total-estimado" *ngIf="cajaActiva">
+          <p class="total-label">Total en Caja Estimado</p>
+          <p class="total-valor">€ {{ totalEstimado.toFixed(2) }}</p>
+        </div>
+
+        <div class="metricas-grid" *ngIf="cajaActiva">
+          <div class="metrica-item">
+            <div class="metrica-icono">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <p class="metrica-label">Efectivo</p>
+            <p class="metrica-valor">€ {{ efectivoVentas.toFixed(2) }}</p>
+          </div>
+          <div class="metrica-item">
+            <div class="metrica-icono">
+              <ion-icon name="card-outline"></ion-icon>
+            </div>
+            <p class="metrica-label">Tarjeta</p>
+            <p class="metrica-valor">€ {{ tarjeta.toFixed(2) }}</p>
+          </div>
+          <div class="metrica-item">
+            <div class="metrica-icono">
+              <ion-icon name="wallet-outline"></ion-icon>
+            </div>
+            <p class="metrica-label">Fondo Inicial</p>
+            <p class="metrica-valor">€ {{ fondoInicial.toFixed(2) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Últimos Movimientos -->
+      <div class="movimientos-card" *ngIf="cajaActiva">
+        <div class="movimientos-header">
+          <div class="movimientos-titulo">
+            <ion-icon name="swap-vertical-outline"></ion-icon>
+            <span>Últimos Movimientos</span>
+          </div>
+          <button class="ver-todos-btn" (click)="abrirHistorial()">
+            Ve todos
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+        </div>
+
+        <div class="movimientos-tabla">
+          <!-- Cabecera -->
+          <div class="tabla-cabecera">
+            <span>HORA</span>
+            <span>TIPO</span>
+            <span>CONCEPTO</span>
+            <span class="col-importe">IMPORTE</span>
+          </div>
+
+          <!-- Filas -->
+          <div class="tabla-fila" *ngFor="let mov of movimientos" [class.clickable]="mov.facturaId"
+            (click)="abrirFactura(mov)">
+            <span class="fila-hora">{{ mov.hora }}</span>
+            <span>
+              <span class="tipo-badge" [class.badge-entrada]="mov.tipo === 'Entrada'"
+                [class.badge-salida]="mov.tipo === 'Salida'" [class.badge-sistema]="mov.tipo === 'Sistema'">
+                <ion-icon [name]="mov.tipo === 'Entrada' ? 'arrow-down-outline' :
+                           mov.tipo === 'Salida'  ? 'arrow-up-outline'   :
+                           'settings-outline'">
+                </ion-icon>
+                {{ mov.tipo }}
+              </span>
+            </span>
+            <div class="fila-concepto-wrapper">
+              <span class="fila-concepto">{{ mov.concepto }}</span>
+              <span class="fila-usuario" *ngIf="mov.usuario">
+                <ion-icon name="person-outline"></ion-icon> {{ mov.usuario }}
+              </span>
+            </div>
+            <span class="fila-importe" [class.importe-positivo]="mov.importe > 0"
+              [class.importe-negativo]="mov.importe < 0">
+              {{ formatImporte(mov) }}
+            </span>
+          </div>
+
+          <!-- Estado vacío -->
+          <div class="tabla-vacia" *ngIf="movimientos.length === 0">
+            <ion-icon name="receipt-outline"></ion-icon>
+            <p>No hay movimientos registrados</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═════════════════════════════════════════════
+         COLUMNA DERECHA — Registro Manual
+    ═════════════════════════════════════════════ -->
+    <div class="col-derecha" *ngIf="cajaActiva">
+      <div class="registro-card">
+
+        <div class="registro-titulo">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          <span>Registro Manual</span>
+        </div>
+
+        <!-- Tabs Entrada / Salida -->
+        <div class="registro-tabs">
+          <button class="reg-tab" [class.tab-entrada-activo]="tabRegistro === 'Entrada'"
+            (click)="tabRegistro = 'Entrada'">
+            Entrada
+          </button>
+          <button class="reg-tab" [class.tab-salida-activo]="tabRegistro === 'Salida'" (click)="tabRegistro = 'Salida'">
+            Salida
+          </button>
+        </div>
+
+        <!-- TARJETA: SALDO DE LA CAJA ACTIVA -->
+        <div class="card-saldo" *ngIf="cajaActiva">
+          <!-- Importe -->
+          <div class="campo-grupo">
+            <label class="campo-label">Importe (€)</label>
+            <div class="importe-input-wrap">
+              <span class="importe-prefix">€</span>
+              <input type="number" class="importe-input" [(ngModel)]="importe" min="0" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+
+          <!-- Concepto -->
+          <div class="campo-grupo">
+            <label class="campo-label">Concepto</label>
+            <div class="select-wrap">
+              <select class="campo-select" [(ngModel)]="concepto">
+                <option *ngFor="let c of conceptos" [value]="c">{{ c }}</option>
+              </select>
+              <ion-icon name="chevron-down-outline" class="select-arrow"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Notas -->
+          <div class="campo-grupo">
+            <label class="campo-label notas-label">Notas <span>(Opcional)</span></label>
+            <textarea class="campo-textarea" [(ngModel)]="notas" placeholder="Detalles adicionales..." rows="3">
+            </textarea>
+          </div>
+
+          <!-- Botón registrar -->
+          <button class="btn-registrar" [class.btn-salida]="tabRegistro === 'Salida'"
+            [disabled]="!importeValido || !cajaActiva" (click)="registrarMovimiento()">
+            <ion-icon name="add-circle-outline"></ion-icon>
+            Registrar Movimiento
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<!-- ═════════════════════════════════════════════
+     MODAL ARQUEO DE CAJA
+═════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isArqueoOpen" (didDismiss)="cancelarArqueo()" class="arqueo-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Arqueo de Caja (Cierre)</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cancelarArqueo()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="arqueo-body">
+      <div class="arqueo-container">
+        <p class="arqueo-instrucciones">Introduce el dinero real contado en caja antes de cerrar el turno. Las
+          diferencias se registrarán como descuadres.</p>
+
+        <div class="arqueo-grid">
+          <!-- Columna Real Contado -->
+          <div class="col-real">
+            <h3>Dinero Contado</h3>
+
+            <div class="conteo-efectivo-container">
+              <!-- Billetes -->
+              <div class="conteo-seccion">
+                <div class="conteo-header">Billetes</div>
+                <div class="conteo-grid">
+                  <div class="conteo-item billete billete-500"><span class="val">500€</span> <input type="number"
+                      [(ngModel)]="b500" min="0"></div>
+                  <div class="conteo-item billete billete-200"><span class="val">200€</span> <input type="number"
+                      [(ngModel)]="b200" min="0"></div>
+                  <div class="conteo-item billete billete-100"><span class="val">100€</span> <input type="number"
+                      [(ngModel)]="b100" min="0"></div>
+                  <div class="conteo-item billete billete-50"><span class="val">50€</span> <input type="number"
+                      [(ngModel)]="b50" min="0"></div>
+                  <div class="conteo-item billete billete-20"><span class="val">20€</span> <input type="number"
+                      [(ngModel)]="b20" min="0"></div>
+                  <div class="conteo-item billete billete-10"><span class="val">10€</span> <input type="number"
+                      [(ngModel)]="b10" min="0"></div>
+                  <div class="conteo-item billete billete-5"><span class="val">5€</span> <input type="number"
+                      [(ngModel)]="b5" min="0"></div>
+                </div>
+              </div>
+
+              <!-- Monedas -->
+              <div class="conteo-seccion">
+                <div class="conteo-header">Monedas</div>
+                <div class="conteo-grid monedas">
+                  <div class="conteo-item moneda moneda-oro"><span class="val">2€</span> <input type="number"
+                      [(ngModel)]="m2" min="0"></div>
+                  <div class="conteo-item moneda moneda-oro"><span class="val">1€</span> <input type="number"
+                      [(ngModel)]="m1" min="0"></div>
+                  <div class="conteo-item moneda moneda-oro"><span class="val">50¢</span> <input type="number"
+                      [(ngModel)]="m50c" min="0"></div>
+                  <div class="conteo-item moneda moneda-oro"><span class="val">20¢</span> <input type="number"
+                      [(ngModel)]="m20c" min="0"></div>
+                  <div class="conteo-item moneda moneda-oro"><span class="val">10¢</span> <input type="number"
+                      [(ngModel)]="m10c" min="0"></div>
+                  <div class="conteo-item moneda moneda-cobre"><span class="val">5¢</span> <input type="number"
+                      [(ngModel)]="m5c" min="0"></div>
+                  <div class="conteo-item moneda moneda-cobre"><span class="val">2¢</span> <input type="number"
+                      [(ngModel)]="m2c" min="0"></div>
+                  <div class="conteo-item moneda moneda-cobre"><span class="val">1¢</span> <input type="number"
+                      [(ngModel)]="m1c" min="0"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resumen-item">
+              <span>Efectivo Contado:</span>
+              <strong>€ {{ arqueoEfectivo | number:'1.2-2' }}</strong>
+            </div>
+            <div class="resumen-item diferencia" [class.positivo]="diferenciaEfectivo >= 0"
+              [class.negativo]="diferenciaEfectivo < 0">
+              <span>Descuadre Efectivo:</span>
+              <strong>{{ diferenciaEfectivo > 0 ? '+' : '' }} € {{ diferenciaEfectivo | number:'1.2-2' }}</strong>
+            </div>
+
+            <div style="margin-top: 16px; border-top: 1px dashed #e2e8f0; padding-top: 12px;"></div>
+
+            <div class="resumen-item">
+              <span>Total Esperado (Sistema):</span>
+              <strong>€ {{ totalEstimado | number:'1.2-2' }}</strong>
+            </div>
+            <div class="resumen-item">
+              <span>Total Contado (Efectivo + Tarj):</span>
+              <strong>€ {{ totalArqueo | number:'1.2-2' }}</strong>
+            </div>
+            <div class="resumen-item diferencia" [class.positivo]="(diferenciaEfectivo + diferenciaTarjeta) >= 0"
+              [class.negativo]="(diferenciaEfectivo + diferenciaTarjeta) < 0">
+              <span>Descuadre Total:</span>
+              <strong>{{ (diferenciaEfectivo + diferenciaTarjeta) > 0 ? '+' : '' }} € {{ (diferenciaEfectivo +
+                diferenciaTarjeta) | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descuadres -->
+        <div class="descuadres-panel">
+          <h3>Arqueo Tarjeta</h3>
+          <div class="arqueo-resumen-tarjeta">
+            <div class="input-tarjeta-wrap">
+              <ion-icon name="card-outline"></ion-icon>
+              <input type="number" [(ngModel)]="arqueoTarjeta" class="input-tarjeta" placeholder="Total del datáfono">
+            </div>
+            <div class="resumen-item">
+              <span>Sistema TPV (Esperado):</span>
+              <strong>€ {{ cajaActiva?.tarjeta | number:'1.2-2' }}</strong>
+            </div>
+            <div class="resumen-item diferencia" [class.positivo]="diferenciaTarjeta >= 0"
+              [class.negativo]="diferenciaTarjeta < 0">
+              <span>Descuadre Tarjeta:</span>
+              <strong>{{ diferenciaTarjeta > 0 ? '+' : '' }} € {{ diferenciaTarjeta | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+
+          <div class="descuadre-warning" *ngIf="diferenciaEfectivo !== 0 || diferenciaTarjeta !== 0">
+            <ion-icon name="warning-outline"></ion-icon>
+            <span>No puedes cerrar la caja si hay un descuadre pendiente de solucionar.</span>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+
+    <div class="arqueo-footer">
+      <button class="btn-cancel" (click)="cancelarArqueo()">Cancelar</button>
+      <button class="btn-confirm" (click)="confirmarArqueo()">
+        <ion-icon name="checkmark-done-outline"></ion-icon>
+        Confirmar Cierre de Caja
+      </button>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ═════════════════════════════════════════════
+     MODAL APERTURA DE CAJA
+═════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isAperturaOpen" (didDismiss)="cancelarApertura()" class="apertura-modal">
+  <ng-template>
+    <div class="apertura-container">
+      <div class="apertura-header">
+        <div class="icon-wrap">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <h2>Apertura de Turno</h2>
+        <p>Por favor, identifícate para abrir la caja y registrar los movimientos bajo tu nombre.</p>
+      </div>
+
+      <div class="apertura-body">
+        <label>Selecciona tu usuario</label>
+        <div class="select-usuario-wrap">
+          <ion-icon name="person-outline" class="user-icon"></ion-icon>
+          <select [(ngModel)]="empleadoSeleccionado" class="select-usuario">
+            <option value="" disabled selected>-- Elige un empleado --</option>
+            <option *ngFor="let emp of empleadosMock" [value]="emp">{{ emp }}</option>
+          </select>
+          <ion-icon name="chevron-down-outline" class="chevron-icon"></ion-icon>
+        </div>
+      </div>
+
+      <div class="apertura-footer">
+        <button class="btn-cancel" (click)="cancelarApertura()">Cancelar</button>
+        <button class="btn-confirm" [disabled]="!empleadoSeleccionado" (click)="confirmarApertura()">
+          Iniciar Turno
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ═════════════════════════════════════════════
+     MODAL HISTORIAL DE MOVIMIENTOS
+═════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isHistorialOpen" (didDismiss)="cerrarHistorial()" class="historial-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Historial de Movimientos</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarHistorial()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+      <ion-toolbar class="filtros-toolbar">
+        <ion-segment [(ngModel)]="filtroHistorial" mode="ios">
+          <ion-segment-button value="Todos">
+            <ion-label>Todos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="Entrada">
+            <ion-label>Entradas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="Salida">
+            <ion-label>Salidas</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="historial-body">
+      <div class="movimientos-tabla historial-tabla">
+        <!-- Cabecera -->
+        <div class="tabla-cabecera">
+          <span>HORA</span>
+          <span>TIPO</span>
+          <span>CONCEPTO</span>
+          <span class="col-importe">IMPORTE</span>
+        </div>
+
+        <!-- Filas -->
+        <div class="tabla-fila" *ngFor="let mov of movimientosFiltrados" [class.clickable]="mov.facturaId"
+          (click)="abrirFactura(mov)">
+          <span class="fila-hora">{{ mov.hora }}</span>
+          <span>
+            <span class="tipo-badge" [class.badge-entrada]="mov.tipo === 'Entrada'"
+              [class.badge-salida]="mov.tipo === 'Salida'" [class.badge-sistema]="mov.tipo === 'Sistema'">
+              <ion-icon [name]="mov.tipo === 'Entrada' ? 'arrow-down-outline' :
+                         mov.tipo === 'Salida'  ? 'arrow-up-outline'   :
+                         'settings-outline'">
+              </ion-icon>
+              {{ mov.tipo }}
+            </span>
+          </span>
+          <div class="fila-concepto-wrapper">
+            <span class="fila-concepto">{{ mov.concepto }}</span>
+            <span class="fila-usuario">{{ mov.usuario }}</span>
+          </div>
+          <span class="col-importe" [class.positivo]="mov.importe > 0" [class.negativo]="mov.importe < 0">
+            <ng-container *ngIf="mov.facturaId">
+              <ion-icon name="receipt-outline" class="factura-icon"></ion-icon>
+            </ng-container>
+            {{ formatImporte(mov) }}
+          </span>
+        </div>
+
+        <div class="empty-state" *ngIf="movimientosFiltrados.length === 0">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <p>No hay movimientos en esta categoría.</p>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ═════════════════════════════════════════════
+     MODAL DETALLE DE FACTURA / TICKET
+═════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isFacturaOpen" (didDismiss)="cerrarFactura()" class="factura-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Ticket {{ facturaSeleccionada?.id }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarFactura()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="factura-body" *ngIf="facturaSeleccionada">
+      <div class="ticket-container">
+        <div class="ticket-header">
+          <h3>Tienda Pueblo</h3>
+          <p>{{ facturaSeleccionada.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+          <p>Le atendió: {{ facturaSeleccionada.empleado }}</p>
+          <p>Cliente: {{ facturaSeleccionada.cliente }}</p>
+        </div>
+
+        <div class="ticket-separator"></div>
+
+        <div class="ticket-lineas">
+          <div class="ticket-linea" *ngFor="let linea of facturaSeleccionada.lineas">
+            <div class="linea-info">
+              <span class="linea-cantidad">{{ linea.cantidad }}x</span>
+              <span class="linea-producto">{{ linea.producto.nombre }}</span>
+            </div>
+            <span class="linea-precio">€{{ (linea.cantidad * linea.producto.precio).toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-separator"></div>
+
+        <div class="ticket-total">
+          <span>TOTAL</span>
+          <strong>€{{ facturaSeleccionada.total.toFixed(2) }}</strong>
+        </div>
+
+        <div class="ticket-footer">
+          <p>Forma de pago: <strong>{{ facturaSeleccionada.metodoCobro }}</strong></p>
+          <p>¡Gracias por su visita!</p>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

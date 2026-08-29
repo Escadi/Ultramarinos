@@ -1,0 +1,539 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Product Page — Gestión de Productos
+// ─────────────────────────────────────────────────────────────────────────────
+
+$verde: #1a7a4a;
+$verde-claro: #e8f5ee;
+$gris-fondo: #f4f6f9;
+$blanco: #ffffff;
+$borde: #e2e8f0;
+$gris: #6b7280;
+$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.prod-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+  --min-height: 72px;
+  padding: 0 24px;
+  box-shadow: $sombra;
+
+  .prod-main-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+
+    .title-left {
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #111827;
+        margin: 0 0 2px;
+      }
+      p {
+        font-size: 0.82rem;
+        color: $gris;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.btn-nuevo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: $verde;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba($verde, 0.3);
+  white-space: nowrap;
+
+  ion-icon { font-size: 1.1rem; }
+
+  &:hover {
+    background: darken($verde, 6%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba($verde, 0.35);
+  }
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+
+.prod-content {
+  --background: #{$gris-fondo};
+}
+
+// ─── Barra de filtros ────────────────────────────────────────────────────────
+
+.filtros-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: $blanco;
+  border-bottom: 1px solid $borde;
+  flex-wrap: wrap;
+}
+
+.search-input-wrap {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $gris-fondo;
+  border: 1.5px solid $borde;
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: $verde;
+    box-shadow: 0 0 0 3px rgba($verde, 0.08);
+  }
+
+  .search-icon {
+    color: $gris;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 0;
+    font-size: 0.88rem;
+    color: #111827;
+
+    &::placeholder { color: #9ca3af; }
+  }
+}
+
+.filtros-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+// Dropdown genérico
+.dropdown-wrap {
+  position: relative;
+
+  .btn-filtro {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    background: $blanco;
+    border: 1.5px solid $borde;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+
+    ion-icon { font-size: 0.95rem; }
+
+    .chevron {
+      font-size: 0.75rem;
+      color: $gris;
+      transition: transform 0.2s;
+    }
+
+    &:hover { border-color: $verde; color: $verde; }
+  }
+
+  &.open .btn-filtro {
+    border-color: $verde;
+    color: $verde;
+    .chevron { transform: rotate(180deg); }
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: $blanco;
+    border: 1px solid $borde;
+    border-radius: 10px;
+    box-shadow: $sombra-md;
+    z-index: 100;
+    min-width: 160px;
+    overflow: hidden;
+    animation: dropdownIn 0.15s ease;
+
+    .dropdown-item {
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.12s;
+
+      &:hover { background: $gris-fondo; }
+
+      &.item-activo {
+        background: $verde-claro;
+        color: $verde;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Tabla de productos ──────────────────────────────────────────────────────
+
+.tabla-card {
+  margin: 16px 20px 0;
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  box-shadow: $sombra;
+  overflow: hidden;
+}
+
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: $gris-fondo;
+    border-bottom: 2px solid $borde;
+  }
+
+  th {
+    padding: 12px 16px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $gris;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+    white-space: nowrap;
+
+    &.col-precio  { text-align: right; }
+    &.col-stock   { text-align: center; }
+    &.col-acciones { text-align: center; }
+  }
+
+  .fila-producto {
+    border-bottom: 1px solid $gris-fondo;
+    transition: background 0.15s;
+    animation: fadeInRow 0.2s ease;
+
+    &:hover { background: #fafbfc; }
+    &:last-child { border-bottom: none; }
+
+    td { padding: 12px 16px; vertical-align: middle; }
+  }
+}
+
+// Celda nombre
+.celda-nombre {
+  min-width: 220px;
+
+  .nombre-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .prod-icono {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+  }
+
+  .nombre-texto {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.3;
+  }
+}
+
+// Badge de categoría
+.cat-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+// Precios
+.celda-precio {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: right;
+  white-space: nowrap;
+
+  &.precio-venta { font-weight: 700; color: #111827; }
+}
+
+// Stock badges
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  ion-icon { font-size: 0.8rem; }
+
+  &.stock-ok {
+    background: #dcfce7;
+    color: #15803d;
+  }
+  &.stock-bajo {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  &.stock-cero {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+}
+
+// Acciones
+.celda-acciones {
+  text-align: center;
+  white-space: nowrap;
+
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-accion {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.95rem;
+
+  &.btn-editar {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+
+    &:hover { background: #2563eb; color: white; }
+  }
+
+  &.btn-eliminar {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #e53935;
+
+    &:hover { background: #e53935; color: white; }
+  }
+}
+
+// Estado vacío
+.tabla-vacia {
+  text-align: center;
+  padding: 48px;
+  color: #9ca3af;
+
+  ion-icon { font-size: 2.5rem; display: block; margin: 0 auto 8px; }
+  p { margin: 0; font-size: 0.9rem; }
+}
+
+// ─── Paginación ───────────────────────────────────────────────────────────────
+
+.paginacion-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .pagina-info {
+    font-size: 0.82rem;
+    color: $gris;
+    margin: 0;
+  }
+
+  .pagina-controles {
+    display: flex;
+    gap: 4px;
+  }
+
+  .btn-pagina {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled):not(.pagina-activa) {
+      border-color: $verde;
+      color: $verde;
+    }
+
+    &.pagina-activa {
+      background: $verde;
+      border-color: $verde;
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    ion-icon { font-size: 0.9rem; }
+  }
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+
+.modal-producto {
+  --width: 500px;
+  --border-radius: 16px;
+}
+
+.modal-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+}
+
+.modal-content {
+  --background: #{$gris-fondo};
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  input, select, textarea {
+    padding: 10px 14px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #111827;
+    background: $blanco;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $verde;
+      box-shadow: 0 0 0 3px rgba($verde, 0.08);
+    }
+
+    &::placeholder { color: #9ca3af; }
+  }
+
+  textarea { resize: vertical; }
+
+  select { appearance: none; cursor: pointer; }
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 4px;
+
+  .btn-cancelar {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    color: $gris;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover { border-color: #9ca3af; color: #374151; }
+  }
+
+  .btn-guardar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: $verde;
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 3px 10px rgba($verde, 0.3);
+
+    ion-icon { font-size: 1rem; }
+
+    &:hover { background: darken($verde, 6%); }
+  }
+}
+
+// ─── Animaciones ─────────────────────────────────────────────────────────────
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

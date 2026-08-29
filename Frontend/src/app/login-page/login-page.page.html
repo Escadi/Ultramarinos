@@ -1,0 +1,77 @@
+<ion-content class="login-content">
+
+  <div class="login-wrapper">
+    <div class="login-form-card">
+
+      <!-- Logo -->
+      <div class="logo-wrap">
+        <img src="assets/icon/minimarketLogo.png" alt="TiendaPueblo" class="logo" />
+      </div>
+      <!-- Cabecera del formulario -->
+      <div class="form-header">
+        <h2>Bienvenido de nuevo</h2>
+        <p>Inicia sesión en tu cuenta para continuar</p>
+      </div>
+
+      <!-- Formulario -->
+      <div class="form-body">
+
+        <!-- Email -->
+        <div class="campo-grupo" [class.campo-error]="loginError">
+          <label class="campo-label">Correo electrónico</label>
+          <div class="input-wrap" [class.input-focused]="emailFocused">
+            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+            <input id="login-email" type="email" class="campo-input" placeholder="tu@correo.com" [(ngModel)]="email"
+              (focus)="emailFocused = true" (blur)="emailFocused = false" (keyup.enter)="getlogin()"
+              autocomplete="email" />
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="campo-grupo" [class.campo-error]="loginError">
+          <label class="campo-label">Contraseña</label>
+          <div class="input-wrap" [class.input-focused]="passFocused">
+            <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+            <input id="login-password" [type]="showPassword ? 'text' : 'password'" class="campo-input"
+              placeholder="••••••••" [(ngModel)]="password" (focus)="passFocused = true" (blur)="passFocused = false"
+              (keyup.enter)="getlogin()" autocomplete="current-password" />
+            <button class="btn-toggle-pass" (click)="showPassword = !showPassword" type="button" tabindex="-1">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div class="error-msg" *ngIf="loginError">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Olvidaste contraseña -->
+        <div class="forgot-row">
+          <button class="btn-forgot" type="button">¿Olvidaste tu contraseña?</button>
+        </div>
+
+        <!-- Botón de acceso -->
+        <button class="btn-login" [class.btn-loading]="isLoading" (click)="getlogin()" [disabled]="isLoading">
+          <span *ngIf="!isLoading">
+            <ion-icon name="log-in-outline"></ion-icon>
+            Iniciar sesión
+          </span>
+          <span *ngIf="isLoading" class="loading-inner">
+            <ion-spinner name="crescent" class="btn-spinner"></ion-spinner>
+            Verificando...
+          </span>
+        </button>
+
+      </div>
+
+      <!-- Pie del formulario -->
+      <div class="form-footer">
+        <span>Escadidev &copy; {{ anio }} · Todos los derechos reservados</span>
+      </div>
+
+    </div>
+  </div>
+
+</ion-content>

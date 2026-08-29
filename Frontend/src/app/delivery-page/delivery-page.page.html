@@ -1,0 +1,421 @@
+<ion-header>
+  <ion-toolbar class="delivery-toolbar">
+    <ion-title class="delivery-main-title">
+      <div class="title-actions">
+        <button class="btn-scan" (click)="scanPedido()" title="Escanear QR">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          Escanear
+        </button>
+        <button class="btn-nuevo-pedido" (click)="abrirModalNuevoPedido()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Nuevo Pedido
+        </button>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="delivery-content">
+
+  <!-- ─── KPIs rápidas ─── -->
+  <div class="kpis-bar">
+    <div class="kpi-card" *ngFor="let kpi of kpis">
+      <div class="kpi-icono" [style.background]="kpi.color + '1a'" [style.color]="kpi.color">
+        <ion-icon [name]="kpi.icono"></ion-icon>
+      </div>
+      <div class="kpi-info">
+        <p class="kpi-valor">{{ kpi.valor }}</p>
+        <p class="kpi-label">{{ kpi.label }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Barra de filtros ─── -->
+  <div class="filtros-bar">
+    <div class="search-wrap">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="text" placeholder="Buscar por ID, cliente, email..." [(ngModel)]="searchText"
+        (input)="filtrarPedidos()" />
+    </div>
+
+    <div class="filtros-derecha">
+      <!-- Filtro por estado -->
+      <div class="dropdown-wrap" [class.open]="dropdownEstadoOpen">
+        <button class="btn-filtro" (click)="dropdownEstadoOpen = !dropdownEstadoOpen">
+          <ion-icon name="funnel-outline"></ion-icon>
+          {{ estadoFiltro || 'Estado' }}
+          <ion-icon name="chevron-down-outline" class="chevron"></ion-icon>
+        </button>
+        <div class="dropdown-menu" *ngIf="dropdownEstadoOpen">
+          <div class="dropdown-item" [class.item-activo]="estadoFiltro === ''" (click)="setEstadoFiltro('')">Todos</div>
+          <div class="dropdown-item" *ngFor="let e of estados" [class.item-activo]="estadoFiltro === e"
+            (click)="setEstadoFiltro(e)">
+            <span class="dot-estado" [style.background]="getStatusHex(e)"></span>
+            {{ e }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Tabla de pedidos ─── -->
+  <div class="tabla-card">
+    <table class="tabla-pedidos">
+      <thead>
+        <tr>
+          <th>ID PEDIDO</th>
+          <th>CLIENTE</th>
+          <th>EMPLEADO</th>
+          <th>CENTRO</th>
+          <th>FECHA</th>
+          <th>ESTADO</th>
+          <th class="col-acciones">ACCIONES</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fila-pedido" *ngFor="let pedido of pedidosPagina">
+          <!-- ID -->
+          <td class="celda-id">
+            <ion-icon name="qr-code-outline"></ion-icon>
+            {{ pedido.idPedido }}
+          </td>
+
+          <!-- Cliente -->
+          <td class="celda-cliente">
+            <div class="avatar-wrap">
+              <div class="avatar">{{ pedido.cliente?.nombre?.charAt(0) }}</div>
+              <div>
+                <p class="cliente-nombre">{{ pedido.cliente?.nombre }}</p>
+                <p class="cliente-email">{{ pedido.cliente?.email }}</p>
+              </div>
+            </div>
+          </td>
+
+          <!-- Empleado -->
+          <td class="celda-empleado">
+            {{ pedido.empleado?.nombre }} {{ pedido.empleado?.apellido }}
+          </td>
+
+          <!-- Centro -->
+          <td class="celda-centro">
+            <ion-icon name="business-outline"></ion-icon>
+            {{ pedido.centroTrabajo?.nombreCentro }}
+          </td>
+
+          <!-- Fecha -->
+          <td class="celda-fecha">
+            {{ pedido.fechaPedido | date:'dd/MM/yyyy' }}
+          </td>
+
+          <!-- Estado -->
+          <td>
+            <span class="estado-badge" [style.background]="getStatusHex(pedido.estado) + '1a'"
+              [style.color]="getStatusHex(pedido.estado)">
+              <span class="estado-dot" [style.background]="getStatusHex(pedido.estado)"></span>
+              {{ pedido.estado }}
+            </span>
+          </td>
+
+          <!-- Acciones -->
+          <td class="celda-acciones">
+            <button class="btn-accion btn-ver" (click)="openModalDetallePedido(pedido.idPedido)" title="Ver detalle">
+              <ion-icon name="eye-outline"></ion-icon>
+            </button>
+            <button class="btn-accion btn-rutas" (click)="openModalOrdenesEntrega(pedido.idPedido)"
+              title="Órdenes de entrega">
+              <ion-icon name="map-outline"></ion-icon>
+            </button>
+            <button class="btn-accion btn-editar" (click)="isUpdatePedido(pedido)" title="Editar">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <button class="btn-accion btn-eliminar" (click)="deletePedido(pedido.idPedido)" title="Eliminar">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="pedidosPagina.length === 0">
+          <td colspan="7" class="tabla-vacia">
+            <ion-icon name="cube-outline"></ion-icon>
+            <p>No se encontraron pedidos</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─── Paginación ─── -->
+  <div class="paginacion-bar">
+    <p class="pagina-info">
+      Mostrando {{ pedidosPagina.length }} de {{ pedidosFiltrados.length }} pedidos
+    </p>
+    <div class="pagina-controles">
+      <button class="btn-pagina" [disabled]="paginaActual === 1" (click)="irPagina(paginaActual - 1)">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </button>
+      <button class="btn-pagina" *ngFor="let n of paginasVisibles" [class.pagina-activa]="n === paginaActual"
+        (click)="irPagina(n)">{{ n }}</button>
+      <button class="btn-pagina" [disabled]="paginaActual === totalPaginas" (click)="irPagina(paginaActual + 1)">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════ MODAL — Actualizar Pedido ═══════ -->
+  <ion-modal [isOpen]="isModalOpenUpdate" (ionModalDidDismiss)="closeModalUpdate()" class="modal-delivery">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Actualizar Pedido</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModalUpdate()"><ion-icon name="close-outline"
+                slot="icon-only"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="modal-form">
+          <div class="form-grupo">
+            <label>ID Pedido</label>
+            <input type="text" [(ngModel)]="idPedidoData" readonly />
+          </div>
+          <div class="form-grupo">
+            <label>Estado</label>
+            <select [(ngModel)]="estado">
+              <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+            </select>
+          </div>
+          <div class="form-grupo">
+            <label>Cliente</label>
+            <select [(ngModel)]="cifCliente">
+              <option *ngFor="let c of clientes" [value]="c.cifCliente">{{ c.nombre }}</option>
+            </select>
+          </div>
+          <div class="form-grupo">
+            <label>Centro de Trabajo</label>
+            <select [(ngModel)]="idCentro">
+              <option *ngFor="let ct of centrosTrabajo" [value]="ct.idCentro">{{ ct.nombreCentro }}</option>
+            </select>
+          </div>
+          <div class="modal-acciones">
+            <button class="btn-cancelar" (click)="closeModalUpdate()">Cancelar</button>
+            <button class="btn-guardar" (click)="onUpdate()">
+              <ion-icon name="save-outline"></ion-icon> Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ═══════ MODAL — Órdenes de Entrega ═══════ -->
+  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="closeModal()" class="modal-delivery">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Órdenes de Entrega — {{ idPedidoData }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"><ion-icon name="close-outline" slot="icon-only"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="modal-form">
+          <div class="orden-card" *ngFor="let orden of filtroOrdenesEntrega">
+            <div class="orden-header">
+              <span class="orden-id">{{ orden.idPedido }}</span>
+              <span class="estado-badge" [style.background]="getStatusHex(orden.estado) + '1a'"
+                [style.color]="getStatusHex(orden.estado)">
+                <span class="estado-dot" [style.background]="getStatusHex(orden.estado)"></span>
+                {{ orden.estado }}
+              </span>
+            </div>
+            <div class="orden-grid">
+              <div class="orden-campo"><label>Fecha Salida</label>
+                <p>{{ orden.fechaSalida ? (orden.fechaSalida | date:'dd/MM/yyyy') : 'Pendiente' }}</p>
+              </div>
+              <div class="orden-campo"><label>Fecha Entrega</label>
+                <p>{{ orden.fechaEntrega ? (orden.fechaEntrega | date:'dd/MM/yyyy') : 'Pendiente' }}</p>
+              </div>
+              <div class="orden-campo"><label>Conductor</label>
+                <p>{{ orden.conductor?.nombre }} {{ orden.conductor?.apellido }}</p>
+              </div>
+              <div class="orden-campo"><label>DNI Receptor</label>
+                <p>{{ orden.dniReceptor || 'Pendiente' }}</p>
+              </div>
+              <div class="orden-campo orden-campo-full"><label>Observaciones</label>
+                <p>{{ orden.observaciones || 'Sin observaciones' }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="tabla-vacia" *ngIf="filtroOrdenesEntrega.length === 0">
+            <ion-icon name="map-outline"></ion-icon>
+            <p>No hay órdenes para este pedido</p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ═══════ MODAL — Detalle del Pedido ═══════ -->
+  <ion-modal [isOpen]="isModalOpenDetalle" (ionModalDidDismiss)="closeModalDetalle()" class="modal-delivery">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title>Detalle del Pedido</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="generateQR()" title="Generar QR">
+              <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button (click)="closeModalDetalle()"><ion-icon name="close-outline"
+                slot="icon-only"></ion-icon></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-content">
+        <div class="modal-form">
+          <div class="detalle-header">
+            <div class="detalle-id">
+              <ion-icon name="qr-code-outline"></ion-icon>
+              <span>{{ idPedidoData }}</span>
+            </div>
+            <div class="detalle-meta">
+              <p><ion-icon name="calendar-outline"></ion-icon> {{ fechaPedido | date:'dd/MM/yyyy' }}</p>
+              <p><ion-icon name="business-outline"></ion-icon> {{ idCentro }}</p>
+              <p><ion-icon name="person-outline"></ion-icon> {{ idEmpleado }}</p>
+            </div>
+          </div>
+
+          <div class="detalle-estado">
+            <span class="estado-badge" [style.background]="getStatusHex(estado) + '1a'"
+              [style.color]="getStatusHex(estado)">
+              <span class="estado-dot" [style.background]="getStatusHex(estado)"></span>
+              {{ estado }}
+            </span>
+          </div>
+
+          <div class="seccion-titulo">
+            <ion-icon name="cube-outline"></ion-icon>
+            Productos del Pedido
+          </div>
+
+          <div class="producto-linea" *ngFor="let d of filtroDetallePedidos">
+            <div class="prod-nombre-det">{{ d.detallesProducto?.producto?.nombreProducto }}</div>
+            <div class="prod-qty-det">
+              <ion-icon name="layers-outline"></ion-icon>
+              {{ d.cantidad }} ud.
+            </div>
+          </div>
+
+          <div class="tabla-vacia" *ngIf="filtroDetallePedidos.length === 0">
+            <ion-icon name="cube-outline"></ion-icon>
+            <p>Sin productos detallados</p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ─── Modal Nuevo Pedido ──────────────────────────────────────────────── -->
+  <ion-modal [isOpen]="isModalOpenNuevoPedido" (didDismiss)="cerrarModalNuevoPedido()" class="nuevo-pedido-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar class="modal-toolbar">
+          <ion-title style="color: #000000; font-weight: bold;">Nuevo Pedido</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalNuevoPedido()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding modal-content">
+        
+        <div class="modal-form">
+          
+          <div class="form-grupo">
+            <label>1. Seleccionar Cliente</label>
+            <select [(ngModel)]="clienteSeleccionadoId" (change)="onClienteChange()">
+              <option value="" disabled>-- Seleccione un cliente --</option>
+              <option *ngFor="let c of clientes" [value]="c.id">{{ c.nombre }} ({{ c.cifCliente || 'Sin CIF' }})</option>
+            </select>
+          </div>
+          
+          <div class="form-grupo" style="margin-top: 10px;">
+            <label>2. Añadir Producto (Buscar por código o nombre)</label>
+            <input type="text" placeholder="Escribe el código o nombre del producto..." 
+                   [(ngModel)]="searchProductoText" (input)="buscarProductoParaPedido()" />
+          </div>
+
+          <!-- Resultados Productos -->
+          <div class="resultados-lista" *ngIf="searchProductoText && productosBuscados.length > 0">
+            <div class="resultado-item" *ngFor="let p of productosBuscados" (click)="agregarProductoAlPedido(p)">
+              <div class="item-info">
+                <strong>{{ p.nombre }}</strong>
+                <span class="sub-text">{{ p.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+              <ion-icon name="add-circle-outline" color="success"></ion-icon>
+            </div>
+          </div>
+
+          <!-- Carrito de Pedido -->
+          <div class="carrito-list" *ngIf="productosSeleccionados.length > 0" style="margin-top: 10px;">
+            <label style="font-size: 0.78rem; font-weight: 600; color: #374151; display: block; margin-bottom: 8px;">Resumen del Pedido</label>
+            
+            <div class="producto-linea" *ngFor="let item of productosSeleccionados; let i = index" style="margin-bottom: 8px;">
+              <div class="prod-nombre-det">
+                {{ item.producto.nombre }}
+                <span style="font-weight: normal; color: #6b7280; margin-left: 5px;">{{ item.producto.precio | currency:'EUR':'symbol':'1.2-2' }} x {{ item.cantidad }}</span>
+              </div>
+              <div class="prod-qty-det" style="background: transparent; padding: 0;">
+                <strong style="margin-right: 12px; color: #111827;">{{ (item.producto.precio * item.cantidad) | currency:'EUR':'symbol':'1.2-2' }}</strong>
+                <button (click)="removerProductoDelPedido(i)" style="background: none; border: none; color: #e53935; cursor: pointer; display: flex; padding: 0; font-size: 1.2rem;">
+                  <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="carrito-total" style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1.5px dashed #e2e8f0; font-weight: 800; font-size: 1.15rem; color: #111827; margin-top: 10px;">
+              <span>Total:</span>
+              <span>{{ calcularTotalPedido() | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-acciones" style="margin-top: 24px;">
+            <button class="btn-cancelar" (click)="cerrarModalNuevoPedido()">Cancelar</button>
+            <button class="btn-guardar" (click)="crearNuevoPedido()" [disabled]="!clienteSeleccionado || productosSeleccionados.length === 0">
+              <ion-icon name="checkmark-circle-outline"></ion-icon> Realizar Pedido
+            </button>
+          </div>
+          
+        </div>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ─── Modal Código QR Generado ──────────────────────────────────────── -->
+  <ion-modal [isOpen]="isModalQRVisible" (didDismiss)="cerrarModalQR()" class="qr-modal" breakpoints="[0, 0.5, 0.8]" [initialBreakpoint]="0.5">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title style="color: #000000; font-weight: bold;">Pedido Creado con Éxito</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModalQR()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" style="text-align: center;">
+        <div class="qr-container" *ngIf="qrCodeDataUrl">
+          <h2 style="margin-bottom: 8px;">{{ pedidoReciente?.idPedido }}</h2>
+          <p style="color: #666; margin-bottom: 16px;">Cliente: {{ pedidoReciente?.cliente?.nombre }}</p>
+          <img [src]="qrCodeDataUrl" alt="Código QR del Pedido" style="width: 200px; height: 200px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto; display: block;" />
+          <p style="margin-top: 16px; font-size: 0.9rem; color: #555;">Muestra este código al repartidor o escanéalo para ver los detalles.</p>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

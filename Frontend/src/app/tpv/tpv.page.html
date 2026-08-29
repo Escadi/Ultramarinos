@@ -1,0 +1,714 @@
+<ion-header>
+  <ion-toolbar class="tpv-toolbar">
+    <ion-title class="tpv-title">
+      <ion-icon name="storefront-outline"></ion-icon>
+      Terminal Punto de Venta
+    </ion-title>
+
+    <!-- Buscador central -->
+    <div class="search-wrapper" slot="end">
+      <ion-searchbar [(ngModel)]="busqueda" placeholder="Buscar productos por nombre, código o scan..."
+        class="tpv-searchbar" debounce="200">
+      </ion-searchbar>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button class="btn-facturas-tpv" routerLink="/dashboard-control/facturas">
+        <ion-icon name="document-text-outline" slot="start"></ion-icon>
+        Facturas
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="tpv-content" [scrollY]="false">
+
+  <!-- BARRA DE SESIONES MULTIUSUARIO -->
+  <div class="sesiones-bar">
+    <div class="sesiones-scroll">
+      <button *ngFor="let s of sesiones; let i = index" class="sesion-tab" [class.active]="i === sesionActivaIndex"
+        (click)="seleccionarSesion(i)">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>{{ s.nombreEmpleado }}</span>
+        <ion-icon name="close-circle" class="close-icon" (click)="cerrarSesionActual(); $event.stopPropagation()"
+          *ngIf="i === sesionActivaIndex"></ion-icon>
+      </button>
+    </div>
+    <button class="nueva-sesion-btn" (click)="nuevaSesionPrompt()">
+      <ion-icon name="add-outline"></ion-icon>
+      <span>Nueva Sesión</span>
+    </button>
+  </div>
+
+  <div class="tpv-layout">
+
+    <!-- MENSAJE SI NO HAY SESIONES ACTIVAS -->
+    <div class="no-sesiones-overlay" *ngIf="sesiones.length === 0">
+      <div class="no-sesiones-card">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        <h2>Terminal Bloqueada</h2>
+        <p>No hay ninguna caja abierta actualmente.</p>
+        <p class="sub-text">Para empezar a cobrar en el TPV, primero debes ir a la pestaña <strong>Caja</strong> y
+          realizar la "Apertura de Caja".</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PANEL IZQUIERDO — Catálogo / Entrada Manual
+    ═══════════════════════════════════════════════════════ -->
+    <div class="panel-catalogo">
+
+      <!-- Pestañas del panel izquierdo -->
+      <div class="panel-tabs">
+        <button class="panel-tab" [class.tab-activo]="pestanaActiva === 'catalogo'"
+          (click)="pestanaActiva = 'catalogo'">
+          <ion-icon name="grid-outline"></ion-icon>
+          Catálogo
+        </button>
+        <button class="panel-tab" [class.tab-activo]="pestanaActiva === 'manual'" (click)="pestanaActiva = 'manual'">
+          <ion-icon name="keypad-outline"></ion-icon>
+          Entrada Manual
+        </button>
+      </div>
+
+      <!-- ─── Pestaña: Catálogo ─── -->
+      <ng-container *ngIf="pestanaActiva === 'catalogo'">
+
+        <!-- Filtros de categoría -->
+        <div class="categorias-scroll">
+          <ion-chip *ngFor="let cat of categorias" [class.chip-activo]="categoriaActiva === cat"
+            (click)="seleccionarCategoria(cat)" class="categoria-chip">
+            {{ cat }}
+          </ion-chip>
+        </div>
+
+        <!-- Grid de productos -->
+        <div class="productos-grid">
+          <div *ngFor="let producto of productosFiltrados" class="producto-card"
+            [class.en-ticket]="estaEnTicket(producto)" [class.agotado]="producto.agotado"
+            (click)="agregarAlTicket(producto)">
+
+            <div class="agotado-overlay" *ngIf="producto.agotado">
+              <span>Agotado</span>
+            </div>
+
+            <!-- Badge de venta por peso -->
+            <div class="peso-badge-card" *ngIf="producto.categoria === 'Frutas y Verduras'">
+              <ion-icon name="scale-outline"></ion-icon>
+            </div>
+
+            <div class="producto-img-wrap">
+              <img [src]="producto.imagen" [alt]="producto.nombre" />
+            </div>
+
+            <div class="producto-info">
+              <p class="producto-nombre">{{ producto.nombre }}</p>
+              <p class="producto-categoria">{{ producto.categoria }}</p>
+              <p class="producto-precio">€{{ producto.precio.toFixed(2) }}<span class="precio-unidad" *ngIf="producto.categoria === 'Frutas y Verduras'">/kg</span></p>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <!-- ─── Pestaña: Entrada Manual ─── -->
+      <ng-container *ngIf="pestanaActiva === 'manual'">
+        <div class="entrada-manual">
+
+          <!-- Display -->
+          <div class="display-manual">
+            <p class="display-label">Entrada manual / Cantidad</p>
+
+            <!-- Modo: código o cantidad -->
+            <div class="display-modos">
+              <button class="modo-btn" [class.modo-activo]="modoEntrada === 'codigo'" (click)="cambiarModo('codigo')">
+                <ion-icon name="barcode-outline"></ion-icon>
+                Código
+              </button>
+              <button class="modo-btn" [class.modo-activo]="modoEntrada === 'cantidad'"
+                (click)="cambiarModo('cantidad')">
+                <ion-icon name="layers-outline"></ion-icon>
+                Cantidad
+              </button>
+            </div>
+
+            <!-- Valor mostrado -->
+            <div class="display-valor" [class.display-error]="errorEntrada">
+              <span class="valor-texto">{{ valorEntrada || '0' }}</span>
+              <span class="valor-unidad" *ngIf="modoEntrada === 'cantidad'"> ud.</span>
+            </div>
+
+            <!-- Mensaje de error -->
+            <p class="error-msg" *ngIf="errorEntrada">{{ errorEntrada }}</p>
+
+            <!-- Producto encontrado preview -->
+            <div class="producto-preview" *ngIf="productoEncontrado">
+              <img [src]="productoEncontrado.imagen" [alt]="productoEncontrado.nombre" />
+              <div>
+                <p class="preview-nombre">{{ productoEncontrado.nombre }}</p>
+                <p class="preview-precio">€{{ productoEncontrado.precio.toFixed(2) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teclado numérico -->
+          <div class="teclado">
+            <div class="teclado-grid">
+              <button class="key" (click)="pulsarTecla('7')">7</button>
+              <button class="key" (click)="pulsarTecla('8')">8</button>
+              <button class="key" (click)="pulsarTecla('9')">9</button>
+
+              <button class="key" (click)="pulsarTecla('4')">4</button>
+              <button class="key" (click)="pulsarTecla('5')">5</button>
+              <button class="key" (click)="pulsarTecla('6')">6</button>
+
+              <button class="key" (click)="pulsarTecla('1')">1</button>
+              <button class="key" (click)="pulsarTecla('2')">2</button>
+              <button class="key" (click)="pulsarTecla('3')">3</button>
+
+              <button class="key" (click)="pulsarTecla('0')">0</button>
+              <button class="key" (click)="pulsarTecla('00')">00</button>
+              <button class="key key-coma" (click)="pulsarTecla(',')">,</button>
+            </div>
+
+            <!-- Fila de acciones -->
+            <div class="teclado-acciones">
+              <button class="key key-borrar" (click)="borrarUltimo()">
+                <ion-icon name="backspace-outline"></ion-icon>
+              </button>
+              <button class="key key-intro" (click)="confirmarEntrada()" [disabled]="!valorEntrada">
+                INTRO
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </ng-container>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PANEL DERECHO — Ticket Actual
+    ═══════════════════════════════════════════════════════ -->
+    <div class="panel-ticket">
+
+      <!-- Cabecera ticket -->
+      <div class="ticket-header" *ngIf="sesionActiva">
+        <div>
+          <h3 class="ticket-titulo">Ticket: {{ sesionActiva.nombreEmpleado }}</h3>
+          <p class="ticket-cliente">{{ sesionActiva.clienteActual }}</p>
+        </div>
+        <div class="header-actions">
+          <ion-button fill="clear" class="btn-scan-qr" (click)="scanQR()" title="Escanear Producto">
+            <ion-icon name="qr-code-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" class="add-cliente-btn" title="Añadir Cliente" (click)="abrirClienteModal()">
+            <ion-icon name="person-add-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+
+      <div class="ticket-divider"></div>
+
+      <!-- Lista de líneas -->
+      <div class="ticket-lineas" *ngIf="sesionActiva && sesionActiva.lineasTicket.length > 0; else emptyTicket">
+        <div class="linea-ticket" *ngFor="let linea of sesionActiva.lineasTicket">
+          <img [src]="linea.producto.imagen" [alt]="linea.producto.nombre" class="linea-img" />
+          <div class="linea-info">
+            <p class="linea-nombre">
+              {{ linea.producto.nombre }}
+              <span class="badge-peso" *ngIf="linea.esPorPeso">kg</span>
+            </p>
+            <!-- Línea normal: cantidad × precio -->
+            <p class="linea-peso" *ngIf="!linea.esPorPeso">
+              {{ linea.cantidad }} × €{{ linea.producto.precio.toFixed(2) }}
+            </p>
+            <!-- Línea por peso: X,XXX kg × €Y.YY/kg -->
+            <p class="linea-peso linea-peso-kg" *ngIf="linea.esPorPeso">
+              {{ linea.kg?.toFixed(3) }} kg × €{{ linea.precioKg?.toFixed(2) }}/kg
+            </p>
+          </div>
+          <div class="linea-controles">
+            <!-- Controles cantidad solo para líneas normales -->
+            <div class="cantidad-control" *ngIf="!linea.esPorPeso">
+              <button class="btn-qty" (click)="reducirCantidad(linea)">−</button>
+              <span class="qty-valor">{{ linea.cantidad }}</span>
+              <button class="btn-qty" (click)="aumentarCantidad(linea)">+</button>
+            </div>
+            <!-- Botón eliminar para líneas por peso -->
+              <button class="btn-qty btn-qty-del" *ngIf="linea.esPorPeso" (click)="eliminarLinea(linea)" title="Eliminar">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+              <!-- Subtotal: peso usa precio directo (ya calculado), normal usa precio×cantidad -->
+              <p class="linea-subtotal">
+                €{{ linea.esPorPeso ? linea.producto.precio.toFixed(2) : (linea.producto.precio * linea.cantidad).toFixed(2) }}
+              </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado vacío -->
+      <ng-template #emptyTicket>
+        <div class="ticket-vacio">
+          <ion-icon name="cart-outline"></ion-icon>
+          <p>Añade productos al ticket</p>
+        </div>
+      </ng-template>
+
+      <!-- Totales -->
+      <div class="ticket-totales">
+        <div class="ticket-divider"></div>
+        <div class="total-linea">
+          <span>Subtotal</span>
+          <span>€{{ subtotal.toFixed(2) }}</span>
+        </div>
+        <div class="total-linea muted">
+          <span>IVA ({{ IVA_PORCENTAJE }}%)</span>
+          <span>€{{ iva.toFixed(2) }}</span>
+        </div>
+        <div class="total-linea total-grande">
+          <span>Total</span>
+          <span>€{{ total.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="ticket-acciones">
+        <div class="acciones-secundarias">
+          <button class="btn-aparcar" (click)="aparcar()">
+            <ion-icon name="pause-circle-outline"></ion-icon>
+            Aparcar
+          </button>
+          <button class="btn-anular" (click)="anular()">
+            <ion-icon name="close-circle-outline"></ion-icon>
+            Anular
+          </button>
+        </div>
+        <button class="btn-cobrar" (click)="abrirModalCobro()"
+          [disabled]="!sesionActiva || sesionActiva.lineasTicket.length === 0">
+          <ion-icon name="card-outline"></ion-icon>
+          Cobrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</ion-content>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL PESO — Introducir kg al seleccionar F&V del catálogo
+═══════════════════════════════════════════════════════════ -->
+<div class="modal-peso-overlay" *ngIf="modalPesoOpen" (click)="cerrarModalPeso()">
+  <div class="modal-peso-card" (click)="$event.stopPropagation()">
+
+    <!-- Cabecera -->
+    <div class="modal-peso-header">
+      <div class="modal-peso-producto-info">
+        <img [src]="modalPesoProducto?.imagen" [alt]="modalPesoProducto?.nombre" class="modal-peso-img" />
+        <div>
+          <p class="modal-peso-nombre">{{ modalPesoProducto?.nombre }}</p>
+          <p class="modal-peso-precio-kg">€{{ modalPesoProducto?.precio?.toFixed(2) }} / kg</p>
+        </div>
+      </div>
+      <button class="modal-peso-close" (click)="cerrarModalPeso()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Display del peso -->
+    <div class="modal-peso-display" [class.display-error]="modalPesoErrorEntrada && !modalPesoKg">
+      <span class="modal-peso-valor">{{ modalPesoKg || '0' }}</span>
+      <span class="modal-peso-unidad"> kg</span>
+    </div>
+
+    <!-- Total en tiempo real -->
+    <div class="modal-peso-total" *ngIf="modalPesoTotal > 0">
+      <span>Total</span>
+      <strong>€ {{ modalPesoTotal.toFixed(2) }}</strong>
+    </div>
+
+    <!-- Error -->
+    <p class="modal-peso-error" *ngIf="modalPesoErrorEntrada">{{ modalPesoErrorEntrada }}</p>
+
+    <!-- Teclado numérico -->
+    <div class="modal-peso-teclado">
+      <div class="modal-teclado-grid">
+        <button class="modal-key" (click)="pulsarTeclaPeso('7')">7</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('8')">8</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('9')">9</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('4')">4</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('5')">5</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('6')">6</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('1')">1</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('2')">2</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('3')">3</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('0')">0</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso('00')">00</button>
+        <button class="modal-key" (click)="pulsarTeclaPeso(',')">,</button>
+      </div>
+      <div class="modal-teclado-acciones">
+        <button class="modal-key modal-key-borrar" (click)="borrarUltimoPeso()">
+          <ion-icon name="backspace-outline"></ion-icon>
+        </button>
+        <button class="modal-key modal-key-confirmar" (click)="confirmarModalPeso()">
+          <ion-icon name="scale-outline"></ion-icon>
+          Añadir al ticket
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL DE COBRO — Método de pago
+════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isCobroOpen" (ionModalDidDismiss)="cerrarModalCobro()" class="modal-cobro">
+  <ng-template>
+
+    <!-- Cabecera -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="cobro-toolbar">
+        <ion-title class="cobro-title">
+          <ion-icon name="card-outline"></ion-icon>
+          Selecciona el método de pago
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-cobro-cerrar" (click)="cerrarModalCobro()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="cobro-content">
+      <div class="cobro-container">
+
+        <!-- ─── Importe total ─── -->
+        <div class="cobro-total-banner" *ngIf="cobroFase === 'seleccion'">
+          <span class="cobro-total-label">Total a cobrar</span>
+          <span class="cobro-total-valor">€ {{ total.toFixed(2) }}</span>
+        </div>
+
+        <!-- ─── Tabs de método ─── -->
+        <div class="cobro-tabs" *ngIf="cobroFase === 'seleccion'">
+          <button class="cobro-tab" [class.tab-activo]="metodoCobro === 'efectivo'"
+            (click)="seleccionarMetodo('efectivo')">
+            <ion-icon name="cash-outline"></ion-icon>
+            <span>Efectivo</span>
+          </button>
+          <button class="cobro-tab" [class.tab-activo]="metodoCobro === 'tarjeta'"
+            (click)="seleccionarMetodo('tarjeta')">
+            <ion-icon name="card-outline"></ion-icon>
+            <span>Tarjeta</span>
+          </button>
+          <button class="cobro-tab" [class.tab-activo]="metodoCobro === 'mixto'" (click)="seleccionarMetodo('mixto')">
+            <ion-icon name="git-merge-outline"></ion-icon>
+            <span>Mixto</span>
+          </button>
+        </div>
+
+        <!-- ──────────────────────────────────────────────────
+             EFECTIVO
+        ────────────────────────────────────────────────── -->
+        <div class="cobro-panel" *ngIf="cobroFase === 'seleccion' && metodoCobro === 'efectivo'">
+          <div class="efectivo-info">
+            <div class="info-fila">
+              <span>Total</span>
+              <strong>€ {{ total.toFixed(2) }}</strong>
+            </div>
+            <div class="info-fila">
+              <span>Entregado</span>
+              <strong class="color-verde">€ {{ (entregadoEfectivo || 0).toFixed(2) }}</strong>
+            </div>
+            <div class="info-fila cambio-fila" [class.cambio-negativo]="cambioEfectivo < 0">
+              <span>Cambio</span>
+              <strong>€ {{ (cambioEfectivo < 0 ? 0 : cambioEfectivo).toFixed(2) }}</strong>
+            </div>
+          </div>
+
+          <!-- Accesos rápidos de billetes -->
+          <div class="billetes-rapidos">
+            <span class="billetes-label">Importe entregado</span>
+            <div class="billetes-grid">
+              <button class="billete-btn" *ngFor="let b of billetesRapidos" (click)="usarBillete(b)">
+                € {{ b }}
+              </button>
+              <button class="billete-btn billete-exacto" (click)="usarBillete(total)">
+                Exacto
+              </button>
+            </div>
+          </div>
+
+          <!-- Input personalizado -->
+          <div class="efectivo-input-wrap">
+            <label class="efectivo-input-label">O introduce el importe manualmente</label>
+            <div class="efectivo-input-row">
+              <span class="euro-prefix">€</span>
+              <input type="number" class="efectivo-input" [(ngModel)]="entregadoEfectivo" placeholder="0.00" min="0"
+                step="0.01" />
+            </div>
+          </div>
+
+          <button class="btn-confirmar-cobro" (click)="confirmarCobro()"
+            [disabled]="!entregadoEfectivo || entregadoEfectivo < total">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Confirmar cobro en efectivo
+          </button>
+        </div>
+
+        <!-- ──────────────────────────────────────────────────
+             TARJETA
+        ────────────────────────────────────────────────── -->
+        <div class="cobro-panel" *ngIf="cobroFase === 'seleccion' && metodoCobro === 'tarjeta'">
+          <div class="tarjeta-ilustracion">
+            <div class="tarjeta-card">
+              <ion-icon name="card-outline" class="tarjeta-icon"></ion-icon>
+              <div class="tarjeta-total">€ {{ total.toFixed(2) }}</div>
+              <p class="tarjeta-hint">Presenta la tarjeta en el lector TPV</p>
+            </div>
+          </div>
+
+          <div class="tarjeta-pasos">
+            <div class="paso-item">
+              <div class="paso-num">1</div>
+              <span>Acerca la tarjeta o insértala en el datáfono</span>
+            </div>
+            <div class="paso-item">
+              <div class="paso-num">2</div>
+              <span>El cliente introduce su PIN si es necesario</span>
+            </div>
+            <div class="paso-item">
+              <div class="paso-num">3</div>
+              <span>Confirma cuando aparezca "Aprobado" en el datáfono</span>
+            </div>
+          </div>
+
+          <button class="btn-confirmar-cobro btn-tarjeta" (click)="confirmarCobro()">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Confirmar pago con tarjeta
+          </button>
+        </div>
+
+        <!-- ──────────────────────────────────────────────────
+             MIXTO (Tarjeta + Efectivo)
+        ────────────────────────────────────────────────── -->
+        <div class="cobro-panel" *ngIf="cobroFase === 'seleccion' && metodoCobro === 'mixto'">
+
+          <div class="mixto-resumen">
+            <div class="mixto-fila">
+              <span>Total a cobrar</span>
+              <strong>€ {{ total.toFixed(2) }}</strong>
+            </div>
+            <div class="mixto-fila">
+              <span>Pagado con tarjeta</span>
+              <strong class="color-azul">€ {{ (mixtoTarjeta || 0).toFixed(2) }}</strong>
+            </div>
+            <div class="mixto-fila">
+              <span>Pagado en efectivo</span>
+              <strong class="color-verde">€ {{ (mixtoEfectivo || 0).toFixed(2) }}</strong>
+            </div>
+            <div class="mixto-fila mixto-pendiente" [class.mixto-ok]="mixtoRestante <= 0">
+              <span>{{ mixtoRestante <= 0 ? '✓ Cubierto' : 'Pendiente' }}</span>
+                  <strong>€ {{ (mixtoRestante < 0 ? 0 : mixtoRestante).toFixed(2) }}</strong>
+            </div>
+          </div>
+
+          <div class="mixto-inputs">
+            <div class="mixto-campo">
+              <label>
+                <ion-icon name="card-outline"></ion-icon>
+                Importe con tarjeta
+              </label>
+              <div class="mixto-input-wrap">
+                <span class="euro-prefix">€</span>
+                <input type="number" class="mixto-input" [(ngModel)]="mixtoTarjeta" placeholder="0.00" min="0"
+                  step="0.01" (ngModelChange)="recalcularMixto()" />
+              </div>
+            </div>
+            <div class="mixto-campo">
+              <label>
+                <ion-icon name="cash-outline"></ion-icon>
+                Importe en efectivo
+              </label>
+              <div class="mixto-input-wrap">
+                <span class="euro-prefix">€</span>
+                <input type="number" class="mixto-input" [(ngModel)]="mixtoEfectivo" placeholder="0.00" min="0"
+                  step="0.01" (ngModelChange)="recalcularMixto()" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mixto-cambio" *ngIf="mixtoRestante < 0">
+            <ion-icon name="arrow-undo-outline"></ion-icon>
+            Cambio a devolver: <strong>€ {{ (-mixtoRestante).toFixed(2) }}</strong>
+          </div>
+
+          <button class="btn-confirmar-cobro" (click)="confirmarCobro()" [disabled]="mixtoRestante > 0">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            Confirmar cobro mixto
+          </button>
+        </div>
+
+        <!-- ──────────────────────────────────────────────────
+             ÉXITO
+        ────────────────────────────────────────────────── -->
+        <div class="cobro-panel exito-container" *ngIf="cobroFase === 'exito'">
+          <ion-icon name="checkmark-circle" class="icono-exito"></ion-icon>
+          <h2>Cobro realizado</h2>
+          
+          <div class="info-cobro">
+            <div class="importe-total">€{{ cobroExitosoImporte.toFixed(2) }}</div>
+            <div class="metodo-label">{{ cobroExitosoMetodoLabel }}</div>
+          </div>
+
+          <div class="exito-acciones">
+            <button class="btn-cancelar" (click)="cerrarCobroExitoso()">Aceptar</button>
+            <button class="btn-guardar" (click)="imprimirTicketExitoso()">
+              <ion-icon name="print-outline"></ion-icon> Imprimir Ticket
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: CREAR NUEVO CLIENTE (FORMULARIO)
+═══════════════════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isNuevoClienteModalOpen" class="modal-cliente" (didDismiss)="cerrarNuevoClienteModal()">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="cliente-toolbar">
+        <ion-title class="cliente-title">
+          <ion-icon name="person-add-outline"></ion-icon>
+          Nuevo Cliente
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-cliente-cerrar" (click)="cerrarNuevoClienteModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="cliente-content">
+      <div class="cliente-panel">
+
+        <div class="cliente-seccion">
+          <h4>Datos del Cliente</h4>
+
+          <div class="cliente-input-wrap">
+            <ion-icon name="person-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Nombre *" [(ngModel)]="nuevoCliente.nombre" />
+          </div>
+
+          <div class="cliente-input-wrap">
+            <ion-icon name="people-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Apellidos" [(ngModel)]="nuevoCliente.apellidos" />
+          </div>
+
+          <div class="cliente-input-wrap">
+            <ion-icon name="call-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Contacto (Tel / Email)"
+              [(ngModel)]="nuevoCliente.contacto" />
+          </div>
+
+          <div class="cliente-input-wrap" style="padding: 0;">
+            <select class="cliente-input" style="padding-left: 12px;" [(ngModel)]="nuevoCliente.tipo">
+              <option value="Fiel">Fiel</option>
+              <option value="Profesional">Profesional</option>
+              <option value="Ocasional">Ocasional</option>
+            </select>
+          </div>
+
+          <button class="btn-cliente-manual" style="margin-top: 10px;" [disabled]="!nuevoCliente.nombre.trim()"
+            (click)="guardarNuevoCliente()">
+            <ion-icon name="save-outline"></ion-icon> Guardar y Asignar
+          </button>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: AÑADIR CLIENTE
+═══════════════════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isClienteModalOpen" class="modal-cliente" (didDismiss)="cerrarClienteModal()">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="cliente-toolbar">
+        <ion-title class="cliente-title">
+          <ion-icon name="person-add-outline"></ion-icon>
+          Añadir Cliente al Ticket
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-cliente-cerrar" (click)="cerrarClienteModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="cliente-content">
+      <div class="cliente-panel">
+
+        <!-- 1. Búsqueda de cliente existente -->
+        <div class="cliente-seccion">
+          <h4>Buscar Cliente Existente</h4>
+          <div class="cliente-input-wrap">
+            <ion-icon name="search-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Buscar por nombre o teléfono..."
+              [(ngModel)]="clienteSearchQuery" />
+          </div>
+
+          <div class="cliente-lista" *ngIf="clientesFiltradosModal.length > 0">
+            <div class="cliente-item" *ngFor="let cliente of clientesFiltradosModal"
+              (click)="seleccionarClienteModal(cliente)">
+              <div class="cliente-item-info">
+                <strong>{{ cliente.nombre }} {{ cliente.apellidos }}</strong>
+                <span>{{ cliente.contacto }}</span>
+              </div>
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+          </div>
+          <div class="cliente-no-results" *ngIf="clienteSearchQuery && clientesFiltradosModal.length === 0">
+            No se encontraron clientes.
+          </div>
+        </div>
+
+        <div class="cliente-divider"><span>O</span></div>
+
+        <!-- 2. Cliente manual rápido -->
+        <div class="cliente-seccion">
+          <h4>Cliente Manual (Sólo para este ticket)</h4>
+          <div class="cliente-input-wrap">
+            <ion-icon name="person-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Ej: Juan Pérez" [(ngModel)]="clienteManualNombre"
+              (keyup.enter)="asignarClienteManual()" />
+          </div>
+          <div class="cliente-input-wrap">
+            <ion-icon name="card-outline"></ion-icon>
+            <input type="text" class="cliente-input" placeholder="Ej: 12345678Z (Opcional)"
+              [(ngModel)]="clienteManualCif" (keyup.enter)="asignarClienteManual()" />
+          </div>
+          <button class="btn-cliente-manual" [disabled]="!clienteManualNombre.trim()" (click)="asignarClienteManual()">
+            <ion-icon name="checkmark-outline"></ion-icon> Asignar al Ticket
+          </button>
+        </div>
+
+        <!-- 3. Crear nuevo cliente -->
+        <div class="cliente-crear-nuevo">
+          <p>¿Es un cliente recurrente?</p>
+          <ion-button expand="block" fill="outline" class="btn-nuevo-cliente" (click)="abrirNuevoClienteModal()">
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Crear Nuevo Cliente
+          </ion-button>
+        </div>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

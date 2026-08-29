@@ -1,0 +1,402 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Worker List Page
+// ─────────────────────────────────────────────────────────────────────────────
+
+$verde: #1a7a4a;
+$verde-claro: #e8f5ee;
+$gris-fondo: #f4f6f9;
+$blanco: #ffffff;
+$borde: #e2e8f0;
+$gris: #6b7280;
+$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.modern-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+  --min-height: 72px;
+  padding: 0 24px;
+  box-shadow: $sombra;
+
+  ion-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #111827;
+    padding: 0;
+  }
+
+  .btn-back {
+    --color: #{$gris};
+    font-size: 1.2rem;
+    margin-right: 12px;
+  }
+
+  .btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: $verde;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba($verde, 0.3);
+
+    ion-icon { font-size: 1.2rem; }
+    &:hover { background: darken($verde, 6%); transform: translateY(-1px); }
+  }
+}
+
+// ─── Contenedor y Acciones ───────────────────────────────────────────────────
+
+.modern-content { --background: #{$gris-fondo}; }
+
+.content-wrapper {
+  padding: 24px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: $blanco;
+  border: 1.5px solid $borde;
+  border-radius: 12px;
+  padding: 0 16px;
+  width: 100%;
+  max-width: 400px;
+  height: 48px;
+  transition: border-color 0.2s;
+
+  &:focus-within { border-color: $verde; }
+
+  ion-icon { font-size: 1.2rem; color: #9ca3af; margin-right: 12px; }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #111827;
+    &::placeholder { color: #9ca3af; }
+  }
+}
+
+.stats-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $blanco;
+  border: 1px solid $borde;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+
+  ion-icon { color: $verde; font-size: 1.1rem; }
+}
+
+// ─── Tabla Principal ─────────────────────────────────────────────────────────
+
+.tabla-card {
+  background: $blanco;
+  border-radius: 16px;
+  border: 1px solid $borde;
+  box-shadow: $sombra;
+  overflow: hidden;
+}
+
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+
+  thead {
+    background: #fafbfc;
+    border-bottom: 1px solid $borde;
+    
+    th {
+      padding: 16px 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $borde;
+      transition: background 0.15s;
+      &:hover { background: #f8fafc; }
+      &:last-child { border-bottom: none; }
+    }
+
+    td {
+      padding: 16px 20px;
+      vertical-align: middle;
+    }
+  }
+}
+
+// ─── Estilos de Celdas ───────────────────────────────────────────────────────
+
+.id-badge {
+  background: #f1f5f9;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.empleado-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .avatar-sm {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: $verde-claro;
+    color: $verde;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  .nombre {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #111827;
+  }
+}
+
+.contacto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: #475569;
+    
+    ion-icon { font-size: 1rem; color: #9ca3af; }
+  }
+}
+
+.puesto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  .puesto-cargo { font-size: 0.9rem; font-weight: 700; color: #111827; }
+  .puesto-centro { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+  .puesto-dpto { font-size: 0.75rem; color: $verde; font-weight: 600; }
+}
+
+.estado-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+
+  &.bg-admin { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+  &.bg-super { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+  &.bg-empleado { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+}
+
+.acciones-grupo {
+  display: flex;
+  gap: 8px;
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.btn-edit {
+      background: #eff6ff; color: #2563eb;
+      &:hover { background: #2563eb; color: white; }
+    }
+    
+    &.btn-delete {
+      background: #fef2f2; color: #dc2626;
+      &:hover { background: #dc2626; color: white; }
+    }
+  }
+}
+
+// ─── Paginación ──────────────────────────────────────────────────────────────
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-top: 1px solid $borde;
+  background: #fafbfc;
+
+  .page-info { font-size: 0.85rem; font-weight: 600; color: #64748b; }
+
+  .btn-page {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: $blanco;
+    border: 1px solid $borde;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) { background: #f1f5f9; border-color: #cbd5e1; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+
+  ion-icon { font-size: 3rem; margin-bottom: 12px; }
+  p { margin: 0; font-size: 1rem; font-weight: 500; }
+}
+
+// ─── Modales ─────────────────────────────────────────────────────────────────
+
+.modern-modal {
+  --width: 650px;
+  --border-radius: 16px;
+}
+
+.modal-body { --background: #{$gris-fondo}; }
+
+.form-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label { font-size: 0.85rem; font-weight: 700; color: #374151; }
+
+  .input-with-icon, .select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    ion-icon {
+      position: absolute;
+      left: 14px;
+      font-size: 1.2rem;
+      color: #9ca3af;
+      pointer-events: none;
+    }
+
+    input, select {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px 0 42px;
+      border: 1.5px solid $borde;
+      border-radius: 10px;
+      background: $blanco;
+      font-size: 0.9rem;
+      color: #111827;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &:focus { border-color: $verde; }
+    }
+
+    select { appearance: none; cursor: pointer; }
+  }
+}
+
+.modal-footer {
+  background: $blanco;
+  padding: 16px 24px;
+  border-top: 1px solid $borde;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  button {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: #f1f5f9; color: #475569; border: none;
+    &:hover { background: #e2e8f0; }
+  }
+
+  .btn-save {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: $verde; color: white; border: none;
+    box-shadow: 0 4px 12px rgba($verde, 0.3);
+    
+    &:hover:not(:disabled) { background: darken($verde, 6%); transform: translateY(-1px); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+  }
+}

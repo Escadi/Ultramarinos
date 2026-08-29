@@ -1,0 +1,652 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Delivery Page — Gestión de Pedidos
+// ─────────────────────────────────────────────────────────────────────────────
+
+$verde: #1a7a4a;
+$verde-claro: #e8f5ee;
+$gris-fondo: #f4f6f9;
+$blanco: #ffffff;
+$borde: #e2e8f0;
+$gris: #6b7280;
+$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+// ─── Toolbar ─────────────────────────────────────────────────────────────────
+
+.delivery-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+  --min-height: 72px;
+  padding: 0 24px;
+  box-shadow: $sombra;
+
+  .delivery-main-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+
+    .title-left {
+      h1 { font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0 0 2px; }
+      p  { font-size: 0.82rem; color: $gris; margin: 0; }
+    }
+
+    .title-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  }
+}
+
+.btn-scan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: $blanco;
+  border: 1.5px solid $borde;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  ion-icon { font-size: 1rem; }
+
+  &:hover { border-color: $verde; color: $verde; }
+}
+
+.btn-nuevo-pedido {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: $verde;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba($verde, 0.3);
+
+  ion-icon { font-size: 1.1rem; }
+
+  &:hover { background: darken($verde, 6%); transform: translateY(-1px); }
+}
+
+// ─── Layout ──────────────────────────────────────────────────────────────────
+
+.delivery-content { --background: #{$gris-fondo}; }
+
+// ─── KPIs ────────────────────────────────────────────────────────────────────
+
+.kpis-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 16px 20px 0;
+}
+
+.kpi-card {
+  background: $blanco;
+  border-radius: 12px;
+  border: 1px solid $borde;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: $sombra;
+  transition: box-shadow 0.18s;
+
+  &:hover { box-shadow: $sombra-md; }
+
+  .kpi-icono {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .kpi-valor {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 2px;
+    line-height: 1;
+  }
+
+  .kpi-label {
+    font-size: 0.75rem;
+    color: $gris;
+    margin: 0;
+    font-weight: 500;
+  }
+}
+
+// ─── Barra de filtros ────────────────────────────────────────────────────────
+
+.filtros-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: $blanco;
+  border-bottom: 1px solid $borde;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: $gris-fondo;
+  border: 1.5px solid $borde;
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: $verde;
+    box-shadow: 0 0 0 3px rgba($verde, 0.08);
+  }
+
+  ion-icon { color: $gris; font-size: 1rem; flex-shrink: 0; }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 10px 0;
+    font-size: 0.88rem;
+    color: #111827;
+
+    &::placeholder { color: #9ca3af; }
+  }
+}
+
+.filtros-derecha { display: flex; gap: 8px; }
+
+// Dropdown
+.dropdown-wrap {
+  position: relative;
+
+  .btn-filtro {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    background: $blanco;
+    border: 1.5px solid $borde;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.18s;
+    white-space: nowrap;
+
+    ion-icon { font-size: 0.95rem; }
+    .chevron { font-size: 0.75rem; color: $gris; transition: transform 0.2s; }
+
+    &:hover { border-color: $verde; color: $verde; }
+  }
+
+  &.open .btn-filtro { border-color: $verde; color: $verde; .chevron { transform: rotate(180deg); } }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: $blanco;
+    border: 1px solid $borde;
+    border-radius: 10px;
+    box-shadow: $sombra-md;
+    z-index: 100;
+    min-width: 160px;
+    overflow: hidden;
+    animation: dropdownIn 0.15s ease;
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      color: #374151;
+      cursor: pointer;
+      transition: background 0.12s;
+
+      &:hover { background: $gris-fondo; }
+      &.item-activo { background: $verde-claro; color: $verde; font-weight: 700; }
+    }
+  }
+}
+
+.dot-estado {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+// ─── Tabla ───────────────────────────────────────────────────────────────────
+
+.tabla-card {
+  margin: 0 20px;
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  box-shadow: $sombra;
+  overflow: hidden;
+}
+
+.tabla-pedidos {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr {
+    background: $gris-fondo;
+    border-bottom: 2px solid $borde;
+  }
+
+  th {
+    padding: 12px 16px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $gris;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: left;
+
+    &.col-acciones { text-align: center; }
+  }
+
+  .fila-pedido {
+    border-bottom: 1px solid $gris-fondo;
+    transition: background 0.15s;
+    animation: fadeInRow 0.2s ease;
+
+    &:hover { background: #fafbfc; }
+    &:last-child { border-bottom: none; }
+
+    td { padding: 12px 16px; vertical-align: middle; }
+  }
+
+  .celda-id {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: $verde;
+    white-space: nowrap;
+
+    ion-icon { font-size: 0.9rem; opacity: 0.7; }
+  }
+}
+
+// Celda cliente con avatar
+.avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cliente-nombre {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 2px;
+}
+
+.cliente-email {
+  font-size: 0.75rem;
+  color: $gris;
+  margin: 0;
+}
+
+.celda-empleado {
+  font-size: 0.85rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.celda-centro {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: #374151;
+
+  ion-icon { font-size: 0.85rem; color: $gris; }
+}
+
+.celda-fecha {
+  font-size: 0.82rem;
+  color: $gris;
+  white-space: nowrap;
+}
+
+// Estado badge
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  .estado-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+// Acciones
+.celda-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn-accion {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1.5px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.88rem;
+
+  &.btn-ver     { background: #f0f9ff; border-color: #bae6fd; color: #0284c7; &:hover { background: #0284c7; color: white; } }
+  &.btn-rutas   { background: #faf5ff; border-color: #e9d5ff; color: #7c3aed; &:hover { background: #7c3aed; color: white; } }
+  &.btn-editar  { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; &:hover { background: #2563eb; color: white; } }
+  &.btn-eliminar{ background: #fff5f5; border-color: #fecaca; color: #e53935; &:hover { background: #e53935; color: white; } }
+}
+
+// Estado vacío
+.tabla-vacia {
+  text-align: center;
+  padding: 48px;
+  color: #9ca3af;
+
+  ion-icon { font-size: 2.5rem; display: block; margin: 0 auto 8px; }
+  p { margin: 0; font-size: 0.9rem; }
+}
+
+// ─── Paginación ───────────────────────────────────────────────────────────────
+
+.paginacion-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .pagina-info { font-size: 0.82rem; color: $gris; margin: 0; }
+
+  .pagina-controles { display: flex; gap: 4px; }
+
+  .btn-pagina {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+
+    &:hover:not(:disabled):not(.pagina-activa) { border-color: $verde; color: $verde; }
+    &.pagina-activa { background: $verde; border-color: $verde; color: white; }
+    &:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    ion-icon { font-size: 0.9rem; }
+  }
+}
+
+// ─── Modales ─────────────────────────────────────────────────────────────────
+
+.modal-delivery { --width: 500px; --border-radius: 16px; }
+
+.nuevo-pedido-modal { 
+  --height: 90%; 
+  --border-radius: 20px 20px 0 0; 
+}
+
+.modal-toolbar { --background: #{$blanco}; --border-color: #{$borde}; }
+
+.modal-content { --background: #{$gris-fondo}; }
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label { font-size: 0.78rem; font-weight: 600; color: #374151; }
+
+  input, select {
+    padding: 10px 14px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #111827;
+    background: $blanco;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    appearance: none;
+
+    &:focus { border-color: $verde; box-shadow: 0 0 0 3px rgba($verde, 0.08); }
+    &[readonly] { background: $gris-fondo; color: $gris; }
+    &::placeholder { color: #9ca3af; }
+  }
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+
+  .btn-cancelar {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    color: $gris;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover { border-color: #9ca3af; }
+  }
+
+  .btn-guardar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: $verde;
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba($verde, 0.3);
+    ion-icon { font-size: 1rem; }
+    &:hover { background: darken($verde, 6%); }
+  }
+}
+
+// ─── Modal Órdenes ────────────────────────────────────────────────────────────
+
+.orden-card {
+  background: $blanco;
+  border-radius: 12px;
+  border: 1px solid $borde;
+  padding: 16px;
+  box-shadow: $sombra;
+
+  .orden-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+
+    .orden-id { font-size: 0.9rem; font-weight: 700; color: $verde; }
+  }
+
+  .orden-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .orden-campo {
+      label { font-size: 0.72rem; font-weight: 600; color: $gris; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 4px; }
+      p { font-size: 0.85rem; color: #374151; margin: 0; font-weight: 500; }
+
+      &.orden-campo-full { grid-column: 1 / -1; }
+    }
+  }
+}
+
+// ─── Modal Detalle ────────────────────────────────────────────────────────────
+
+.detalle-header {
+  background: $blanco;
+  border-radius: 12px;
+  border: 1px solid $borde;
+  padding: 16px;
+  box-shadow: $sombra;
+
+  .detalle-id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $verde;
+    margin-bottom: 10px;
+
+    ion-icon { font-size: 1.1rem; }
+  }
+
+  .detalle-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.83rem;
+      color: #374151;
+      margin: 0;
+
+      ion-icon { color: $gris; font-size: 0.85rem; }
+    }
+  }
+}
+
+.detalle-estado { margin-bottom: 4px; }
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  padding-bottom: 8px;
+  border-bottom: 2px solid $borde;
+
+  ion-icon { color: $verde; font-size: 1rem; }
+}
+
+.producto-linea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: $blanco;
+  border-radius: 8px;
+  border: 1px solid $borde;
+  animation: fadeInRow 0.15s ease;
+
+  .prod-nombre-det { font-size: 0.88rem; font-weight: 600; color: #111827; }
+
+  .prod-qty-det {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $verde;
+    background: $verde-claro;
+    padding: 3px 10px;
+    border-radius: 10px;
+
+    ion-icon { font-size: 0.8rem; }
+  }
+}
+
+// ─── Animaciones ─────────────────────────────────────────────────────────────
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(-3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-toolbar ion-title { color: #000000 !important; }
+

@@ -1,0 +1,251 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modern-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="goToSettings()" class="btn-back">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Gestión de Empleados</ion-title>
+    <ion-buttons slot="end">
+      <button class="btn-primary" (click)="openModal()">
+        <ion-icon name="add-outline"></ion-icon>
+        <span>Nuevo Empleado</span>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modern-content">
+  <div class="content-wrapper">
+
+    <!-- BARRA DE ACCIONES Y BÚSQUEDA -->
+    <div class="actions-bar">
+      <div class="search-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <input type="text" placeholder="Buscar por DNI, nombre, email..." [(ngModel)]="searchTerm" (input)="filterWorkers()">
+      </div>
+      <div class="stats-badge">
+        <ion-icon name="people-outline"></ion-icon>
+        {{ filteredWorkers.length }} Empleados
+      </div>
+    </div>
+
+    <!-- TABLA PRINCIPAL -->
+    <div class="tabla-card">
+      <div class="tabla-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Empleado</th>
+              <th>Contacto</th>
+              <th>Puesto / Centro</th>
+              <th>Rol</th>
+              <th class="acciones-col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Fila Vacía -->
+            <tr *ngIf="paginatedWorkers.length === 0">
+              <td colspan="6" class="empty-state">
+                <ion-icon name="people-outline"></ion-icon>
+                <p>No se encontraron empleados</p>
+              </td>
+            </tr>
+
+            <!-- Filas con datos -->
+            <tr *ngFor="let worker of paginatedWorkers">
+              <td class="id-col">
+                <span class="id-badge">#{{ worker.idEmpleado }}</span>
+              </td>
+              
+              <td>
+                <div class="empleado-info">
+                  <div class="avatar-sm">
+                    <ion-icon name="person"></ion-icon>
+                  </div>
+                  <div>
+                    <span class="nombre">{{ worker.nombre }} {{ worker.apellido }}</span>
+                  </div>
+                </div>
+              </td>
+              
+              <td>
+                <div class="contacto-info">
+                  <span class="contact-item"><ion-icon name="mail-outline"></ion-icon> {{ worker.email || 'N/A' }}</span>
+                  <span class="contact-item"><ion-icon name="call-outline"></ion-icon> {{ worker.telefono || 'N/A' }}</span>
+                </div>
+              </td>
+              
+              <td>
+                <div class="puesto-info">
+                  <span class="puesto-cargo">{{ worker.cargo?.nombreCargo || 'Sin Cargo' }}</span>
+                  <span class="puesto-centro">{{ worker.centroTrabajo?.nombreCentro || 'Sin Centro' }}</span>
+                  <span class="puesto-dpto">{{ worker.departamento?.nombreDepartamento || 'Sin Dpto' }}</span>
+                </div>
+              </td>
+              
+              <td>
+                <span class="estado-badge" 
+                      [class.bg-admin]="worker.rol === 'Admin'"
+                      [class.bg-super]="worker.rol === 'Supervisor'"
+                      [class.bg-empleado]="worker.rol === 'Empleado'">
+                  {{ worker.rol }}
+                </span>
+              </td>
+
+              <td class="acciones-col">
+                <div class="acciones-grupo">
+                  <button class="btn-icon btn-edit" (click)="editWorker(worker)" title="Editar">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                  <button class="btn-icon btn-delete" (click)="deleteEmpleado(worker.idEmpleado)" title="Eliminar">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <div class="paginacion" *ngIf="totalPages > 1">
+        <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon> Anterior
+        </button>
+        <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Siguiente <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- MODAL FORMULARIO EMPLEADO -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modern-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>{{ isEditEmpleado ? 'Editar Empleado' : 'Nuevo Empleado' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-body">
+      <div class="form-container">
+        
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Nombre</label>
+            <div class="input-with-icon">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" [(ngModel)]="empleado.nombre" placeholder="Ej. Juan">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Apellido</label>
+            <div class="input-with-icon">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" [(ngModel)]="empleado.apellido" placeholder="Ej. Pérez">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Email Corporativo</label>
+            <div class="input-with-icon">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" [(ngModel)]="empleado.email" placeholder="juan@empresa.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <div class="input-with-icon">
+              <ion-icon name="call-outline"></ion-icon>
+              <input type="tel" [(ngModel)]="empleado.telefono" placeholder="600 000 000">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Departamento</label>
+            <div class="select-wrapper">
+              <ion-icon name="bag-outline"></ion-icon>
+              <select [(ngModel)]="empleado.idDepartamento">
+                <option value="0" disabled>Seleccione un departamento</option>
+                <option *ngFor="let dep of departamentos" [value]="dep.idDepartamento">
+                  {{ dep.nombreDepartamento }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Centro de Trabajo</label>
+            <div class="select-wrapper">
+              <ion-icon name="business-outline"></ion-icon>
+              <select [(ngModel)]="empleado.idCentro">
+                <option value="0" disabled>Seleccione un centro</option>
+                <option *ngFor="let cen of centrosTrabajo" [value]="cen.idCentro">
+                  {{ cen.nombreCentro }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Cargo</label>
+            <div class="select-wrapper">
+              <ion-icon name="construct-outline"></ion-icon>
+              <select [(ngModel)]="empleado.idCargo">
+                <option value="0" disabled>Seleccione un cargo</option>
+                <option *ngFor="let car of cargos" [value]="car.idCargo">
+                  {{ car.nombreCargo }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Rol de Acceso (Sistema)</label>
+            <div class="select-wrapper">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <select [(ngModel)]="empleado.rol">
+                <option value="" disabled>Seleccione nivel</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Admin">Administrador</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isEditEmpleado">
+          <label>Contraseña Temporal</label>
+          <div class="input-with-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <input type="text" [(ngModel)]="empleado.temporalPassword" placeholder="Contraseña para primer acceso">
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
+      <button class="btn-save" (click)="createEmpleado()" [disabled]="!empleado.nombre || !empleado.apellido || !empleado.email">
+        <ion-icon name="save-outline"></ion-icon>
+        {{ isEditEmpleado ? 'Actualizar' : 'Guardar' }}
+      </button>
+    </div>
+  </ng-template>
+</ion-modal>

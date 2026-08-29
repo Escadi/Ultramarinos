@@ -1,0 +1,82 @@
+<ion-content class="settings-content">
+  <div class="settings-layout">
+
+    <!-- ═══════════════════════════════════════════════════
+         SECCIÓN 1: PERFIL DEL TRABAJADOR
+    ════════════════════════════════════════════════════ -->
+    <div class="perfil-card">
+      <div class="perfil-header">
+        <div class="avatar-grande">
+          {{ currentUser.avatar }}
+        </div>
+        <div class="perfil-nombres">
+          <h2>{{ currentUser.nombre }} {{ currentUser.apellido }}</h2>
+          <span class="badge-rol" [class.rol-admin]="currentUser.rol === 'ADMIN'">
+            <ion-icon [name]="currentUser.rol === 'ADMIN' ? 'shield-checkmark-outline' : 'person-outline'"></ion-icon>
+            {{ currentUser.rol }}
+          </span>
+        </div>
+      </div>
+
+      <div class="perfil-grid">
+        <div class="dato-box">
+          <ion-icon name="mail-outline"></ion-icon>
+          <div>
+            <label>Email Corporativo</label>
+            <p>{{ currentUser.email }}</p>
+          </div>
+        </div>
+
+        <div class="dato-box">
+          <ion-icon name="call-outline"></ion-icon>
+          <div>
+            <label>Teléfono</label>
+            <p>{{ currentUser.telefono }}</p>
+          </div>
+        </div>
+
+        <div class="dato-box">
+          <ion-icon name="id-card-outline"></ion-icon>
+          <div>
+            <label>DNI / NIE</label>
+            <p>{{ currentUser.dni }}</p>
+          </div>
+        </div>
+
+        <div class="dato-box">
+          <ion-icon name="business-outline"></ion-icon>
+          <div>
+            <label>Centro Asignado</label>
+            <p>{{ currentUser.centroTrabajo }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECCIÓN 2: PANEL DE ADMINISTRADOR (Solo ADMIN)
+    ════════════════════════════════════════════════════ -->
+    <div class="admin-section" *ngIf="currentUser.rol === 'ADMIN'">
+
+      <div class="section-title">
+        <ion-icon name="construct-outline"></ion-icon>
+        <h2>Panel de Administración</h2>
+      </div>
+
+      <!-- Módulos de Gestión (Admin Home portado) -->
+      <div class="admin-modules-grid">
+        <div class="module-card" *ngFor="let module of adminModules" (click)="navigateTo(module.route)">
+          <div class="module-icono" [style.background]="module.color + '1a'" [style.color]="module.color">
+            <ion-icon [name]="module.icon"></ion-icon>
+          </div>
+          <div class="module-info">
+            <h3>{{ module.title }}</h3>
+            <p>{{ module.description }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</ion-content>

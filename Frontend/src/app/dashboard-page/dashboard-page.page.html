@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar class="dash-toolbar">
+    <ion-title class="dash-main-title">
+      <div class="title-left">
+        <h1>{{ saludo }}</h1>
+        <p class="fecha-texto">{{ fecha | titlecase }}</p>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dash-content">
+
+  <!-- ═══════════════════════════════════════════════
+       KPI CARDS
+  ═══════════════════════════════════════════════ -->
+  <div class="kpis-grid">
+    <a class="kpi-card" *ngFor="let kpi of kpis">
+      <div class="kpi-top">
+        <div class="kpi-icono" [style.background]="kpi.color + '18'" [style.color]="kpi.color">
+          <ion-icon [name]="kpi.icono"></ion-icon>
+        </div>
+        <ion-icon name="arrow-forward-outline" class="kpi-arrow"></ion-icon>
+      </div>
+      <p class="kpi-valor" [style.color]="kpi.color">{{ kpi.valor }}</p>
+      <p class="kpi-label">{{ kpi.label }}</p>
+      <p class="kpi-descripcion">{{ kpi.descripcion }}</p>
+      <div class="kpi-tendencia" *ngIf="kpi.tendencia" [class.tendencia-positiva]="kpi.tendenciaPositiva"
+        [class.tendencia-negativa]="!kpi.tendenciaPositiva">
+        <ion-icon [name]="kpi.tendenciaPositiva ? 'trending-up-outline' : 'alert-circle-outline'"></ion-icon>
+        {{ kpi.tendencia }}
+      </div>
+    </a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SEGUNDA FILA — Progreso + Actividad
+  ═══════════════════════════════════════════════ -->
+  <div class="segunda-fila">
+
+    <!-- Panel izquierdo: métricas de rendimiento -->
+    <div class="metricas-panel">
+
+      <div class="panel-titulo">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <span>Rendimiento</span>
+      </div>
+
+      <!-- Tasa de entrega -->
+      <div class="metrica-item">
+        <div class="metrica-header">
+          <span class="metrica-nombre">Tasa de Entrega</span>
+          <span class="metrica-pct" [style.color]="tasaEntrega >= 80 ? '#16a34a' : '#d97706'">
+            {{ tasaEntrega }}%
+          </span>
+        </div>
+        <div class="barra-fondo">
+          <div class="barra-progreso" [style.width.%]="tasaEntrega"
+            [style.background]="tasaEntrega >= 80 ? '#16a34a' : '#d97706'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Pedidos totales -->
+      <div class="metrica-item">
+        <div class="metrica-header">
+          <span class="metrica-nombre">Pedidos Entregados</span>
+          <span class="metrica-pct" style="color:#2563eb">
+            {{ pedidosEntregados }} / {{ totalPedidos }}
+          </span>
+        </div>
+        <div class="barra-fondo">
+          <div class="barra-progreso" [style.width.%]="totalPedidos ? (pedidosEntregados / totalPedidos * 100) : 0"
+            style="background:#2563eb">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock sano (placeholder visual) -->
+      <div class="metrica-item">
+        <div class="metrica-header">
+          <span class="metrica-nombre">Stock Saludable</span>
+          <span class="metrica-pct" style="color:#7c3aed">75%</span>
+        </div>
+        <div class="barra-fondo">
+          <div class="barra-progreso" style="width:75%;background:#7c3aed"></div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="panel-divider"></div>
+
+      <!-- Resumen compacto -->
+      <div class="resumen-grid">
+        <div class="resumen-item">
+          <ion-icon name="cube-outline" style="color:#2563eb"></ion-icon>
+          <div>
+            <p class="ri-valor">{{ productCount }}</p>
+            <p class="ri-label">Productos</p>
+          </div>
+        </div>
+        <div class="resumen-item">
+          <ion-icon name="business-outline" style="color:#d97706"></ion-icon>
+          <div>
+            <p class="ri-valor">{{ providerCount }}</p>
+            <p class="ri-label">Proveedores</p>
+          </div>
+        </div>
+        <div class="resumen-item">
+          <ion-icon name="time-outline" style="color:#e53935"></ion-icon>
+          <div>
+            <p class="ri-valor">{{ pendingOrdersCount }}</p>
+            <p class="ri-label">Pendientes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel central: actividad reciente -->
+    <div class="actividad-panel">
+      <div class="panel-titulo">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>Actividad Reciente</span>
+      </div>
+
+      <div class="actividad-lista">
+        <div class="actividad-item" *ngFor="let act of actividadReciente; let i = index"
+          [style.animation-delay]="(i * 60) + 'ms'">
+          <div class="act-icono" [style.background]="act.color + '18'" [style.color]="act.color">
+            <ion-icon [name]="act.icono"></ion-icon>
+          </div>
+          <div class="act-info">
+            <p class="act-desc">{{ act.descripcion }}</p>
+            <p class="act-hora">{{ act.hora }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel derecho: acciones rápidas -->
+    <div class="acciones-panel">
+      <div class="panel-titulo">
+        <ion-icon name="flash-outline"></ion-icon>
+        <span>Acceso Rápido</span>
+      </div>
+
+      <div class="acciones-lista">
+        <a class="accion-item" *ngFor="let ac of accionesRapidas" [routerLink]="ac.ruta">
+          <div class="ac-icono" [style.background]="ac.color + '18'" [style.color]="ac.color">
+            <ion-icon [name]="ac.icono"></ion-icon>
+          </div>
+          <span class="ac-label">{{ ac.label }}</span>
+          <ion-icon name="chevron-forward-outline" class="ac-arrow"></ion-icon>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

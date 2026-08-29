@@ -1,0 +1,623 @@
+// Using global CSS variables from global.scss
+
+ion-header {
+    box-shadow: none;
+}
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DE LOS SEGMENTOS DE LOS FILTROS DE BUSQUEDA DE (TOTAL , PAPELERIA, ETC....)
+------------------------------------------------------------------------------------------------*/
+.segmentFilter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    margin-left: 10px;
+
+    ion-segment-button {
+        --indicator-color: var(--color-primary);
+        --color: var(--color-text-main);
+        --color-checked: var(--color-primary);
+    }
+}
+
+/*------------------------------------------------------------------------------------------------
+BARRA DE LA PARTE SUPERIOR DE LA VENTANA (ESTILOS DE LA BARRA)
+------------------------------------------------------------------------------------------------*/
+.searchtab {
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-main);
+    background-color: var(--color-surface);
+    width: 95%;
+    margin: 16px auto;
+    --padding-top: 20px;
+    --padding-bottom: 15px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+
+
+}
+
+/*------------------------------------------------------------------------------------------------
+BARRA DE BUSQUEDA Y BOTON DE AGREGAR EN LA PARTE SUPERIOR DE LA VENTANA (ESTILOS DE LA BARRA)
+------------------------------------------------------------------------------------------------*/
+.search-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    ion-searchbar {
+        width: 80%;
+        margin-top: 10px;
+        --border-radius: var(--border-radius-main);
+        --background: var(--color-background);
+    }
+
+    ion-button {
+        --background: var(--color-primary);
+        --background-hover: var(--color-primary-hover);
+        --background-activated: var(--color-primary-hover);
+        --background-focused: var(--color-primary-hover);
+        --color: var(--color-text-inverse);
+        --color-hover: var(--color-text-inverse);
+        --color-activated: var(--color-text-inverse);
+        --color-focused: var(--color-text-inverse);
+        --border-radius: 50px;
+        --padding-top: 10px;
+        --padding-bottom: 10px;
+        --padding-start: 10px;
+        --padding-end: 10px;
+    }
+
+    .newProductButton {
+        width: 30%;
+    }
+
+    ion-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    ion-item {
+        width: 12%;
+        --background: transparent;
+        --border-radius: 50px;
+        margin-top: 20px;
+        margin-left: 20px;
+        margin-bottom: 10px;
+
+        ion-toggle {
+            --track-background: #ddd;
+            --track-background-checked: #ddd;
+            --handle-background: var(--color-primary);
+            --handle-background-checked: var(--color-primary);
+            --handle-max-height: auto;
+            --handle-border-radius: 4px;
+            --handle-box-shadow: none;
+        }
+    }
+}
+
+
+
+
+.products-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 80%;
+    margin-left: 10%;
+    padding: 10px;
+}
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DE LA TABLA DE PRODUCTOS EN FORMA DE GRID
+------------------------------------------------------------------------------------------------*/
+.products-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 80%;
+    margin-left: 12px;
+
+    ion-row {
+        width: 120%;
+        margin-left: 19px;
+
+        ion-col {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+
+            ion-card {
+                width: 100%;
+                margin: 0;
+            }
+        }
+    }
+
+
+
+    ion-card {
+        justify-content: center;
+        align-items: center;
+        margin: 10px;
+        border-radius: var(--border-radius-main);
+        background: var(--color-surface);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--color-border-subtle);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        --padding-top: 10px;
+        --padding-bottom: 10px;
+        --padding-start: 10px;
+        --padding-end: 10px;
+
+        &:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            /* changed from cover to contain for better product display */
+        }
+    }
+
+    ion-button {
+        --background: rgba(var(--color-primary-rgb), 0.1);
+        --background-hover: var(--color-primary);
+        --background-activated: var(--color-primary);
+        --color: var(--color-primary);
+        --color-hover: var(--color-text-inverse);
+        --color-activated: var(--color-text-inverse);
+        --border-radius: 8px;
+        /* replaced 50px pill with standard rounded rect */
+        --box-shadow: none;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DE LA TABLA DE PRODUCTOS EN FORMA DE LISTA
+------------------------------------------------------------------------------------------------*/
+.products-list {
+    background: transparent;
+    margin-left: 4.25%;
+    width: 91.5%;
+
+    ion-item {
+        margin-bottom: 10px;
+        border-radius: var(--border-radius-main);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--color-border-subtle);
+        --padding-top: 10px;
+        --padding-bottom: 10px;
+        --padding-start: 10px;
+        --padding-end: 10px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover {
+            box-shadow: 0px, 0px, 2px, 0px var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+    }
+
+    ion-button {
+        --background: var(--color-primary);
+        --background-hover: var(--color-primary-hover);
+        --background-activated: var(--color-primary-hover);
+        --background-focused: var(--color-primary-hover);
+        --color: var(--color-text-inverse);
+        --color-hover: var(--color-text-inverse);
+        --color-activated: var(--color-text-inverse);
+        --color-focused: var(--color-text-inverse);
+        --border-radius: 50px;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+
+    ion-label {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+
+        h2 {
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--color-text-brand);
+        }
+
+        h3 {
+            font-size: 15px;
+        }
+
+        p {
+            font-size: 15px;
+        }
+    }
+
+    .product-description {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        flex: 4;
+        margin-left: 15px;
+
+        ion-chip {
+            justify-content: center;
+            --background: var(--color-chip-opacity);
+            --color: var(--color-text-brand);
+            --border-radius: 50px;
+            font-weight: 600;
+            width: 15%;
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--color-text-brand);
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--color-text-muted);
+        }
+
+    }
+}
+
+/*------------------------------------------------------------------------------------------------
+INFORMACION DE LOS PRODUCTOS DENTRO DE LAS DOS LISTAS (NOMBRE, DESCRIPCION, etc...)
+------------------------------------------------------------------------------------------------*/
+.product-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+
+    h2 {
+        font-size: 15px;
+        font-weight: bold;
+        color: var(--color-text-brand);
+    }
+
+    h3 {
+        font-size: 15px;
+    }
+
+    p {
+        font-size: 15px;
+    }
+
+    .product-name {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        padding-top: 10px;
+
+        p {
+            color: var(--color-text-muted);
+            font-size: 15px;
+        }
+
+        h3 {
+            color: var(--color-text-main);
+            font-size: 15px;
+        }
+    }
+
+    .product-description {
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        padding-top: 10px;
+
+        p {
+            color: var(--color-text-muted);
+            font-size: 15px;
+        }
+
+        h3 {
+            color: var(--color-text-main);
+            font-size: 15px;
+        }
+    }
+
+
+}
+
+.product-category {
+    ion-chip {
+        justify-content: center;
+        --background: var(--color-chip-opacity);
+        --color: var(--color-text-brand);
+        --border-radius: 50px;
+        font-weight: 600;
+        width: 50%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+.product-price {
+    h2 {
+        color: var(--color-text-brand);
+
+        span {
+            color: var(--color-text-muted);
+        }
+    }
+}
+
+
+
+.deleteButton {
+    position: absolute;
+    top: -10px;
+    bottom: unset;
+    right: 0px;
+    z-index: 1;
+
+    ion-button {
+        --background: var(--color-danger);
+        --color: var(--color-text-inverse);
+        --border-radius: 50px;
+        margin-top: 10px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+
+        &:hover {
+            --background: var(--color-danger-hover);
+
+            ion-icon {
+                color: var(--color-text-inverse);
+            }
+        }
+    }
+}
+
+/*------------------------------------------------------------------------------------------------
+MODAL PARA AGREGAR UN NUEVO PRODUCTO Y EDITAR PRODUCTO (ESTILOS DEL MODAL)
+------------------------------------------------------------------------------------------------*/
+.modalinput {
+    --height: 100%;
+    --width: 50%;
+    --border-radius: var(--border-radius-main);
+    --box-shadow: var(--shadow-md);
+
+    ion-toolbar {
+        --background: var(--color-surface);
+        --border-width: 0 0 1px 0;
+        --border-style: solid;
+        --border-color: var(--color-border-subtle);
+        --padding-start: 16px;
+        --padding-end: 16px;
+
+        ion-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+
+        ion-button {
+            --color: var(--color-text-muted);
+            font-size: 22px;
+        }
+    }
+
+    ion-content {
+        --padding-top: 24px;
+        --padding-bottom: 24px;
+        --padding-start: 24px;
+        --padding-end: 24px;
+        --background: var(--color-surface);
+
+        ion-item {
+            --background: var(--color-surface);
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --border-radius: 12px;
+            --inner-border-width: 0;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+
+            &:hover {
+                box-shadow: var(--shadow-md);
+            }
+        }
+
+        ion-label {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            color: var(--color-primary);
+            margin-bottom: 4px;
+        }
+
+        ion-input {
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --padding-start: 0;
+            --padding-end: 0;
+            --placeholder-color: var(--color-text-muted);
+            --placeholder-font-weight: 400;
+            --color: var(--color-text-main);
+            font-size: 15px;
+        }
+
+        ion-button[expand="block"] {
+            --background: var(--color-primary);
+            --background-hover: var(--color-primary-hover);
+            --background-activated: var(--color-primary-hover);
+            --border-radius: 12px;
+            --box-shadow: var(--shadow-primary);
+            --color: var(--color-text-inverse);
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            height: 48px;
+            margin-top: 8px;
+            transition: transform 0.15s ease;
+
+            &:active {
+                transform: scale(0.98);
+            }
+        }
+
+
+    }
+
+    .labelCategoria {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: var(--shadow-md);
+        font-size: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--color-primary);
+        margin-bottom: 20px;
+        --padding-top: 20px;
+        --padding-bottom: 20px;
+        --padding-start: 20px;
+        --padding-end: 20px;
+    }
+}
+
+.imagenModal {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+
+}
+
+.imagenModalPreview {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.buttonImagenContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+
+
+/*------------------------------------------------------------------------------------------------
+MODAL PARA AGREGAR UN NUEVO PRODUCTO Y EDITAR PRODUCTO (ESTILOS DEL MODAL) DE DETALLE PRODUCTO
+CUANDO LE DAS CLICK AL PRODUCTO
+------------------------------------------------------------------------------------------------*/
+.modalinputDetalle {
+    --height: 90%;
+    --width: 45%;
+    --border-radius: var(--border-radius-main);
+    --box-shadow: var(--shadow-md);
+
+    ion-toolbar {
+        --background: var(--color-surface);
+        --border-width: 0 0 1px 0;
+        --border-style: solid;
+        --border-color: var(--color-border-subtle);
+        --padding-start: 16px;
+        --padding-end: 16px;
+
+        ion-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-main);
+        }
+
+        ion-button {
+            --color: var(--color-text-muted);
+            font-size: 22px;
+        }
+    }
+
+    ion-content {
+        --padding-top: 24px;
+        --padding-bottom: 24px;
+        --padding-start: 24px;
+        --padding-end: 24px;
+        --background: var(--color-surface);
+
+        ion-item {
+            --background: var(--color-surface);
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --padding-start: 16px;
+            --padding-end: 16px;
+            --border-radius: 12px;
+            --inner-border-width: 0;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+
+            &:hover {
+                box-shadow: var(--shadow-md);
+            }
+        }
+
+        ion-label {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            color: var(--color-primary);
+            margin-bottom: 4px;
+        }
+
+        ion-input {
+            --padding-top: 8px;
+            --padding-bottom: 8px;
+            --padding-start: 0;
+            --padding-end: 0;
+            --placeholder-color: var(--color-text-muted);
+            --placeholder-font-weight: 400;
+            --color: var(--color-text-main);
+            font-size: 15px;
+        }
+
+        ion-button[expand="block"] {
+            --background: var(--color-primary);
+            --background-hover: var(--color-primary-hover);
+            --background-activated: var(--color-primary-hover);
+            --border-radius: 12px;
+            --box-shadow: var(--shadow-primary);
+            --color: var(--color-text-inverse);
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            height: 48px;
+            margin-top: 8px;
+            transition: transform 0.15s ease;
+
+            &:active {
+                transform: scale(0.98);
+            }
+        }
+    }
+}

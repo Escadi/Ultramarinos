@@ -1,0 +1,177 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+/*
+----------------------------------------------------------------------------------------------
+RESPONSIVE PARA MULTIPLATAFORMAS | MOVIL - TABLET - DESKTOP | Y LOS MIXINS
+----------------------------------------------------------------------------------------------
+*/
+
+/* 
+---------------------------------------------------------------------------------------------
+VARIABLES PARA LAS MEDIDAS DE LOS DISPOSITIVOS
+---------------------------------------------------------------------------------------------
+*/
+$mobile-small: 375px;
+$mobile: 576px;
+$tablet: 768px;
+$desktop: 1024px;
+$large-desktop: 1440px;
+
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DEL CONTENIDO (CONTENT)    
+--------------------------------------------------------------------------------------------------*/
+ion-content {
+    --background: var(--color-background);
+}
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DE LOS MODALES (ION-MODAL)    
+--------------------------------------------------------------------------------------------------*/
+ion-modal {
+    --ion-text-color: #2d7a4f;
+    color: #2d7a4f;
+}
+
+/*------------------------------------------------------------------------------------------------
+ESTILO DE LA CABECERA (HEADERS)    
+--------------------------------------------------------------------------------------------------*/
+ion-toolbar {
+    --background: var(--color-background);
+
+    ion-title {
+        color: var(--color-primary);
+        font-weight: 600;
+    }
+}
+
+:root {
+    /* Brand Colors */
+    --color-primary: #f58422;
+    --color-primary-hover: #d9751e;
+    --color-primary-rgb: 245, 132, 34; // For box-shadows with opacity
+    --color-chip-opacity: #fce5d1;
+
+    /* Backgrounds & Surfaces */
+    --color-background: #f4f6f8;
+    --color-surface: #ffffff;
+    --color-surface-alt: #fafafa;
+    --color-background-alt: #ffffffef;
+
+    /* Typography */
+    --color-text-main: #2c2c2c;
+    --color-text-brand: #f58422;
+    --color-text-muted: #666666;
+    --color-text-inverse: #ffffff;
+
+    /* Status/Action Colors */
+    --color-danger: #e74c3c;
+    --color-danger-hover: #c0392b;
+
+    /* Borders & Shadows */
+    --color-border: #e0e0e0;
+    --color-border-subtle: #eaedf1;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04);
+    --shadow-primary: 0 4px 10px rgba(245, 132, 34, 0.2);
+
+    /* Geometry */
+    --border-radius-main: 12px;
+    --border-radius-card: 20px;
+    --border-radius-sm: 8px;
+}
+
+/* 
+---------------------------------------------------------------------------------------------
+ESTILOS DE ALERTAS PERSONALIZADAS
+---------------------------------------------------------------------------------------------
+*/
+.alerta-descuadre {
+  --background: #ffffff;
+  --backdrop-opacity: 0.5;
+
+  .alert-wrapper {
+    border-radius: var(--border-radius-card, 16px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+  }
+
+  .alert-head {
+    background-color: #fef2f2;
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid #fecaca;
+    text-align: center;
+  }
+
+  .alert-title {
+    color: #b91c1c;
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .alert-message {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .alert-button-group {
+    padding: 0 20px 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .alert-button {
+    background-color: var(--color-danger, #e74c3c);
+    color: white !important;
+    border-radius: var(--border-radius-main, 10px);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px;
+    width: 100%;
+    margin: 0;
+    transition: background-color 0.2s;
+
+    &:hover, &:active {
+      background-color: var(--color-danger-hover, #c0392b) !important;
+    }
+  }
+}

@@ -1,0 +1,312 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="facturas-toolbar">
+    <ion-title class="facturas-title">
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <ion-icon name="euro-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">TOTAL FACTURADO (FILTRO)</span>
+          <span class="kpi-valor">{{ totalFacturado | number:'1.2-2' }} €</span>
+        </div>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="facturas-content">
+  <div class="facturas-container">
+
+    <!-- ─── Filtros ─── -->
+    <div class="filtros-card">
+      <div class="filtros-row">
+
+        <!-- Fechas -->
+        <div class="filtro-grupo filtro-fechas">
+          <label class="filtro-label">Fechas</label>
+          <div class="fecha-range">
+            <button class="fecha-btn" (click)="abrirDatepickerDesde()">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ filtros.fechaDesde ? (filtros.fechaDesde | date:'dd/MM/yy') : 'Desde' }}</span>
+            </button>
+            <span class="fecha-sep">-</span>
+            <button class="fecha-btn" (click)="abrirDatepickerHasta()">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ filtros.fechaHasta ? (filtros.fechaHasta | date:'dd/MM/yy') : 'Hasta' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Nº Factura -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Nº Factura</label>
+          <div class="input-wrap">
+            <ion-icon name="search-outline" class="input-icon"></ion-icon>
+            <input type="text" class="filtro-input" placeholder="Buscar por número..." [(ngModel)]="filtros.numero" />
+          </div>
+        </div>
+
+        <!-- Cliente -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Cliente</label>
+          <div class="input-wrap">
+            <ion-icon name="people-outline" class="input-icon"></ion-icon>
+            <input type="text" class="filtro-input" placeholder="Nombre del cliente..." [(ngModel)]="filtros.cliente" />
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="filtro-grupo">
+          <label class="filtro-label">Estado</label>
+          <div class="select-wrap">
+            <select class="filtro-select" [(ngModel)]="filtros.estado">
+              <option value="">Todos los estados</option>
+              <option value="pagada">Pagada</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="anulada">Anulada</option>
+            </select>
+            <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Acciones filtros -->
+      <div class="filtros-acciones">
+        <button class="btn-limpiar" (click)="limpiarFiltros()">
+          Limpiar Filtros
+        </button>
+        <button class="btn-aplicar" (click)="aplicarFiltros()">
+          <ion-icon name="filter-outline"></ion-icon>
+          Aplicar
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Tabla ─── -->
+    <div class="tabla-card">
+      <!-- Cabecera -->
+      <div class="tabla-cabecera">
+        <div class="col-id">ID Factura</div>
+        <div class="col-fecha">Fecha y Hora</div>
+        <div class="col-cliente">Cliente</div>
+        <div class="col-total">Total</div>
+        <div class="col-metodo">Método</div>
+        <div class="col-estado">Estado</div>
+        <div class="col-acciones">Acciones</div>
+      </div>
+
+      <!-- Filas vacías -->
+      <div class="tabla-vacia" *ngIf="facturasFiltradas.length === 0">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <p>No se encontraron facturas con los filtros aplicados</p>
+      </div>
+
+      <!-- Filas de datos -->
+      <div class="tabla-fila" *ngFor="let factura of facturasPaginadas" (click)="verDetalle(factura)">
+        <div class="col-id">
+          <span class="factura-id">{{ factura.id }}</span>
+        </div>
+        <div class="col-fecha">
+          <span class="fecha-principal">{{ factura.fecha | date:'dd/MM/yyyy' }}</span>
+          <span class="fecha-hora">{{ factura.fecha | date:'HH:mm' }}</span>
+        </div>
+        <div class="col-cliente">
+          <span class="cliente-nombre" [class.cliente-ocasional]="!factura.clienteNombre">
+            {{ factura.clienteNombre || 'Cliente Ocasional' }}
+          </span>
+        </div>
+        <div class="col-total">
+          <span class="total-valor">{{ factura.total | number:'1.2-2' }} €</span>
+        </div>
+        <div class="col-metodo">
+          <span class="metodo-badge" *ngIf="factura.metodoPago">
+            <ion-icon [name]="getIconMetodo(factura.metodoPago)"></ion-icon>
+            {{ factura.metodoPago }}
+          </span>
+          <span class="metodo-sin" *ngIf="!factura.metodoPago">—</span>
+        </div>
+        <div class="col-estado">
+          <span class="estado-badge" [ngClass]="'estado-' + factura.estado">
+            {{ factura.estado | titlecase }}
+          </span>
+        </div>
+        <div class="col-acciones">
+          <button class="btn-accion btn-ver" (click)="verDetalle(factura); $event.stopPropagation()"
+            title="Ver detalle">
+            <ion-icon name="eye-outline"></ion-icon>
+          </button>
+          <button class="btn-accion btn-pdf" (click)="descargarPDF(factura); $event.stopPropagation()"
+            title="Descargar PDF">
+            <ion-icon name="download-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Paginación ─── -->
+    <div class="paginacion-row" *ngIf="facturasFiltradas.length > 0">
+      <span class="paginacion-info">
+        Mostrando {{ rangoInicio }}-{{ rangoFin }} de {{ facturasFiltradas.length }} facturas
+      </span>
+      <div class="paginacion-botones">
+        <button class="pag-btn" (click)="irPagina(paginaActual - 1)" [disabled]="paginaActual === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </button>
+        <button class="pag-btn" *ngFor="let p of paginasVisibles" [class.activa]="p === paginaActual"
+          (click)="p !== -1 && irPagina(p)" [class.puntos]="p === -1">
+          {{ p === -1 ? '...' : p }}
+        </button>
+        <button class="pag-btn" (click)="irPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL DETALLE DE FACTURA
+════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isDetalleOpen" (ionModalDidDismiss)="cerrarDetalle()" class="modal-detalle-factura">
+  <ng-template>
+
+    <!-- ─── Cabecera del modal ─── -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-detalle-toolbar">
+        <ion-title class="modal-detalle-title">
+          <ion-icon name="document-text-outline"></ion-icon>
+          Detalle de Factura
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-modal-accion btn-imprimir" (click)="imprimirFactura()" title="Imprimir">
+            <ion-icon name="print-outline"></ion-icon>
+            <span>Imprimir</span>
+          </button>
+          <button class="btn-modal-accion btn-descargar" (click)="descargarPDF(facturaDetalle!)" title="Descargar PDF">
+            <ion-icon name="download-outline"></ion-icon>
+            <span>Descargar PDF</span>
+          </button>
+          <button class="btn-modal-cerrar" (click)="cerrarDetalle()" title="Cerrar">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- ─── Contenido del modal ─── -->
+    <ion-content class="modal-detalle-content" *ngIf="facturaDetalle">
+
+      <!-- Zona imprimible -->
+      <div class="factura-print-area" id="factura-print-area">
+
+        <!-- Encabezado de la factura -->
+        <div class="factura-header">
+          <div class="factura-empresa">
+            <div class="empresa-logo">
+              <ion-icon name="storefront-outline"></ion-icon>
+            </div>
+            <div class="empresa-info">
+              <h2>TiendaPueblo</h2>
+              <p>Calle Mayor, 1 · 28001 Madrid</p>
+              <p>CIF: B-12345678 · Tel: 910 000 000</p>
+            </div>
+          </div>
+          <div class="factura-meta">
+            <div class="factura-numero-wrap">
+              <span class="factura-meta-label">Nº FACTURA</span>
+              <span class="factura-numero-valor">{{ facturaDetalle.id }}</span>
+            </div>
+            <div class="factura-estado-wrap">
+              <span class="estado-badge" [ngClass]="'estado-' + facturaDetalle.estado">
+                {{ facturaDetalle.estado | titlecase }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="factura-divider" />
+
+        <!-- Info cliente y fechas -->
+        <div class="factura-info-grid">
+          <div class="info-bloque">
+            <span class="info-label">
+              <ion-icon name="person-outline"></ion-icon> Cliente
+            </span>
+            <span class="info-valor">{{ facturaDetalle.clienteNombre || 'Cliente Ocasional' }}</span>
+          </div>
+          <div class="info-bloque">
+            <span class="info-label">
+              <ion-icon name="calendar-outline"></ion-icon> Fecha de emisión
+            </span>
+            <span class="info-valor">{{ facturaDetalle.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="info-bloque">
+            <span class="info-label">
+              <ion-icon name="cash-outline"></ion-icon> Método de pago
+            </span>
+            <span class="info-valor metodo-con-icono">
+              <ion-icon [name]="getIconMetodo(facturaDetalle.metodoPago || '')"
+                *ngIf="facturaDetalle.metodoPago"></ion-icon>
+              {{ facturaDetalle.metodoPago || '—' }}
+            </span>
+          </div>
+          <div class="info-bloque">
+            <span class="info-label">
+              <ion-icon name="storefront-outline"></ion-icon> Punto de venta
+            </span>
+            <span class="info-valor">TPV Principal</span>
+          </div>
+        </div>
+
+        <hr class="factura-divider" />
+
+        <!-- Tabla de líneas (demo) -->
+        <div class="lineas-section">
+          <h3 class="lineas-titulo">Líneas de la factura</h3>
+          <div class="lineas-tabla">
+            <div class="lineas-cabecera">
+              <div class="lc-desc">Descripción</div>
+              <div class="lc-cant">Cant.</div>
+              <div class="lc-precio">Precio unit.</div>
+              <div class="lc-iva">IVA</div>
+              <div class="lc-total">Total</div>
+            </div>
+            <div class="linea-fila" *ngFor="let linea of facturaDetalle.lineas">
+              <div class="lc-desc">{{ linea.descripcion }}</div>
+              <div class="lc-cant">{{ linea.cantidad }}</div>
+              <div class="lc-precio">{{ linea.precioUnitario | number:'1.2-2' }} €</div>
+              <div class="lc-iva">{{ linea.iva }}%</div>
+              <div class="lc-total">{{ linea.cantidad * linea.precioUnitario | number:'1.2-2' }} €</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Totales -->
+        <div class="factura-totales">
+          <div class="total-fila">
+            <span>Subtotal (sin IVA)</span>
+            <span>{{ facturaDetalle.subtotal | number:'1.2-2' }} €</span>
+          </div>
+          <div class="total-fila">
+            <span>IVA (21%)</span>
+            <span>{{ facturaDetalle.totalIva | number:'1.2-2' }} €</span>
+          </div>
+          <div class="total-fila total-final">
+            <span>TOTAL</span>
+            <span>{{ facturaDetalle.total | number:'1.2-2' }} €</span>
+          </div>
+        </div>
+
+        <!-- Pie de factura -->
+        <div class="factura-pie">
+          <p>Documento generado electrónicamente · TiendaPueblo © {{ anioActual }}</p>
+        </div>
+
+      </div><!-- /factura-print-area -->
+
+    </ion-content>
+
+  </ng-template>
+</ion-modal>
