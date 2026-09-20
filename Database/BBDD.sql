@@ -9,14 +9,14 @@ CREATE DATABASE minimarket;
 -- ============================================
 -- ROL CLIENTE
 -- ============================================
-CREATE SEQUENCE seq_rolcliente_id INCREMENT 1 START 1;
+CREATE SEQUENCE seq_rolcliente_id  INCREMENT BY 1 START WITH 1;
 
 CREATE TABLE rolCliente (
-    id LONG,
+    id BIGINT NOT NULL,
     tipoCliente VARCHAR(50) NOT NULL,
 
     CONSTRAINT pk_rol_cliente PRIMARY KEY (id),
-    CONSTRAINT uq_rol_cliente UNIQUE (tipo_cliente)
+    CONSTRAINT uq_rol_cliente UNIQUE (tipoCliente)
 );
 
 
@@ -24,13 +24,16 @@ CREATE TABLE rolCliente (
 -- CLIENTE
 -- ============================================
 
+CREATE SEQUENCE seq_cliente_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE cliente (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(150),
     fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     correo_electronico VARCHAR(150),
     rolCliente_id BIGINT,
+
     CONSTRAINT pk_cliente PRIMARY KEY (id),
     CONSTRAINT fk_cliente_rol FOREIGN KEY (rolCliente_id) REFERENCES rolCliente(id)
 );
@@ -40,8 +43,10 @@ CREATE TABLE cliente (
 -- TELEFONO CLIENTE
 -- ============================================
 
+CREATE SEQUENCE seq_telefono_cliente_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE telefono_cliente (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     telefono_cliente VARCHAR(20) NOT NULL,
     cliente_id BIGINT NOT NULL,
 
@@ -54,8 +59,10 @@ CREATE TABLE telefono_cliente (
 -- TPV
 -- ============================================
 
+CREATE SEQUENCE seq_tpv_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE tpv (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     nombre_terminal VARCHAR(100) NOT NULL,
     activo BOOLEAN NOT NULL DEFAULT TRUE,
     ubicacion VARCHAR(150),
@@ -68,8 +75,10 @@ CREATE TABLE tpv (
 -- ROL TRABAJADOR
 -- ============================================
 
+CREATE SEQUENCE seq_roltrabajador_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE rol_trabajador (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     nombre_rol VARCHAR(50) NOT NULL UNIQUE,
 
     CONSTRAINT pk_rol_trabajador_id PRIMARY KEY (id)
@@ -80,8 +89,10 @@ CREATE TABLE rol_trabajador (
 -- EMPLEADO
 -- ============================================
 
+CREATE SEQUENCE seq_empleado_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE empleado (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     codigo_empleado VARCHAR(50) NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(150),
@@ -99,8 +110,10 @@ CREATE TABLE empleado (
 -- TURNO CAJA
 -- ============================================
 
+CREATE SEQUENCE seq_turno_caja_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE turno_caja (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     fondo_caja NUMERIC(10,2) NOT NULL DEFAULT 0,
     estado_caja VARCHAR(30) NOT NULL,
     saldo_real NUMERIC(10,2),
@@ -116,8 +129,10 @@ CREATE TABLE turno_caja (
 -- CATEGORIA
 -- ============================================
 
+CREATE SEQUENCE seq_categoria_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE categoria (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     nombre_categoria VARCHAR(100) NOT NULL UNIQUE,
     descripcion VARCHAR(255),
 
@@ -129,8 +144,10 @@ CREATE TABLE categoria (
 -- PRODUCTO
 -- ============================================
 
+CREATE SEQUENCE seq_producto_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE producto (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     codigo_producto VARCHAR(50) NOT NULL UNIQUE,
     nombre VARCHAR(150) NOT NULL,
     precio_compra NUMERIC(10,2),
@@ -143,18 +160,10 @@ CREATE TABLE producto (
 
     CONSTRAINT pk_producto_id PRIMARY KEY (id),
     CONSTRAINT fk_producto_categoria FOREIGN KEY (categoria_id) REFERENCES categoria(id),
-
-    CONSTRAINT chk_producto_precio_compra
-        CHECK (precio_compra IS NULL OR precio_compra >= 0),
-
-    CONSTRAINT chk_producto_precio_venta
-        CHECK (precio_venta >= 0),
-
-    CONSTRAINT chk_producto_stock_actual
-        CHECK (stock_actual >= 0),
-
-    CONSTRAINT chk_producto_stock_minimo
-        CHECK (stock_minimo >= 0)
+    CONSTRAINT chk_producto_precio_compra CHECK (precio_compra IS NULL OR precio_compra >= 0),
+    CONSTRAINT chk_producto_precio_venta CHECK (precio_venta >= 0),
+    CONSTRAINT chk_producto_stock_actual CHECK (stock_actual >= 0),
+    CONSTRAINT chk_producto_stock_minimo CHECK (stock_minimo >= 0)
 );
 
 
@@ -162,16 +171,17 @@ CREATE TABLE producto (
 -- VENTA
 -- ============================================
 
+CREATE SEQUENCE seq_venta_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE venta (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     numero_ticket VARCHAR(50) NOT NULL UNIQUE,
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total NUMERIC(10,2) NOT NULL DEFAULT 0,
     estado VARCHAR(30) NOT NULL,
     base_imponible NUMERIC(10,2) NOT NULL DEFAULT 0,
     total_igic NUMERIC(10,2) NOT NULL DEFAULT 0,
-
-    cliente_id BIGINT,
+    cliente_id BIGINT NOT NULL,
     tpv_id BIGINT NOT NULL,
     turno_caja_id BIGINT NOT NULL,
 
@@ -179,7 +189,6 @@ CREATE TABLE venta (
     CONSTRAINT fk_venta_cliente FOREIGN KEY (cliente_id) REFERENCES cliente(id),
     CONSTRAINT fk_venta_tpv FOREIGN KEY (tpv_id) REFERENCES tpv(id),
     CONSTRAINT fk_venta_turno FOREIGN KEY (turno_caja_id) REFERENCES turno_caja(id),
-
     CONSTRAINT chk_venta_total CHECK (total >= 0)
 );
 
@@ -188,14 +197,15 @@ CREATE TABLE venta (
 -- DETALLE VENTA
 -- ============================================
 
+CREATE SEQUENCE seq_detalle_venta_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE detalle_venta (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     cantidad INTEGER NOT NULL,
     precio_unitario NUMERIC(10,2) NOT NULL,
     tipo_igic NUMERIC(5,2) NOT NULL DEFAULT 0,
     descuento NUMERIC(10,2) NOT NULL DEFAULT 0,
     subtotal NUMERIC(10,2) NOT NULL,
-
     venta_id BIGINT NOT NULL,
     producto_id BIGINT NOT NULL,
 
@@ -214,17 +224,17 @@ CREATE TABLE detalle_venta (
 -- PAGO
 -- ============================================
 
+CREATE SEQUENCE seq_pago_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE pago (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     metodo VARCHAR(50) NOT NULL,
     importe NUMERIC(10,2) NOT NULL,
     fecha_pago TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     venta_id BIGINT NOT NULL,
 
     CONSTRAINT pk_pago_id PRIMARY KEY (id),
     CONSTRAINT fk_pago_venta FOREIGN KEY (venta_id) REFERENCES venta(id) ON DELETE CASCADE,
-
     CONSTRAINT chk_pago_importe CHECK (importe > 0)
 );
 
@@ -233,11 +243,12 @@ CREATE TABLE pago (
 -- FACTURA
 -- ============================================
 
+CREATE SEQUENCE seq_factura_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE factura (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     numero_factura VARCHAR(50) NOT NULL UNIQUE,
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     cliente_id BIGINT NOT NULL,
     venta_id BIGINT NOT NULL UNIQUE,
 
@@ -251,8 +262,10 @@ CREATE TABLE factura (
 -- PROVEEDOR
 -- ============================================
 
+CREATE SEQUENCE seq_proveedor_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE proveedor (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     cif VARCHAR(20) NOT NULL UNIQUE,
     contacto VARCHAR(150),
     nombre_proveedor VARCHAR(150) NOT NULL,
@@ -261,6 +274,7 @@ CREATE TABLE proveedor (
     telefono VARCHAR(20),
 
     CONSTRAINT pk_proveedor_id PRIMARY KEY (id)
+
 );
 
 
@@ -268,20 +282,19 @@ CREATE TABLE proveedor (
 -- PRODUCTO PROVEEDOR
 -- ============================================
 
+CREATE SEQUENCE seq_producto_proveedor_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE producto_proveedor (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     precio_compra NUMERIC(10,2) NOT NULL,
     preferente BOOLEAN NOT NULL DEFAULT FALSE,
-
     producto_id BIGINT NOT NULL,
     proveedor_id BIGINT NOT NULL,
 
     CONSTRAINT pk_producto_proveedor_id PRIMARY KEY (id),
     CONSTRAINT fk_producto_proveedor_producto FOREIGN KEY (producto_id) REFERENCES producto(id),
     CONSTRAINT fk_producto_proveedor_proveedor FOREIGN KEY (proveedor_id) REFERENCES proveedor(id),
-
     CONSTRAINT uq_producto_proveedor UNIQUE (producto_id, proveedor_id),
-
     CONSTRAINT chk_producto_proveedor_precio CHECK (precio_compra >= 0)
 );
 
@@ -290,18 +303,18 @@ CREATE TABLE producto_proveedor (
 -- PEDIDO PROVEEDOR
 -- ============================================
 
+CREATE SEQUENCE seq_pedido_proveedor_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE pedido_proveedor (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     numero_pedido VARCHAR(50) NOT NULL UNIQUE,
     fecha_pedido TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     estado VARCHAR(30) NOT NULL,
     total_estimado NUMERIC(10,2) NOT NULL DEFAULT 0,
-
     empleado_id BIGINT NOT NULL,
 
     CONSTRAINT pk_pedido_proveedor_id PRIMARY KEY (id),
     CONSTRAINT fk_pedido_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id),
-
     CONSTRAINT chk_pedido_total CHECK (total_estimado >= 0)
 );
 
@@ -310,8 +323,10 @@ CREATE TABLE pedido_proveedor (
 -- DETALLE PEDIDO PROVEEDOR
 -- ============================================
 
+CREATE SEQUENCE seq_detalle_pedido_proveedor_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE detalle_pedido_proveedor (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     cantidad INTEGER NOT NULL,
     precio_unitario NUMERIC(10,2) NOT NULL,
     descuento NUMERIC(10,2) NOT NULL DEFAULT 0,
@@ -335,20 +350,20 @@ CREATE TABLE detalle_pedido_proveedor (
 -- COMPRA
 -- ============================================
 
+CREATE SEQUENCE seq_compra_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE compra (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     numero_compra VARCHAR(50) UNIQUE,
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     total NUMERIC(10,2) NOT NULL DEFAULT 0,
     estado VARCHAR(30),
-
     pedido_proveedor_id BIGINT,
     empleado_id BIGINT NOT NULL,
 
     CONSTRAINT pk_compra_id PRIMARY KEY (id),
     CONSTRAINT fk_compra_pedido FOREIGN KEY (pedido_proveedor_id) REFERENCES pedido_proveedor(id),
     CONSTRAINT fk_compra_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id),
-
     CONSTRAINT chk_compra_total CHECK (total >= 0)
 );
 
@@ -357,21 +372,21 @@ CREATE TABLE compra (
 -- DETALLE COMPRA
 -- ============================================
 
+CREATE SEQUENCE seq_detalle_compra_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE detalle_compra (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     cantidad INTEGER NOT NULL,
     precio_unitario NUMERIC(10,2) NOT NULL,
     tipo_igic NUMERIC(5,2) NOT NULL DEFAULT 0,
     descuento NUMERIC(10,2) NOT NULL DEFAULT 0,
     subtotal NUMERIC(10,2) NOT NULL,
-
     compra_id BIGINT NOT NULL,
     producto_id BIGINT NOT NULL,
 
     CONSTRAINT pk_detalle_compra_id PRIMARY KEY (id),
     CONSTRAINT fk_detalle_compra FOREIGN KEY (compra_id) REFERENCES compra(id) ON DELETE CASCADE,
     CONSTRAINT fk_detalle_compra_producto FOREIGN KEY (producto_id) REFERENCES producto(id),
-
     CONSTRAINT chk_detalle_compra_cantidad CHECK (cantidad > 0),
     CONSTRAINT chk_detalle_compra_precio CHECK (precio_unitario >= 0),
     CONSTRAINT chk_detalle_compra_descuento CHECK (descuento >= 0),
@@ -383,19 +398,19 @@ CREATE TABLE detalle_compra (
 -- MOVIMIENTO STOCK
 -- ============================================
 
+CREATE SEQUENCE seq_movimiento_stock_id  INCREMENT BY 1 START WITH 1;
+
 CREATE TABLE movimiento_stock (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL,
     fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tipo VARCHAR(30) NOT NULL,
     cantidad INTEGER NOT NULL,
     motivo VARCHAR(255),
-
     producto_id BIGINT NOT NULL,
     empleado_id BIGINT,
 
     CONSTRAINT pk_movimiento_stock_id PRIMARY KEY (id),
     CONSTRAINT fk_movimiento_producto FOREIGN KEY (producto_id) REFERENCES producto(id),
     CONSTRAINT fk_movimiento_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id),
-
     CONSTRAINT chk_movimiento_cantidad CHECK (cantidad > 0)
 );
