@@ -31,6 +31,8 @@ export class ProductPagePage implements OnInit {
   // ─── Modal ────────────────────────────────────────────────────────────────
   isModalOpen: boolean = false;
   modoEdicion: boolean = false;
+  isDetalleOpen: boolean = false;
+  productoSeleccionado: any = null;
 
   form: any = {
     idDetalleProducto: null,
@@ -226,6 +228,23 @@ export class ProductPagePage implements OnInit {
 
   cerrarModal() {
     this.isModalOpen = false;
+  }
+
+  verDetalle(p: any) {
+    this.productoSeleccionado = p;
+    this.isDetalleOpen = true;
+  }
+
+  cerrarDetalle() {
+    this.isDetalleOpen = false;
+  }
+
+  editarDesdeDetalle() {
+    const prod = this.productoSeleccionado;
+    this.cerrarDetalle();
+    if (prod) {
+      this.editarProducto(prod);
+    }
   }
 
   // Compatibilidad antigua

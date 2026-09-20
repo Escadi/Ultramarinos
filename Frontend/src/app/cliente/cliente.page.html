@@ -1,6 +1,19 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="clientes-toolbar">
     <ion-title class="clientes-title">
+      <div class="title-left">
+        <h1>Clientes</h1>
+        <p>Gestión y fidelización de clientes</p>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">TOTAL CLIENTES</span>
+          <span class="kpi-valor">{{ clientes.length }}</span>
+        </div>
+      </div>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -60,8 +73,8 @@
       </div>
     </div>
 
-    <!-- ─── Tabla ─── -->
-    <div class="tabla-card">
+    <!-- ─── Tabla (Visible en tablet y desktop) ─── -->
+    <div class="tabla-card vista-tabla">
       <!-- Cabecera -->
       <div class="tabla-cabecera">
         <div class="col-id">ID Cliente</div>
@@ -80,7 +93,7 @@
       </div>
 
       <!-- Filas de datos -->
-      <div class="tabla-fila" *ngFor="let cliente of clientesFiltrados">
+      <div class="tabla-fila" *ngFor="let cliente of clientesFiltrados" (click)="verDetalle(cliente)">
         <div class="col-id">
           <span class="id-badge">{{ cliente.idString }}</span>
         </div>
@@ -103,11 +116,11 @@
         <div class="col-fecha">
           <span class="fecha-texto">{{ cliente.fechaCreacion }}</span>
         </div>
-        <div class="col-acciones">
-          <button class="btn-accion btn-ver">
+        <div class="col-acciones" (click)="$event.stopPropagation()">
+          <button class="btn-accion btn-ver" (click)="verDetalle(cliente)" title="Ver detalle">
             <ion-icon name="eye-outline"></ion-icon>
           </button>
-          <button class="btn-accion btn-editar">
+          <button class="btn-accion btn-editar" (click)="abrirEditar(cliente)" title="Editar">
             <ion-icon name="pencil-outline"></ion-icon>
           </button>
         </div>
@@ -115,6 +128,9 @@
 
       <!-- Paginación Footer -->
       <div class="tabla-footer">
+        <div class="footer-info">
+          Mostrando {{ clientesFiltrados.length }} de {{ clientes.length }} clientes
+        </div>
         <div class="paginacion">
           <button class="page-btn"><ion-icon name="chevron-back-outline"></ion-icon></button>
           <button class="page-btn active">1</button>
@@ -125,5 +141,284 @@
         </div>
       </div>
     </div>
+
+    <!-- ─── Cards de Clientes (Visible solo en móvil) ─── -->
+    <div class="clientes-cards-movil vista-cards">
+      <div class="cliente-card" *ngFor="let cliente of clientesFiltrados" (click)="verDetalle(cliente)">
+        <div class="cliente-card-header">
+          <div class="cliente-info-header">
+            <div class="cliente-avatar">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+            <div class="cliente-nombres-wrap">
+              <h3 class="cliente-nombre-completo">{{ cliente.nombre }} {{ cliente.apellidos }}</h3>
+              <span class="id-badge">{{ cliente.idString }}</span>
+            </div>
+          </div>
+          <span class="badge-tipo" [ngClass]="{
+            'badge-fiel': cliente.tipo === 'Fiel',
+            'badge-profesional': cliente.tipo === 'Profesional',
+            'badge-ocasional': cliente.tipo === 'Ocasional'
+          }">{{ cliente.tipo }}</span>
+        </div>
+
+        <div class="cliente-card-detalles">
+          <div class="cliente-detalle-item">
+            <span class="detalle-label">
+              <ion-icon name="call-outline"></ion-icon> Contacto
+            </span>
+            <span class="detalle-valor contacto-destacado">{{ cliente.contacto }}</span>
+          </div>
+
+          <div class="cliente-detalle-item">
+            <span class="detalle-label">
+              <ion-icon name="calendar-outline"></ion-icon> Fecha de Alta
+            </span>
+            <span class="detalle-valor">{{ cliente.fechaCreacion }}</span>
+          </div>
+        </div>
+
+        <div class="cliente-card-acciones" (click)="$event.stopPropagation()">
+          <button class="btn-card-accion btn-ver" (click)="verDetalle(cliente)" title="Ver detalle">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>Ver Detalle</span>
+          </button>
+          <button class="btn-card-accion btn-editar" (click)="abrirEditar(cliente)" title="Editar">
+            <ion-icon name="pencil-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío móvil -->
+      <div class="cards-vacia" *ngIf="clientesFiltrados.length === 0">
+        <ion-icon name="people-outline"></ion-icon>
+        <p>No se encontraron clientes con esos filtros.</p>
+      </div>
+
+      <!-- Paginación móvil -->
+      <div class="cards-footer" *ngIf="clientesFiltrados.length > 0">
+        <div class="paginacion">
+          <button class="page-btn"><ion-icon name="chevron-back-outline"></ion-icon></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span class="page-dots">...</span>
+          <button class="page-btn"><ion-icon name="chevron-forward-outline"></ion-icon></button>
+        </div>
+      </div>
+    </div>
+
   </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: VER DETALLE DEL CLIENTE
+  ════════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="isDetalleOpen" (ionModalDidDismiss)="cerrarDetalle()" class="modal-detalle-cliente">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-cliente-toolbar">
+          <ion-title class="modal-cliente-title">
+            <ion-icon name="person-circle-outline"></ion-icon>
+            Detalle del Cliente
+          </ion-title>
+          <ion-buttons slot="end">
+            <button class="btn-modal-accion btn-modal-editar" (click)="abrirEditarDesdeDetalle()" title="Editar cliente">
+              <ion-icon name="pencil-outline"></ion-icon>
+              <span>Editar</span>
+            </button>
+            <button class="btn-modal-cerrar" (click)="cerrarDetalle()" title="Cerrar">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-cliente-content" *ngIf="clienteSeleccionado">
+        <div class="detalle-cliente-sheet">
+
+          <!-- Cabecera del cliente -->
+          <div class="detalle-header-card">
+            <div class="detalle-avatar">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+            <div class="detalle-header-info">
+              <h2>{{ clienteSeleccionado.nombre }} {{ clienteSeleccionado.apellidos }}</h2>
+              <div class="detalle-badges">
+                <span class="id-badge">{{ clienteSeleccionado.idString }}</span>
+                <span class="badge-tipo" [ngClass]="{
+                  'badge-fiel': clienteSeleccionado.tipo === 'Fiel',
+                  'badge-profesional': clienteSeleccionado.tipo === 'Profesional',
+                  'badge-ocasional': clienteSeleccionado.tipo === 'Ocasional'
+                }">{{ clienteSeleccionado.tipo }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cuadrícula de detalles -->
+          <div class="detalle-secciones-grid">
+
+            <!-- Contacto -->
+            <div class="detalle-bloque">
+              <h4 class="bloque-titulo">
+                <ion-icon name="call-outline"></ion-icon> Canales de Contacto
+              </h4>
+              <div class="contacto-items">
+                <div class="contacto-fila" *ngIf="clienteSeleccionado.telefono || (!clienteSeleccionado.contacto.includes('@') && clienteSeleccionado.contacto)">
+                  <span class="c-label">Teléfono:</span>
+                  <a class="c-valor tel" [href]="'tel:' + (clienteSeleccionado.telefono || clienteSeleccionado.contacto)">
+                    <ion-icon name="call-outline"></ion-icon>
+                    {{ clienteSeleccionado.telefono || clienteSeleccionado.contacto }}
+                  </a>
+                </div>
+                <div class="contacto-fila" *ngIf="clienteSeleccionado.email || (clienteSeleccionado.contacto.includes('@') && clienteSeleccionado.contacto)">
+                  <span class="c-label">Email:</span>
+                  <a class="c-valor mail" [href]="'mailto:' + (clienteSeleccionado.email || clienteSeleccionado.contacto)">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    {{ clienteSeleccionado.email || clienteSeleccionado.contacto }}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Información comercial -->
+            <div class="detalle-bloque">
+              <h4 class="bloque-titulo">
+                <ion-icon name="card-outline"></ion-icon> Información Comercial
+              </h4>
+              <div class="info-kv-grid">
+                <div class="kv-item">
+                  <span class="kv-label">NIF / CIF:</span>
+                  <span class="kv-val">{{ clienteSeleccionado.cifNif || 'No especificado' }}</span>
+                </div>
+                <div class="kv-item">
+                  <span class="kv-label">Fecha de Alta:</span>
+                  <span class="kv-val">{{ clienteSeleccionado.fechaCreacion }}</span>
+                </div>
+                <div class="kv-item" *ngIf="clienteSeleccionado.totalCompras">
+                  <span class="kv-label">Total Compras:</span>
+                  <span class="kv-val total-destacado">{{ clienteSeleccionado.totalCompras | number:'1.2-2' }} €</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="detalle-bloque full-width" *ngIf="clienteSeleccionado.direccion">
+              <h4 class="bloque-titulo">
+                <ion-icon name="location-outline"></ion-icon> Dirección
+              </h4>
+              <p class="bloque-texto">{{ clienteSeleccionado.direccion }}</p>
+            </div>
+
+            <!-- Notas -->
+            <div class="detalle-bloque full-width" *ngIf="clienteSeleccionado.notas">
+              <h4 class="bloque-titulo">
+                <ion-icon name="document-text-outline"></ion-icon> Observaciones
+              </h4>
+              <p class="bloque-texto">{{ clienteSeleccionado.notas }}</p>
+            </div>
+
+          </div>
+
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: EDITAR CLIENTE
+  ════════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="isEditarOpen" (ionModalDidDismiss)="cerrarEditar()" class="modal-editar-cliente">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-cliente-toolbar">
+          <ion-title class="modal-cliente-title">
+            <ion-icon name="create-outline"></ion-icon>
+            Editar Cliente ({{ clienteForm.idString }})
+          </ion-title>
+          <ion-buttons slot="end">
+            <button class="btn-modal-cerrar" (click)="cerrarEditar()" title="Cerrar">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-cliente-content">
+        <div class="modal-form-wrap">
+
+          <!-- Fila Nombre y Apellidos -->
+          <div class="form-fila">
+            <div class="form-grupo">
+              <label>Nombre *</label>
+              <input type="text" [(ngModel)]="clienteForm.nombre" placeholder="Nombre" />
+            </div>
+            <div class="form-grupo">
+              <label>Apellidos</label>
+              <input type="text" [(ngModel)]="clienteForm.apellidos" placeholder="Apellidos o denominación" />
+            </div>
+          </div>
+
+          <!-- Fila Teléfono y Email -->
+          <div class="form-fila">
+            <div class="form-grupo">
+              <label>Teléfono</label>
+              <div class="input-icon-wrap">
+                <ion-icon name="call-outline"></ion-icon>
+                <input type="tel" [(ngModel)]="clienteForm.telefono" placeholder="Ej: 612 345 678" />
+              </div>
+            </div>
+            <div class="form-grupo">
+              <label>Correo Electrónico</label>
+              <div class="input-icon-wrap">
+                <ion-icon name="mail-outline"></ion-icon>
+                <input type="email" [(ngModel)]="clienteForm.email" placeholder="ejemplo@correo.com" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila Tipo y CIF/NIF -->
+          <div class="form-fila">
+            <div class="form-grupo">
+              <label>Tipo de Cliente</label>
+              <select [(ngModel)]="clienteForm.tipo">
+                <option value="Fiel">Fiel</option>
+                <option value="Profesional">Profesional</option>
+                <option value="Ocasional">Ocasional</option>
+              </select>
+            </div>
+            <div class="form-grupo">
+              <label>NIF / CIF</label>
+              <input type="text" [(ngModel)]="clienteForm.cifNif" placeholder="12345678A" />
+            </div>
+          </div>
+
+          <!-- Dirección -->
+          <div class="form-grupo">
+            <label>Dirección</label>
+            <input type="text" [(ngModel)]="clienteForm.direccion" placeholder="Calle, número, ciudad..." />
+          </div>
+
+          <!-- Notas -->
+          <div class="form-grupo">
+            <label>Notas / Observaciones</label>
+            <textarea rows="3" [(ngModel)]="clienteForm.notas" placeholder="Preferencias, condiciones de entrega..."></textarea>
+          </div>
+
+          <!-- Acciones modal -->
+          <div class="modal-form-acciones">
+            <button class="btn-modal-cancelar" (click)="cerrarEditar()">
+              Cancelar
+            </button>
+            <button class="btn-modal-guardar" (click)="guardarCliente()" [disabled]="!clienteForm.nombre.trim()">
+              <ion-icon name="checkmark-outline"></ion-icon>
+              Guardar Cambios
+            </button>
+          </div>
+
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

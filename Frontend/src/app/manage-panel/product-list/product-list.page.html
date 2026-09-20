@@ -122,14 +122,17 @@
   <!------------------------------------------------------------------------------------------------
   MODAL PARA AGREGAR UN NUEVO PRODUCTO
   -------------------------------------------------------------------------------------------------->
-  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modalinput">
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modern-modal modalinput">
     <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Nuevo Producto</ion-title>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="cube-outline"></ion-icon>
+            Nuevo Producto / Categoría
+          </ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closeModal()">
-              <ion-icon name="close"></ion-icon>
+            <ion-button (click)="closeModal()" class="btn-modal-cerrar">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
@@ -239,14 +242,17 @@
   <!------------------------------------------------------------------------------------------------
   MODAL PARA AGREGAR EL PRODUCTO A DETALLE PRODUCTO
   -------------------------------------------------------------------------------------------------->
-  <ion-modal [isOpen]="isAddProductModal" (didDismiss)="closeAddProductModal()" class="modalinputDetalle">
+  <ion-modal [isOpen]="isAddProductModal" (didDismiss)="closeAddProductModal()" class="modern-modal modalinputDetalle">
     <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Agregar Producto al departamento</ion-title>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="business-outline"></ion-icon>
+            Asignar a Departamento
+          </ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="closeAddProductModal()">
-              <ion-icon name="close"></ion-icon>
+            <ion-button (click)="closeAddProductModal()" class="btn-modal-cerrar">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>

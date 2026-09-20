@@ -1,156 +1,233 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Dashboard Page
+// Dashboard Page — Responsive SCSS
+// Breakpoints:
+//   Móvil  : < 576px
+//   Tablet : 576px – 991px
+//   Desktop: ≥ 992px
 // ─────────────────────────────────────────────────────────────────────────────
 
-$verde: #1a7a4a;
+// ─── Variables ────────────────────────────────────────────────────────────────
+$verde:       #1a7a4a;
 $verde-claro: #e8f5ee;
-$gris-fondo: #f4f6f9;
-$blanco: #ffffff;
-$borde: #e2e8f0;
-$gris: #6b7280;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
-$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+$gris-fondo:  #f4f6f9;
+$blanco:      #ffffff;
+$borde:       #e2e8f0;
+$gris:        #6b7280;
+$sombra:      0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md:   0 4px 20px rgba(0, 0, 0, 0.1);
 
-// ─── Toolbar ─────────────────────────────────────────────────────────────────
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+$bp-mobile-max:  575px;
+$bp-tablet-min:  576px;
+$bp-tablet-max:  991px;
+$bp-desktop-min: 992px;
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 1. ANIMACIONES (globales, sin breakpoint)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.45; transform: scale(1.35); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+@keyframes barraEntrada {
+  from { width: 0 !important; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 2. TOOLBAR
+// ═══════════════════════════════════════════════════════════════════════════════
 
 .dash-toolbar {
-  --background: #{$blanco};
+  --background:   #{$blanco};
   --border-color: #{$borde};
-  --min-height: 72px;
-  padding: 0 24px;
   box-shadow: $sombra;
 
   .dash-main-title {
-    display: flex;
-    align-items: center;
+    display:         flex;
+    align-items:     center;
     justify-content: space-between;
-    padding: 0;
+    padding:         0;
 
     .title-left {
-      h1 { font-size: 1.4rem; font-weight: 800; color: #111827; margin: 0 0 2px; }
-      .fecha-texto { font-size: 0.82rem; color: $gris; margin: 0; }
+      h1 {
+        font-weight: 800;
+        color:       #111827;
+        margin:      0 0 2px;
+      }
+
+      .fecha-texto {
+        color:  $gris;
+        margin: 0;
+      }
     }
 
     .estado-sistema {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #16a34a;
-      background: #dcfce7;
-      padding: 6px 14px;
+      display:       flex;
+      align-items:   center;
+      font-weight:   600;
+      color:         #16a34a;
+      background:    #dcfce7;
       border-radius: 20px;
-      border: 1.5px solid #86efac;
+      border:        1.5px solid #86efac;
 
       .dot-online {
-        width: 8px;
-        height: 8px;
-        background: #22c55e;
+        width:         8px;
+        height:        8px;
+        background:    #22c55e;
         border-radius: 50%;
-        animation: pulse-dot 2s ease-in-out infinite;
+        animation:     pulse-dot 2s ease-in-out infinite;
       }
     }
   }
 }
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.45; transform: scale(1.35); }
+// ── Toolbar · Móvil ──────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .dash-toolbar {
+    --min-height: 60px;
+    padding: 0 12px;
+
+    .dash-main-title {
+      .title-left h1            { font-size: 1.1rem; }
+      .title-left .fecha-texto  { font-size: 0.72rem; }
+      .estado-sistema           { font-size: 0.7rem; padding: 4px 10px; gap: 6px; }
+    }
+  }
 }
 
-// ─── Content ─────────────────────────────────────────────────────────────────
+// ── Toolbar · Tablet ─────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .dash-toolbar {
+    --min-height: 66px;
+    padding: 0 18px;
 
-.dash-content { --background: #{$gris-fondo}; }
+    .dash-main-title {
+      .title-left h1            { font-size: 1.25rem; }
+      .title-left .fecha-texto  { font-size: 0.78rem; }
+      .estado-sistema           { font-size: 0.76rem; padding: 5px 12px; gap: 7px; }
+    }
+  }
+}
 
-// ─── KPI Grid ────────────────────────────────────────────────────────────────
+// ── Toolbar · Desktop ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .dash-toolbar {
+    --min-height: 72px;
+    padding: 0 24px;
 
+    .dash-main-title {
+      .title-left h1            { font-size: 1.4rem; }
+      .title-left .fecha-texto  { font-size: 0.82rem; }
+      .estado-sistema           { font-size: 0.8rem; padding: 6px 14px; gap: 8px; }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 3. CONTENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+.dash-content {
+  --background: #{$gris-fondo};
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 4. KPI GRID & CARDS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── KPI Grid — base ──────────────────────────────────────────────────────────
 .kpis-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  padding: 20px 20px 0;
 }
 
+// ── KPI Card — base ──────────────────────────────────────────────────────────
 .kpi-card {
-  background: $blanco;
-  border-radius: 14px;
-  border: 1px solid $borde;
-  padding: 18px;
-  box-shadow: $sombra;
-  cursor: pointer;
+  background:      $blanco;
+  border-radius:   14px;
+  border:          1px solid $borde;
+  box-shadow:      $sombra;
+  cursor:          pointer;
   text-decoration: none;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  animation: fadeInUp 0.3s ease both;
+  transition:      all 0.2s;
+  display:         flex;
+  flex-direction:  column;
+  gap:             2px;
+  animation:       fadeInUp 0.3s ease both;
 
-  &:nth-child(1) { animation-delay: 0ms; }
-  &:nth-child(2) { animation-delay: 60ms; }
+  &:nth-child(1) { animation-delay: 0ms;   }
+  &:nth-child(2) { animation-delay: 60ms;  }
   &:nth-child(3) { animation-delay: 120ms; }
   &:nth-child(4) { animation-delay: 180ms; }
 
   &:hover {
-    transform: translateY(-3px);
+    transform:  translateY(-3px);
     box-shadow: $sombra-md;
   }
 
   .kpi-top {
-    display: flex;
-    align-items: center;
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom:   10px;
   }
 
   .kpi-icono {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
+    border-radius:   12px;
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    font-size: 1.2rem;
   }
 
   .kpi-arrow {
-    font-size: 0.9rem;
-    color: #cbd5e1;
+    color:      #cbd5e1;
     transition: transform 0.2s, color 0.2s;
   }
 
-  &:hover .kpi-arrow { color: $verde; transform: translateX(3px); }
+  &:hover .kpi-arrow {
+    color:     $verde;
+    transform: translateX(3px);
+  }
 
   .kpi-valor {
-    font-size: 2.2rem;
-    font-weight: 900;
-    margin: 0;
-    line-height: 1;
+    font-weight:    900;
+    margin:         0;
+    line-height:    1;
     letter-spacing: -1px;
   }
 
   .kpi-label {
-    font-size: 0.88rem;
     font-weight: 700;
-    color: #111827;
-    margin: 4px 0 2px;
+    color:       #111827;
   }
 
   .kpi-descripcion {
-    font-size: 0.75rem;
     color: $gris;
-    margin: 0 0 8px;
   }
 
   .kpi-tendencia {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 3px 8px;
+    display:       flex;
+    align-items:   center;
+    gap:           4px;
+    font-weight:   600;
     border-radius: 10px;
-    width: fit-content;
+    width:         fit-content;
 
     ion-icon { font-size: 0.8rem; }
 
@@ -159,227 +236,383 @@ $sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 }
 
-// ─── Segunda fila ─────────────────────────────────────────────────────────────
+// ── KPI · Móvil ──────────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .kpis-grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 12px 12px 0;
+    gap: 10px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+    .kpi-icono       { width: 36px; height: 36px; font-size: 1rem; }
+    .kpi-arrow       { font-size: 0.8rem; }
+    .kpi-valor       { font-size: 1.6rem; }
+    .kpi-label       { font-size: 0.78rem; margin: 3px 0 2px; }
+    .kpi-descripcion { font-size: 0.68rem; margin: 0 0 6px; }
+    .kpi-tendencia   { font-size: 0.65rem; padding: 2px 6px; }
+  }
+}
+
+// ── KPI · Tablet ─────────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 16px 16px 0;
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+    .kpi-icono       { width: 40px; height: 40px; font-size: 1.1rem; }
+    .kpi-arrow       { font-size: 0.85rem; }
+    .kpi-valor       { font-size: 1.9rem; }
+    .kpi-label       { font-size: 0.84rem; margin: 4px 0 2px; }
+    .kpi-descripcion { font-size: 0.72rem; margin: 0 0 7px; }
+    .kpi-tendencia   { font-size: 0.7rem; padding: 3px 7px; }
+  }
+}
+
+// ── KPI · Desktop ────────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .kpis-grid {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 20px 20px 0;
+    gap: 16px;
+  }
+
+  .kpi-card {
+    padding: 18px;
+    .kpi-icono       { width: 44px; height: 44px; font-size: 1.2rem; }
+    .kpi-arrow       { font-size: 0.9rem; }
+    .kpi-valor       { font-size: 2.2rem; }
+    .kpi-label       { font-size: 0.88rem; margin: 4px 0 2px; }
+    .kpi-descripcion { font-size: 0.75rem; margin: 0 0 8px; }
+    .kpi-tendencia   { font-size: 0.72rem; padding: 3px 8px; }
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 5. SEGUNDA FILA (Métricas + Actividad + Acciones)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Segunda fila — base ──────────────────────────────────────────────────────
 
 .segunda-fila {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 0.8fr;
   gap: 16px;
-  padding: 16px 20px 20px;
 }
 
-// ─── Panel base (compartido) ──────────────────────────────────────────────────
-
+// ── Panel base compartido ────────────────────────────────────────────────────
 .metricas-panel,
 .actividad-panel,
 .acciones-panel {
-  background: $blanco;
+  background:    $blanco;
   border-radius: 14px;
-  border: 1px solid $borde;
-  padding: 18px;
-  box-shadow: $sombra;
+  border:        1px solid $borde;
+  box-shadow:    $sombra;
 }
 
 .panel-titulo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #111827;
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  font-weight:   700;
+  color:         #111827;
   margin-bottom: 16px;
 
   ion-icon { color: $verde; font-size: 1.1rem; }
 }
 
 .panel-divider {
-  height: 1px;
+  height:     1px;
   background: $borde;
-  margin: 16px 0;
+  margin:     16px 0;
 }
 
-// ─── Panel Métricas ───────────────────────────────────────────────────────────
+// ── Segunda fila · Móvil ─────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .segunda-fila {
+    grid-template-columns: 1fr;
+    padding: 12px 12px 16px;
+  }
+
+  .metricas-panel,
+  .actividad-panel,
+  .acciones-panel { padding: 14px; }
+
+  .panel-titulo { font-size: 0.88rem; }
+}
+
+// ── Segunda fila · Tablet ────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .segunda-fila {
+    grid-template-columns: 1fr 1fr;
+    padding: 14px 16px 18px;
+  }
+
+  // Actividad ocupa las 2 columnas en tablet
+  .actividad-panel { grid-column: 1 / -1; }
+
+  .metricas-panel,
+  .actividad-panel,
+  .acciones-panel { padding: 16px; }
+
+  .panel-titulo { font-size: 0.92rem; }
+}
+
+// ── Segunda fila · Desktop ───────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .segunda-fila {
+    grid-template-columns: 1fr 1.4fr 0.8fr;
+    padding: 16px 20px 20px;
+  }
+
+  .metricas-panel,
+  .actividad-panel,
+  .acciones-panel { padding: 18px; }
+
+  .panel-titulo { font-size: 0.95rem; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 6. PANEL MÉTRICAS — barras de progreso
+// ═══════════════════════════════════════════════════════════════════════════════
 
 .metrica-item {
   margin-bottom: 16px;
-
   &:last-of-type { margin-bottom: 0; }
 }
 
 .metrica-header {
-  display: flex;
+  display:         flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+  align-items:     center;
+  margin-bottom:   6px;
 
   .metrica-nombre { font-size: 0.82rem; font-weight: 600; color: #374151; }
   .metrica-pct    { font-size: 0.85rem; font-weight: 800; }
 }
 
 .barra-fondo {
-  height: 8px;
-  background: $gris-fondo;
+  height:        8px;
+  background:    $gris-fondo;
   border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid $borde;
+  overflow:      hidden;
+  border:        1px solid $borde;
 }
 
 .barra-progreso {
-  height: 100%;
+  height:        100%;
   border-radius: 10px;
-  transition: width 0.8s ease;
-  animation: barraEntrada 0.8s ease both;
+  transition:    width 0.8s ease;
+  animation:     barraEntrada 0.8s ease both;
 }
 
-@keyframes barraEntrada {
-  from { width: 0 !important; }
-}
-
-// Resumen compacto
+// ── Resumen compacto — base ──────────────────────────────────────────────────
 .resumen-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap:     10px;
 }
 
 .resumen-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: $gris-fondo;
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  background:    $gris-fondo;
   border-radius: 10px;
-  padding: 10px;
-  border: 1px solid $borde;
+  border:        1px solid $borde;
 
-  ion-icon { font-size: 1.3rem; flex-shrink: 0; }
+  ion-icon    { flex-shrink: 0; }
+  .ri-valor   { font-weight: 800; color: #111827; margin: 0 0 2px; }
+  .ri-label   { color: $gris; margin: 0; font-weight: 500; }
+}
 
-  .ri-valor {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #111827;
-    margin: 0 0 2px;
-  }
-
-  .ri-label {
-    font-size: 0.7rem;
-    color: $gris;
-    margin: 0;
-    font-weight: 500;
+// ── Métricas · Móvil ─────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .resumen-grid { grid-template-columns: 1fr 1fr; }
+  .resumen-item {
+    padding: 8px;
+    ion-icon  { font-size: 1.1rem; }
+    .ri-valor { font-size: 0.95rem; }
+    .ri-label { font-size: 0.65rem; }
   }
 }
 
-// ─── Panel Actividad ──────────────────────────────────────────────────────────
+// ── Métricas · Tablet ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .resumen-grid { grid-template-columns: repeat(3, 1fr); }
+  .resumen-item {
+    padding: 9px;
+    ion-icon  { font-size: 1.2rem; }
+    .ri-valor { font-size: 1rem; }
+    .ri-label { font-size: 0.68rem; }
+  }
+}
 
+// ── Métricas · Desktop ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .resumen-grid { grid-template-columns: 1fr 1fr; }
+  .resumen-item {
+    padding: 10px;
+    ion-icon  { font-size: 1.3rem; }
+    .ri-valor { font-size: 1.1rem; }
+    .ri-label { font-size: 0.7rem; }
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 7. PANEL ACTIVIDAD
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Actividad — base ─────────────────────────────────────────────────────────
 .actividad-lista {
-  display: flex;
+  display:        flex;
   flex-direction: column;
-  gap: 2px;
+  gap:            2px;
 }
 
 .actividad-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 10px 8px;
+  display:       flex;
+  align-items:   flex-start;
+  gap:           12px;
   border-radius: 10px;
-  transition: background 0.15s;
-  animation: fadeInRow 0.3s ease both;
+  transition:    background 0.15s;
+  animation:     fadeInRow 0.3s ease both;
 
   &:hover { background: $gris-fondo; }
 
   .act-icono {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
+    border-radius:   10px;
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    font-size: 0.95rem;
-    flex-shrink: 0;
+    flex-shrink:     0;
   }
 
   .act-info {
-    .act-desc {
-      font-size: 0.83rem;
-      font-weight: 500;
-      color: #111827;
-      margin: 0 0 3px;
-      line-height: 1.3;
-    }
-    .act-hora {
-      font-size: 0.73rem;
-      color: $gris;
-      margin: 0;
-    }
+    .act-desc { font-weight: 500; color: #111827; margin: 0 0 3px; line-height: 1.3; }
+    .act-hora { color: $gris; margin: 0; }
   }
 }
 
-// ─── Panel Acciones ───────────────────────────────────────────────────────────
+// ── Actividad · Móvil ────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .actividad-item {
+    padding: 8px 6px;
+    .act-icono         { width: 30px; height: 30px; font-size: 0.85rem; }
+    .act-info .act-desc { font-size: 0.78rem; }
+    .act-info .act-hora { font-size: 0.68rem; }
+  }
+}
 
+// ── Actividad · Tablet ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .actividad-item {
+    padding: 9px 7px;
+    .act-icono         { width: 33px; height: 33px; font-size: 0.9rem; }
+    .act-info .act-desc { font-size: 0.81rem; }
+    .act-info .act-hora { font-size: 0.71rem; }
+  }
+}
+
+// ── Actividad · Desktop ──────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .actividad-item {
+    padding: 10px 8px;
+    .act-icono         { width: 36px; height: 36px; font-size: 0.95rem; }
+    .act-info .act-desc { font-size: 0.83rem; }
+    .act-info .act-hora { font-size: 0.73rem; }
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 8. PANEL ACCIONES RÁPIDAS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Acciones — base ──────────────────────────────────────────────────────────
 .acciones-lista {
-  display: flex;
+  display:        flex;
   flex-direction: column;
-  gap: 4px;
+  gap:            4px;
 }
 
 .accion-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 12px;
-  border-radius: 10px;
-  border: 1.5px solid $borde;
-  background: $blanco;
+  display:         flex;
+  align-items:     center;
+  gap:             12px;
+  border-radius:   10px;
+  border:          1.5px solid $borde;
+  background:      $blanco;
   text-decoration: none;
-  transition: all 0.18s;
-  cursor: pointer;
+  transition:      all 0.18s;
+  cursor:          pointer;
 
   &:hover {
     border-color: $verde;
-    background: $verde-claro;
-    transform: translateX(3px);
-
+    background:   $verde-claro;
+    transform:    translateX(3px);
     .ac-label { color: $verde; }
-    .ac-arrow  { color: $verde; }
+    .ac-arrow { color: $verde; }
   }
 
   .ac-icono {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
+    border-radius:   10px;
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-    transition: transform 0.18s;
+    flex-shrink:     0;
+    transition:      transform 0.18s;
   }
 
   &:hover .ac-icono { transform: scale(1.1); }
 
   .ac-label {
-    flex: 1;
-    font-size: 0.88rem;
+    flex:        1;
     font-weight: 600;
-    color: #374151;
-    transition: color 0.15s;
+    color:       #374151;
+    transition:  color 0.15s;
   }
 
   .ac-arrow {
-    font-size: 0.85rem;
-    color: #cbd5e1;
+    color:      #cbd5e1;
     transition: color 0.15s;
   }
 }
 
-// ─── Animaciones ─────────────────────────────────────────────────────────────
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+// ── Acciones · Móvil ─────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .accion-item {
+    padding: 9px 10px;
+    .ac-icono { width: 30px; height: 30px; font-size: 0.88rem; }
+    .ac-label { font-size: 0.82rem; }
+    .ac-arrow { font-size: 0.78rem; }
+  }
 }
 
-@keyframes fadeInRow {
-  from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0); }
+// ── Acciones · Tablet ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .acciones-lista { flex-direction: row; flex-wrap: wrap; }
+  .accion-item {
+    flex: 1 1 calc(50% - 8px);
+    padding: 10px 11px;
+    .ac-icono { width: 33px; height: 33px; font-size: 0.94rem; }
+    .ac-label { font-size: 0.85rem; }
+    .ac-arrow { font-size: 0.82rem; }
+  }
+}
+
+// ── Acciones · Desktop ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .accion-item {
+    padding: 11px 12px;
+    .ac-icono { width: 36px; height: 36px; font-size: 1rem; }
+    .ac-label { font-size: 0.88rem; }
+    .ac-arrow { font-size: 0.85rem; }
+  }
 }

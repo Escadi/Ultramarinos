@@ -225,20 +225,23 @@
 <!-- ═════════════════════════════════════════════
      MODAL ARQUEO DE CAJA
 ═════════════════════════════════════════════ -->
-<ion-modal [isOpen]="isArqueoOpen" (didDismiss)="cancelarArqueo()" class="arqueo-modal">
+<ion-modal [isOpen]="isArqueoOpen" (didDismiss)="cancelarArqueo()" class="arqueo-modal modern-modal">
   <ng-template>
     <ion-header class="ion-no-border">
-      <ion-toolbar>
-        <ion-title>Arqueo de Caja (Cierre)</ion-title>
+      <ion-toolbar class="modal-prov-toolbar">
+        <ion-title class="modal-prov-title">
+          <ion-icon name="calculator-outline"></ion-icon>
+          Arqueo de Caja (Cierre)
+        </ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cancelarArqueo()">
-            <ion-icon name="close-outline"></ion-icon>
+          <ion-button (click)="cancelarArqueo()" class="btn-modal-cerrar">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="arqueo-body">
+    <ion-content class="arqueo-body modal-body">
       <div class="arqueo-container">
         <p class="arqueo-instrucciones">Introduce el dinero real contado en caja antes de cerrar el turno. Las
           diferencias se registrarán como descuadres.</p>
@@ -273,26 +276,31 @@
               <!-- Monedas -->
               <div class="conteo-seccion">
                 <div class="conteo-header">Monedas</div>
-                <div class="conteo-grid monedas">
-                  <div class="conteo-item moneda moneda-oro"><span class="val">2€</span> <input type="number"
+                <div class="conteo-grid">
+                  <div class="conteo-item moneda moneda-2"><span class="val">2€</span> <input type="number"
                       [(ngModel)]="m2" min="0"></div>
-                  <div class="conteo-item moneda moneda-oro"><span class="val">1€</span> <input type="number"
+                  <div class="conteo-item moneda moneda-1"><span class="val">1€</span> <input type="number"
                       [(ngModel)]="m1" min="0"></div>
-                  <div class="conteo-item moneda moneda-oro"><span class="val">50¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-50c"><span class="val">0.50€</span> <input type="number"
                       [(ngModel)]="m50c" min="0"></div>
-                  <div class="conteo-item moneda moneda-oro"><span class="val">20¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-20c"><span class="val">0.20€</span> <input type="number"
                       [(ngModel)]="m20c" min="0"></div>
-                  <div class="conteo-item moneda moneda-oro"><span class="val">10¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-10c"><span class="val">0.10€</span> <input type="number"
                       [(ngModel)]="m10c" min="0"></div>
-                  <div class="conteo-item moneda moneda-cobre"><span class="val">5¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-5c"><span class="val">0.05€</span> <input type="number"
                       [(ngModel)]="m5c" min="0"></div>
-                  <div class="conteo-item moneda moneda-cobre"><span class="val">2¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-2c"><span class="val">0.02€</span> <input type="number"
                       [(ngModel)]="m2c" min="0"></div>
-                  <div class="conteo-item moneda moneda-cobre"><span class="val">1¢</span> <input type="number"
+                  <div class="conteo-item moneda moneda-1c"><span class="val">0.01€</span> <input type="number"
                       [(ngModel)]="m1c" min="0"></div>
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Columna Teórico vs Real -->
+          <div class="col-teorico">
+            <h3>Balance y Descuadres</h3>
 
             <div class="resumen-item">
               <span>Efectivo Contado:</span>
@@ -350,9 +358,9 @@
       </div>
     </ion-content>
 
-    <div class="arqueo-footer">
+    <div class="modal-footer">
       <button class="btn-cancel" (click)="cancelarArqueo()">Cancelar</button>
-      <button class="btn-confirm" (click)="confirmarArqueo()">
+      <button class="btn-save" (click)="confirmarArqueo()">
         <ion-icon name="checkmark-done-outline"></ion-icon>
         Confirmar Cierre de Caja
       </button>
@@ -363,7 +371,7 @@
 <!-- ═════════════════════════════════════════════
      MODAL APERTURA DE CAJA
 ═════════════════════════════════════════════ -->
-<ion-modal [isOpen]="isAperturaOpen" (didDismiss)="cancelarApertura()" class="apertura-modal">
+<ion-modal [isOpen]="isAperturaOpen" (didDismiss)="cancelarApertura()" class="apertura-modal modern-modal">
   <ng-template>
     <div class="apertura-container">
       <div class="apertura-header">
@@ -386,9 +394,9 @@
         </div>
       </div>
 
-      <div class="apertura-footer">
+      <div class="apertura-footer modal-footer">
         <button class="btn-cancel" (click)="cancelarApertura()">Cancelar</button>
-        <button class="btn-confirm" [disabled]="!empleadoSeleccionado" (click)="confirmarApertura()">
+        <button class="btn-save" [disabled]="!empleadoSeleccionado" (click)="confirmarApertura()">
           Iniciar Turno
         </button>
       </div>
@@ -399,18 +407,21 @@
 <!-- ═════════════════════════════════════════════
      MODAL HISTORIAL DE MOVIMIENTOS
 ═════════════════════════════════════════════ -->
-<ion-modal [isOpen]="isHistorialOpen" (didDismiss)="cerrarHistorial()" class="historial-modal">
+<ion-modal [isOpen]="isHistorialOpen" (didDismiss)="cerrarHistorial()" class="modern-modal historial-modal">
   <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Historial de Movimientos</ion-title>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-prov-toolbar">
+        <ion-title class="modal-prov-title">
+          <ion-icon name="timer-outline"></ion-icon>
+          Historial de Movimientos
+        </ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cerrarHistorial()">
-            <ion-icon name="close-outline"></ion-icon>
+          <ion-button (click)="cerrarHistorial()" class="btn-modal-cerrar">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
-      <ion-toolbar class="filtros-toolbar">
+      <ion-toolbar class="filtros-toolbar" style="--background: #f8fafc; padding: 6px 12px;">
         <ion-segment [(ngModel)]="filtroHistorial" mode="ios">
           <ion-segment-button value="Todos">
             <ion-label>Todos</ion-label>
@@ -425,7 +436,7 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="historial-body">
+    <ion-content class="historial-body modal-body">
       <div class="movimientos-tabla historial-tabla">
         <!-- Cabecera -->
         <div class="tabla-cabecera">
@@ -467,58 +478,95 @@
         </div>
       </div>
     </ion-content>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cerrarHistorial()">Cerrar</button>
+    </div>
   </ng-template>
 </ion-modal>
 
 <!-- ═════════════════════════════════════════════
      MODAL DETALLE DE FACTURA / TICKET
 ═════════════════════════════════════════════ -->
-<ion-modal [isOpen]="isFacturaOpen" (didDismiss)="cerrarFactura()" class="factura-modal">
+<ion-modal [isOpen]="isFacturaOpen" (didDismiss)="cerrarFactura()" class="modern-modal modal-detalle-ticket">
   <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Ticket {{ facturaSeleccionada?.id }}</ion-title>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-prov-toolbar">
+        <ion-title class="modal-prov-title">
+          <ion-icon name="receipt-outline"></ion-icon>
+          Detalle del Ticket #{{ facturaSeleccionada?.id }}
+        </ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cerrarFactura()">
-            <ion-icon name="close-outline"></ion-icon>
+          <ion-button (click)="cerrarFactura()" class="btn-modal-cerrar">
+            <ion-icon name="close-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content class="factura-body" *ngIf="facturaSeleccionada">
-      <div class="ticket-container">
-        <div class="ticket-header">
-          <h3>Tienda Pueblo</h3>
-          <p>{{ facturaSeleccionada.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
-          <p>Le atendió: {{ facturaSeleccionada.empleado }}</p>
-          <p>Cliente: {{ facturaSeleccionada.cliente }}</p>
-        </div>
-
-        <div class="ticket-separator"></div>
-
-        <div class="ticket-lineas">
-          <div class="ticket-linea" *ngFor="let linea of facturaSeleccionada.lineas">
-            <div class="linea-info">
-              <span class="linea-cantidad">{{ linea.cantidad }}x</span>
-              <span class="linea-producto">{{ linea.producto.nombre }}</span>
+    <ion-content class="modal-body" *ngIf="facturaSeleccionada">
+      <div class="detalle-sheet">
+        <!-- Tarjeta de cabecera -->
+        <div class="detalle-header-card">
+          <div class="detalle-avatar">
+            <ion-icon name="receipt"></ion-icon>
+          </div>
+          <div class="detalle-header-info">
+            <h2>Ticket {{ facturaSeleccionada.id }}</h2>
+            <div class="detalle-badges">
+              <span class="id-badge">TOTAL: €{{ facturaSeleccionada.total.toFixed(2) }}</span>
+              <span class="estado-badge" style="background: #eafbf0; color: #16a34a; padding: 4px 10px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 4px;">
+                <ion-icon name="checkmark-circle-outline"></ion-icon> {{ facturaSeleccionada.metodoCobro }}
+              </span>
             </div>
-            <span class="linea-precio">€{{ (linea.cantidad * linea.producto.precio).toFixed(2) }}</span>
           </div>
         </div>
 
-        <div class="ticket-separator"></div>
-
-        <div class="ticket-total">
-          <span>TOTAL</span>
-          <strong>€{{ facturaSeleccionada.total.toFixed(2) }}</strong>
+        <!-- Información de la Venta -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="information-circle-outline"></ion-icon> Datos de la Venta
+          </h4>
+          <div class="info-kv-grid">
+            <div class="kv-item">
+              <span class="kv-label">Fecha y Hora:</span>
+              <span class="kv-val"><ion-icon name="time-outline"></ion-icon> {{ facturaSeleccionada.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Le atendió:</span>
+              <span class="kv-val"><ion-icon name="person-outline"></ion-icon> {{ facturaSeleccionada.empleado }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Cliente:</span>
+              <span class="kv-val"><ion-icon name="person-circle-outline"></ion-icon> {{ facturaSeleccionada.cliente }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Forma de Pago:</span>
+              <span class="kv-val"><ion-icon name="card-outline"></ion-icon> {{ facturaSeleccionada.metodoCobro }}</span>
+            </div>
+          </div>
         </div>
 
-        <div class="ticket-footer">
-          <p>Forma de pago: <strong>{{ facturaSeleccionada.metodoCobro }}</strong></p>
-          <p>¡Gracias por su visita!</p>
+        <!-- Líneas del Ticket -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="cart-outline"></ion-icon> Artículos del Ticket ({{ facturaSeleccionada.lineas?.length || 0 }})
+          </h4>
+          <div class="productos-pedido-lista" style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="prod-pedido-item" *ngFor="let linea of facturaSeleccionada.lineas" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+              <div class="prod-info-col" style="display: flex; flex-direction: column; gap: 2px;">
+                <span class="prod-nombre" style="font-size: 0.88rem; font-weight: 700; color: #111827;">{{ linea.producto.nombre }}</span>
+                <span class="prod-sub" style="font-size: 0.75rem; color: #64748b;">{{ linea.cantidad }} ud. x €{{ linea.producto.precio.toFixed(2) }}</span>
+              </div>
+              <div class="prod-qty-badge" style="background: #f1f5f9; color: #111827; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;">
+                <span>€{{ (linea.cantidad * linea.producto.precio).toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </ion-content>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cerrarFactura()">Cerrar</button>
+    </div>
   </ng-template>
 </ion-modal>

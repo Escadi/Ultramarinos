@@ -1,15 +1,27 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Delivery Page — Gestión de Pedidos
+// Delivery Page — Gestión de Pedidos — Responsive SCSS
+// Breakpoints:
+//   Móvil  : < 576px  (Pixel 8: 412px)
+//   Tablet : 576px – 991px
+//   Desktop: ≥ 992px
 // ─────────────────────────────────────────────────────────────────────────────
 
-$verde: #1a7a4a;
+// ─── Variables ────────────────────────────────────────────────────────────────
+$verde:       #1a7a4a;
 $verde-claro: #e8f5ee;
-$gris-fondo: #f4f6f9;
-$blanco: #ffffff;
-$borde: #e2e8f0;
-$gris: #6b7280;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
-$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+$gris-fondo:  #f4f6f9;
+$blanco:      #ffffff;
+$borde:       #e2e8f0;
+$gris:        #6b7280;
+$sombra:      0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md:   0 4px 20px rgba(0, 0, 0, 0.1);
+
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+$bp-mobile-max:  575px;
+$bp-tablet-min:  576px;
+$bp-tablet-max:  991px;
+$bp-desktop-min: 992px;
+
 
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 
@@ -407,6 +419,245 @@ $sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
   p { margin: 0; font-size: 0.9rem; }
 }
 
+// ─── Cards de Pedidos para Móvil (Base) ───────────────────────────────────────
+
+.vista-cards {
+  display: none; // Oculto por defecto en tablet y desktop
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.pedido-card {
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  padding: 14px 16px;
+  box-shadow: $sombra;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.pedido-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.pedido-id-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .pedido-id-badge {
+    background: #f1f5f9;
+    color: #334155;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: monospace;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    ion-icon {
+      font-size: 0.95rem;
+      color: $verde;
+    }
+  }
+
+  .pedido-card-fecha {
+    font-size: 0.78rem;
+    color: $gris;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    ion-icon {
+      font-size: 0.88rem;
+    }
+  }
+}
+
+.pedido-card-cliente {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid rgba($borde, 0.7);
+
+  .pedido-cliente-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: $verde;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .pedido-cliente-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+
+    .pedido-cliente-nombre {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pedido-cliente-meta {
+      margin: 0;
+      font-size: 0.78rem;
+      color: $gris;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      ion-icon {
+        font-size: 0.88rem;
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+.pedido-card-detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px dashed $borde;
+}
+
+.pedido-detalle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  gap: 8px;
+
+  .detalle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #64748b;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 0.9rem;
+      color: #94a3b8;
+    }
+  }
+
+  .detalle-valor {
+    color: #1e293b;
+    font-weight: 600;
+    text-align: right;
+  }
+}
+
+.pedido-card-acciones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #f1f5f9;
+
+  .btn-card-accion {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+
+    ion-icon {
+      font-size: 0.95rem;
+    }
+
+    &.btn-ver {
+      background: #f0f9ff;
+      border-color: #bae6fd;
+      color: #0284c7;
+      &:active { background: #0284c7; color: white; }
+    }
+
+    &.btn-rutas {
+      background: #faf5ff;
+      border-color: #e9d5ff;
+      color: #7c3aed;
+      &:active { background: #7c3aed; color: white; }
+    }
+
+    &.btn-editar {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #2563eb;
+      &:active { background: #2563eb; color: white; }
+    }
+
+    &.btn-eliminar {
+      flex: 0 0 36px;
+      width: 36px;
+      background: #fff5f5;
+      border-color: #fecaca;
+      color: #e53935;
+      &:active { background: #e53935; color: white; }
+    }
+  }
+}
+
+.cards-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: #9ca3af;
+
+  ion-icon {
+    font-size: 2.8rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
 // ─── Paginación ───────────────────────────────────────────────────────────────
 
 .paginacion-bar {
@@ -632,8 +883,252 @@ $sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
     background: $verde-claro;
     padding: 3px 10px;
     border-radius: 10px;
+    &.pagina-activa { background: $verde; border-color: $verde; color: white; }
+    &:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    ion-icon { font-size: 0.9rem; }
+  }
+}
+
+// ─── Modales ─────────────────────────────────────────────────────────────────
+
+.modal-delivery { --width: 500px; --border-radius: 16px; }
+
+.nuevo-pedido-modal { 
+  --height: 90%; 
+  --border-radius: 20px 20px 0 0; 
+}
+
+.modal-toolbar { --background: #{$blanco}; --border-color: #{$borde}; }
+
+.modal-content { --background: #{$gris-fondo}; }
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label { font-size: 0.78rem; font-weight: 600; color: #374151; }
+
+  input, select {
+    padding: 10px 14px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    color: #111827;
+    background: $blanco;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    appearance: none;
+
+    &:focus { border-color: $verde; box-shadow: 0 0 0 3px rgba($verde, 0.08); }
+    &[readonly] { background: $gris-fondo; color: $gris; }
+    &::placeholder { color: #9ca3af; }
+  }
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+
+  .btn-cancelar {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    color: $gris;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    &:hover { border-color: #9ca3af; }
+  }
+
+  .btn-guardar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: $verde;
+    color: white;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba($verde, 0.3);
+    ion-icon { font-size: 1rem; }
+    &:hover { background: darken($verde, 6%); }
+  }
+}
+
+// ─── Modal Órdenes ────────────────────────────────────────────────────────────
+
+.orden-card {
+  background: $blanco;
+  border-radius: 12px;
+  border: 1px solid $borde;
+  padding: 16px;
+  box-shadow: $sombra;
+
+  .orden-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+
+    .orden-id { font-size: 0.9rem; font-weight: 700; color: $verde; }
+  }
+
+  .orden-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    .orden-campo {
+      label { font-size: 0.72rem; font-weight: 600; color: $gris; text-transform: uppercase; letter-spacing: 0.3px; display: block; margin-bottom: 4px; }
+      p { font-size: 0.85rem; color: #374151; margin: 0; font-weight: 500; }
+
+      &.orden-campo-full { grid-column: 1 / -1; }
+    }
+  }
+}
+
+// ─── Modal Detalle ────────────────────────────────────────────────────────────
+
+.detalle-header {
+  background: $blanco;
+  border-radius: 12px;
+  border: 1px solid $borde;
+  padding: 16px;
+  box-shadow: $sombra;
+
+  .detalle-id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $verde;
+    margin-bottom: 10px;
+
+    ion-icon { font-size: 1.1rem; }
+  }
+
+  .detalle-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.83rem;
+      color: #374151;
+      margin: 0;
+
+      ion-icon { color: $gris; font-size: 0.85rem; }
+    }
+  }
+}
+
+.detalle-estado { margin-bottom: 4px; }
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  padding-bottom: 8px;
+  border-bottom: 2px solid $borde;
+
+  ion-icon { color: $verde; font-size: 1rem; }
+}
+
+.producto-linea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: $blanco;
+  border-radius: 8px;
+  border: 1px solid $borde;
+  animation: fadeInRow 0.15s ease;
+
+  .prod-nombre-det { font-size: 0.88rem; font-weight: 600; color: #111827; }
+
+  .prod-qty-det {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $verde;
+    background: $verde-claro;
+    padding: 3px 10px;
+    border-radius: 10px;
 
     ion-icon { font-size: 0.8rem; }
+  }
+}
+
+.productos-pedido-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prod-pedido-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+
+  .prod-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .prod-nombre {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .prod-sub {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: monospace;
+    }
+  }
+
+  .prod-qty-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #16a34a;
+    background: #eafbf0;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(22, 163, 74, 0.2);
+
+    ion-icon { font-size: 0.9rem; }
   }
 }
 
@@ -650,3 +1145,352 @@ $sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 .modal-toolbar ion-title { color: #000000 !important; }
 
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 1: TOOLBAR (botones Escanear y Nuevo Pedido)
+// =============================================================================
+
+// -- Toolbar - Movil (< 576px) ------------------------------------------------
+@media (max-width: 575px) {
+  .delivery-toolbar {
+    --min-height: 56px;
+    padding: 0 10px;
+  }
+
+  .btn-scan {
+    padding: 7px 10px;
+    font-size: 0.78rem;
+    gap: 4px;
+    border-radius: 8px;
+
+    ion-icon { font-size: 0.9rem; }
+  }
+
+  .btn-nuevo-pedido {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    gap: 5px;
+    border-radius: 8px;
+
+    ion-icon { font-size: 0.95rem; }
+  }
+}
+
+// -- Toolbar - Tablet (576px a 991px) -----------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .delivery-toolbar {
+    --min-height: 64px;
+    padding: 0 16px;
+  }
+
+  .btn-scan         { padding: 8px 14px; font-size: 0.82rem; }
+  .btn-nuevo-pedido { padding: 8px 16px; font-size: 0.85rem; }
+}
+
+// -- Toolbar - Desktop (>= 992px) ---------------------------------------------
+@media (min-width: 992px) {
+  .delivery-toolbar {
+    --min-height: 72px;
+    padding: 0 24px;
+  }
+
+  .btn-scan         { padding: 9px 16px; font-size: 0.85rem; }
+  .btn-nuevo-pedido { padding: 10px 18px; font-size: 0.88rem; }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 2: KPIs (tarjetas resumen)
+// =============================================================================
+
+// -- KPIs - Movil -------------------------------------------------------------
+@media (max-width: 575px) {
+  .kpis-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px 12px 0;
+  }
+
+  .kpi-card {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 10px;
+
+    .kpi-icono { width: 36px; height: 36px; font-size: 1rem; border-radius: 8px; }
+    .kpi-valor { font-size: 1.2rem; }
+    .kpi-label { font-size: 0.68rem; }
+  }
+}
+
+// -- KPIs - Tablet ------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .kpis-bar {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 12px 16px 0;
+  }
+
+  .kpi-card {
+    padding: 12px 14px;
+    gap: 12px;
+
+    .kpi-icono { width: 40px; height: 40px; font-size: 1.1rem; }
+    .kpi-valor { font-size: 1.4rem; }
+    .kpi-label { font-size: 0.72rem; }
+  }
+}
+
+// -- KPIs - Desktop -----------------------------------------------------------
+@media (min-width: 992px) {
+  .kpis-bar {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    padding: 16px 20px 0;
+  }
+
+  .kpi-card {
+    padding: 16px;
+    gap: 14px;
+
+    .kpi-icono { width: 44px; height: 44px; font-size: 1.2rem; }
+    .kpi-valor { font-size: 1.6rem; }
+    .kpi-label { font-size: 0.75rem; }
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 3: BARRA DE FILTROS
+// =============================================================================
+
+// -- Filtros - Movil ----------------------------------------------------------
+@media (max-width: 575px) {
+  .filtros-bar {
+    padding: 10px 12px;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    width: 100%;
+    min-width: unset;
+    padding: 0 10px;
+
+    input { padding: 8px 0; font-size: 0.82rem; }
+    ion-icon { font-size: 0.9rem; }
+  }
+
+  .filtros-derecha { width: 100%; }
+
+  .btn-filtro { padding: 7px 10px; font-size: 0.78rem; }
+}
+
+// -- Filtros - Tablet ---------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .filtros-bar { padding: 12px 16px; gap: 10px; margin-top: 12px; }
+
+  .search-wrap { padding: 0 12px; input { font-size: 0.85rem; } }
+
+  .btn-filtro { padding: 8px 12px; font-size: 0.82rem; }
+}
+
+// -- Filtros - Desktop --------------------------------------------------------
+@media (min-width: 992px) {
+  .filtros-bar { padding: 14px 20px; gap: 12px; margin-top: 16px; }
+
+  .search-wrap { padding: 0 14px; input { font-size: 0.88rem; } }
+
+  .btn-filtro { padding: 9px 14px; font-size: 0.85rem; }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 4: TABLA Y CARDS DE PEDIDOS
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .vista-tabla {
+    display: none !important;
+  }
+
+  .vista-cards {
+    display: flex !important;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .vista-cards {
+    display: none !important;
+  }
+
+  .vista-tabla {
+    display: block !important;
+  }
+
+  .tabla-card {
+    margin: 0 14px;
+    overflow-x: auto;
+  }
+
+  .tabla-pedidos {
+    min-width: 680px;
+
+    th { padding: 10px 12px; font-size: 0.66rem; }
+    .fila-pedido td { padding: 10px 12px; }
+  }
+
+  .celda-id { font-size: 0.82rem; }
+
+  .avatar { width: 30px; height: 30px; font-size: 0.8rem; }
+  .cliente-nombre { font-size: 0.82rem; }
+  .cliente-email  { font-size: 0.72rem; }
+
+  .btn-accion { width: 28px; height: 28px; }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .vista-cards {
+    display: none !important;
+  }
+
+  .vista-tabla {
+    display: block !important;
+  }
+
+  .tabla-card { margin: 0 20px; }
+
+  .tabla-pedidos {
+    th { padding: 12px 16px; font-size: 0.7rem; }
+    .fila-pedido td { padding: 12px 16px; }
+  }
+
+  .avatar { width: 34px; height: 34px; }
+  .btn-accion { width: 30px; height: 30px; }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 5: PAGINACION
+// =============================================================================
+
+// -- Paginacion - Movil -------------------------------------------------------
+@media (max-width: 575px) {
+  .paginacion-bar {
+    padding: 10px 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .btn-pagina { width: 28px; height: 28px; font-size: 0.78rem; border-radius: 6px; }
+  .pagina-info { font-size: 0.75rem; }
+}
+
+// -- Paginacion - Tablet ------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .paginacion-bar { padding: 12px 16px 18px; }
+  .btn-pagina { width: 30px; height: 30px; font-size: 0.82rem; }
+}
+
+// -- Paginacion - Desktop -----------------------------------------------------
+@media (min-width: 992px) {
+  .paginacion-bar { padding: 14px 20px 20px; }
+  .btn-pagina { width: 32px; height: 32px; font-size: 0.85rem; }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 6: MODALES (Actualizar, Ordenes, Detalle, Nuevo Pedido)
+// =============================================================================
+
+// -- Modales - Movil ----------------------------------------------------------
+@media (max-width: 575px) {
+  .modal-delivery {
+    --width:         100%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .nuevo-pedido-modal {
+    --height:        95%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .modal-form {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .form-grupo {
+    label { font-size: 0.73rem; }
+
+    input, select {
+      padding: 8px 11px;
+      font-size: 0.83rem;
+      border-radius: 7px;
+    }
+  }
+
+  .modal-acciones {
+    flex-direction: column;
+    gap: 8px;
+
+    .btn-cancelar,
+    .btn-guardar { width: 100%; justify-content: center; padding: 10px; }
+  }
+
+  .orden-card {
+    padding: 12px;
+    border-radius: 10px;
+
+    .orden-grid { grid-template-columns: 1fr; gap: 8px; }
+  }
+}
+
+// -- Modales - Tablet ---------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .modal-delivery {
+    --width:         90%;
+    --border-radius: 14px;
+  }
+
+  .nuevo-pedido-modal {
+    --height:        90%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .modal-form { padding: 16px; gap: 14px; }
+
+  .form-grupo {
+    label { font-size: 0.76rem; }
+    input, select { padding: 9px 12px; font-size: 0.86rem; }
+  }
+
+  .modal-acciones { flex-direction: row; justify-content: flex-end; }
+}
+
+// -- Modales - Desktop --------------------------------------------------------
+@media (min-width: 992px) {
+  .modal-delivery {
+    --width:         500px;
+    --border-radius: 16px;
+  }
+
+  .nuevo-pedido-modal {
+    --height:        90%;
+    --border-radius: 20px 20px 0 0;
+  }
+
+  .modal-form { padding: 20px; gap: 16px; }
+
+  .form-grupo {
+    label { font-size: 0.78rem; }
+    input, select { padding: 10px 14px; font-size: 0.88rem; }
+  }
+
+  .modal-acciones { flex-direction: row; justify-content: flex-end; }
+}

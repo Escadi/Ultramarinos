@@ -23,23 +23,37 @@
       </div>
 
       <div class="proveedores-lista">
-        <div class="proveedor-card" *ngFor="let prov of proveedores">
-          <div class="prov-icono" [style.background]="prov.color + '1a'" [style.color]="prov.color">
-            <ion-icon [name]="prov.icono"></ion-icon>
+        <div class="proveedor-card" *ngFor="let prov of proveedores" (click)="verDetalleProveedor(prov)" style="cursor: pointer;">
+          <div class="prov-card-header">
+            <div class="prov-icono" [style.background]="prov.color + '1a'" [style.color]="prov.color">
+              <ion-icon [name]="prov.icono"></ion-icon>
+            </div>
+            <div class="prov-info">
+              <h3 class="prov-nombre">{{ prov.nombre }}</h3>
+              <span class="prov-cat-badge" [style.color]="prov.color" [style.background]="prov.color + '18'">
+                {{ prov.categoria }}
+              </span>
+            </div>
           </div>
-          <div class="prov-info">
-            <p class="prov-nombre">{{ prov.nombre }}</p>
-            <p class="prov-contacto" *ngIf="prov.telefono">
+
+          <!-- Canales de contacto / Detalles claros -->
+          <div class="prov-card-contacto" *ngIf="prov.telefono || prov.email">
+            <a class="contacto-chip tel" *ngIf="prov.telefono" [href]="'tel:' + prov.telefono" (click)="$event.stopPropagation()">
               <ion-icon name="call-outline"></ion-icon>
-              {{ prov.telefono }}
-            </p>
-            <p class="prov-contacto" *ngIf="prov.email">
+              <span>{{ prov.telefono }}</span>
+            </a>
+            <a class="contacto-chip mail" *ngIf="prov.email" [href]="'mailto:' + prov.email" (click)="$event.stopPropagation()">
               <ion-icon name="mail-outline"></ion-icon>
-              {{ prov.email }}
-            </p>
-            <span class="prov-cat-badge" [style.color]="prov.color" [style.background]="prov.color + '18'">
-              {{ prov.categoria }}
-            </span>
+              <span>{{ prov.email }}</span>
+            </a>
+          </div>
+
+          <!-- Acción rápida en la card -->
+          <div class="prov-card-acciones" (click)="$event.stopPropagation()">
+            <button class="btn-prov-pedido" (click)="abrirModalCompra(prov.id)">
+              <ion-icon name="cart-outline"></ion-icon>
+              <span>Nuevo Pedido</span>
+            </button>
           </div>
         </div>
       </div>
@@ -75,8 +89,8 @@
         </div>
       </div>
 
-      <!-- Tabla -->
-      <table class="pedidos-tabla">
+      <!-- Tabla (Tablet / Desktop) -->
+      <table class="pedidos-tabla vista-tabla">
         <thead>
           <tr>
             <th>ID PEDIDO</th>
@@ -87,7 +101,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="fila-pedido" *ngFor="let compra of comprasFiltradas">
+          <tr class="fila-pedido" *ngFor="let compra of comprasFiltradas" (click)="verDetalleCompra(compra)" style="cursor: pointer;">
             <td class="celda-id">{{ compra.id }}</td>
             <td class="celda-proveedor">{{ compra.proveedor }}</td>
             <td class="celda-fecha">{{ compra.fecha }}</td>
@@ -110,65 +124,248 @@
         </tbody>
       </table>
 
+      <!-- Cards de Pedidos (Móvil) -->
+      <div class="pedidos-cards-movil vista-cards">
+        <div class="pedido-card" *ngFor="let compra of comprasFiltradas" (click)="verDetalleCompra(compra)" style="cursor: pointer;">
+          <div class="pedido-card-header">
+            <div class="pedido-id-badge">
+              <ion-icon name="receipt-outline"></ion-icon>
+              <span>{{ compra.id }}</span>
+            </div>
+            <span class="estado-badge" [style.color]="getEstadoColor(compra.estado)"
+              [style.background]="getEstadoColor(compra.estado) + '1a'">
+              <ion-icon [name]="getEstadoIcono(compra.estado)"></ion-icon>
+              {{ compra.estado }}
+            </span>
+          </div>
+
+          <div class="pedido-card-body">
+            <h4 class="pedido-card-proveedor">{{ compra.proveedor }}</h4>
+            <div class="pedido-card-meta">
+              <span class="pedido-fecha">
+                <ion-icon name="calendar-outline"></ion-icon>
+                {{ compra.fecha }}
+              </span>
+              <span class="pedido-total">€{{ compra.total.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pedidos-vacia" *ngIf="comprasFiltradas.length === 0">
+          <ion-icon name="receipt-outline"></ion-icon>
+          <p>No se encontraron pedidos</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════
-       MODAL — Registrar Compra
+       MODAL — Detalle de Compra / Pedido
   ════════════════════════════════════════════════════ -->
-  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="cerrarModal()" class="modal-compra">
+  <ion-modal [isOpen]="isDetalleCompraOpen" (didDismiss)="cerrarDetalleCompra()" class="modern-modal modal-detalle-compra">
     <ng-template>
-      <ion-header>
-        <ion-toolbar class="modal-toolbar">
-          <ion-title>Registrar Compra</ion-title>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="receipt-outline"></ion-icon>
+            Detalle del Pedido
+          </ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="cerrarModal()">
+            <ion-button (click)="cerrarDetalleCompra()" class="btn-modal-cerrar">
               <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="modal-content">
-        <div class="modal-form">
 
-          <div class="form-grupo">
-            <label>Proveedor</label>
-            <select [(ngModel)]="form.proveedorId">
-              <option value="" disabled>Selecciona un proveedor</option>
-              <option *ngFor="let p of proveedores" [value]="p.id">{{ p.nombre }}</option>
-            </select>
-          </div>
-
-          <div class="form-grupo">
-            <label>Concepto</label>
-            <input type="text" [(ngModel)]="form.concepto" placeholder="Ej: Pedido semanal frutas..." />
-          </div>
-
-          <div class="form-fila">
-            <div class="form-grupo">
-              <label>Total (€)</label>
-              <input type="number" [(ngModel)]="form.total" placeholder="0.00" min="0" step="0.01" />
+      <ion-content class="modal-body" *ngIf="compraSeleccionada">
+        <div class="detalle-sheet">
+          <!-- Tarjeta de cabecera -->
+          <div class="detalle-header-card">
+            <div class="detalle-avatar">
+              <ion-icon name="cart"></ion-icon>
             </div>
-            <div class="form-grupo">
-              <label>Estado inicial</label>
-              <select [(ngModel)]="form.estado">
-                <option value="Pendiente">Pendiente</option>
-                <option value="En tránsito">En tránsito</option>
-                <option value="Recibido">Recibido</option>
-              </select>
+            <div class="detalle-header-info">
+              <h2>{{ compraSeleccionada.id }}</h2>
+              <div class="detalle-badges">
+                <span class="id-badge">TOTAL: €{{ compraSeleccionada.total.toFixed(2) }}</span>
+                <span class="estado-badge" [style.color]="getEstadoColor(compraSeleccionada.estado)"
+                  [style.background]="getEstadoColor(compraSeleccionada.estado) + '1a'"
+                  style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
+                  <ion-icon [name]="getEstadoIcono(compraSeleccionada.estado)"></ion-icon>
+                  {{ compraSeleccionada.estado }}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div class="modal-acciones">
-            <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-            <button class="btn-guardar" (click)="guardarCompra()" [disabled]="!form.proveedorId || !form.total">
-              <ion-icon name="checkmark-outline"></ion-icon>
-              Registrar Compra
-            </button>
+          <!-- Datos del Pedido -->
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="information-circle-outline"></ion-icon> Información de la Compra
+            </h4>
+            <div class="info-kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">Proveedor:</span>
+                <span class="kv-val"><ion-icon name="business-outline"></ion-icon> {{ compraSeleccionada.proveedor }}</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Fecha de Registro:</span>
+                <span class="kv-val"><ion-icon name="calendar-outline"></ion-icon> {{ compraSeleccionada.fecha }}</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Estado Actual:</span>
+                <span class="kv-val" [style.color]="getEstadoColor(compraSeleccionada.estado)">{{ compraSeleccionada.estado }}</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Importe Total:</span>
+                <span class="kv-val" style="color: #16a34a; font-weight: 800;">€{{ compraSeleccionada.total.toFixed(2) }}</span>
+              </div>
+              <div class="kv-item full-width" *ngIf="compraSeleccionada.concepto">
+                <span class="kv-label">Concepto:</span>
+                <span class="kv-val">{{ compraSeleccionada.concepto }}</span>
+              </div>
+            </div>
           </div>
-
         </div>
       </ion-content>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarDetalleCompra()">Cerrar</button>
+        <button class="btn-save" (click)="cerrarDetalleCompra(); abrirModalCompra(compraSeleccionada?.proveedorId)">
+          <ion-icon name="cart-outline"></ion-icon> Nuevo Pedido
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL — Detalle de Proveedor
+  ════════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="isDetalleProveedorOpen" (didDismiss)="cerrarDetalleProveedor()" class="modern-modal modal-detalle-proveedor">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="storefront-outline"></ion-icon>
+            Detalle del Proveedor
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarDetalleProveedor()" class="btn-modal-cerrar">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="modal-body" *ngIf="proveedorSeleccionado">
+        <div class="detalle-sheet">
+          <div class="detalle-header-card">
+            <div class="detalle-avatar" [style.background]="proveedorSeleccionado.color + '22'" [style.color]="proveedorSeleccionado.color">
+              <ion-icon [name]="proveedorSeleccionado.icono"></ion-icon>
+            </div>
+            <div class="detalle-header-info">
+              <h2>{{ proveedorSeleccionado.nombre }}</h2>
+              <div class="detalle-badges">
+                <span class="id-badge">ID: {{ proveedorSeleccionado.id }}</span>
+                <span class="estado-badge" [style.color]="proveedorSeleccionado.color" [style.background]="proveedorSeleccionado.color + '18'" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem;">
+                  {{ proveedorSeleccionado.categoria }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="call-outline"></ion-icon> Canales de Contacto
+            </h4>
+            <div class="info-kv-grid">
+              <div class="kv-item" *ngIf="proveedorSeleccionado.telefono">
+                <span class="kv-label">Teléfono Directo:</span>
+                <span class="kv-val"><ion-icon name="call-outline"></ion-icon> {{ proveedorSeleccionado.telefono }}</span>
+              </div>
+              <div class="kv-item" *ngIf="proveedorSeleccionado.email">
+                <span class="kv-label">Correo Electrónico:</span>
+                <span class="kv-val"><ion-icon name="mail-outline"></ion-icon> {{ proveedorSeleccionado.email }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarDetalleProveedor()">Cerrar</button>
+        <button class="btn-save" (click)="cerrarDetalleProveedor(); abrirModalCompra(proveedorSeleccionado?.id)">
+          <ion-icon name="cart-outline"></ion-icon> Registrar Pedido
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL — Registrar Compra
+  ════════════════════════════════════════════════════ -->
+  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="cerrarModal()" class="modern-modal modal-compra">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="cart-outline"></ion-icon>
+            Registrar Compra
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()" class="btn-modal-cerrar">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-body">
+        <div class="detalle-sheet">
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="document-text-outline"></ion-icon> Datos de la Compra
+            </h4>
+            <div class="modal-form">
+              <div class="form-grupo">
+                <label>Proveedor</label>
+                <select [(ngModel)]="form.proveedorId">
+                  <option value="" disabled>Selecciona un proveedor</option>
+                  <option *ngFor="let p of proveedores" [value]="p.id">{{ p.nombre }}</option>
+                </select>
+              </div>
+
+              <div class="form-grupo">
+                <label>Concepto</label>
+                <input type="text" [(ngModel)]="form.concepto" placeholder="Ej: Pedido semanal frutas..." />
+              </div>
+
+              <div class="form-fila">
+                <div class="form-grupo">
+                  <label>Total (€)</label>
+                  <input type="number" [(ngModel)]="form.total" placeholder="0.00" min="0" step="0.01" />
+                </div>
+                <div class="form-grupo">
+                  <label>Estado inicial</label>
+                  <select [(ngModel)]="form.estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En tránsito">En tránsito</option>
+                    <option value="Recibido">Recibido</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-save" (click)="guardarCompra()" [disabled]="!form.proveedorId || !form.total">
+          <ion-icon name="checkmark-outline"></ion-icon>
+          Registrar Compra
+        </button>
+      </div>
     </ng-template>
   </ion-modal>
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { AlertControl } from '../service/alert-control';
 import { Myservice } from '../service/myservice';
 import { CallData } from '../service/dataService/call-data';
@@ -34,8 +35,13 @@ export class DashboardControlPage implements OnInit {
     private router: Router,
     private myService: Myservice,
     private alert: AlertControl,
-    private dataService: CallData
+    private dataService: CallData,
+    private menuCtrl: MenuController
   ) { }
+
+  toggleMenu() {
+    this.menuCtrl.toggle('mobileMenu');
+  }
 
   ngOnInit() {
     this.getAllData();

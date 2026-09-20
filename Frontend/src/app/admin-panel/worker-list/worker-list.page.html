@@ -5,7 +5,6 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Gestión de Empleados</ion-title>
     <ion-buttons slot="end">
       <button class="btn-primary" (click)="openModal()">
         <ion-icon name="add-outline"></ion-icon>
@@ -22,7 +21,8 @@
     <div class="actions-bar">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Buscar por DNI, nombre, email..." [(ngModel)]="searchTerm" (input)="filterWorkers()">
+        <input type="text" placeholder="Buscar por DNI, nombre, email..." [(ngModel)]="searchTerm"
+          (input)="filterWorkers()">
       </div>
       <div class="stats-badge">
         <ion-icon name="people-outline"></ion-icon>
@@ -30,8 +30,8 @@
       </div>
     </div>
 
-    <!-- TABLA PRINCIPAL -->
-    <div class="tabla-card">
+    <!-- TABLA PRINCIPAL (Visible en tablet y desktop) -->
+    <div class="tabla-card vista-tabla">
       <div class="tabla-responsive">
         <table>
           <thead>
@@ -58,7 +58,7 @@
               <td class="id-col">
                 <span class="id-badge">#{{ worker.idEmpleado }}</span>
               </td>
-              
+
               <td>
                 <div class="empleado-info">
                   <div class="avatar-sm">
@@ -69,14 +69,16 @@
                   </div>
                 </div>
               </td>
-              
+
               <td>
                 <div class="contacto-info">
-                  <span class="contact-item"><ion-icon name="mail-outline"></ion-icon> {{ worker.email || 'N/A' }}</span>
-                  <span class="contact-item"><ion-icon name="call-outline"></ion-icon> {{ worker.telefono || 'N/A' }}</span>
+                  <span class="contact-item"><ion-icon name="mail-outline"></ion-icon> {{ worker.email || 'N/A'
+                    }}</span>
+                  <span class="contact-item"><ion-icon name="call-outline"></ion-icon> {{ worker.telefono || 'N/A'
+                    }}</span>
                 </div>
               </td>
-              
+
               <td>
                 <div class="puesto-info">
                   <span class="puesto-cargo">{{ worker.cargo?.nombreCargo || 'Sin Cargo' }}</span>
@@ -84,18 +86,19 @@
                   <span class="puesto-dpto">{{ worker.departamento?.nombreDepartamento || 'Sin Dpto' }}</span>
                 </div>
               </td>
-              
+
               <td>
-                <span class="estado-badge" 
-                      [class.bg-admin]="worker.rol === 'Admin'"
-                      [class.bg-super]="worker.rol === 'Supervisor'"
-                      [class.bg-empleado]="worker.rol === 'Empleado'">
+                <span class="estado-badge" [class.bg-admin]="worker.rol === 'Admin'"
+                  [class.bg-super]="worker.rol === 'Supervisor'" [class.bg-empleado]="worker.rol === 'Empleado'">
                   {{ worker.rol }}
                 </span>
               </td>
 
               <td class="acciones-col">
                 <div class="acciones-grupo">
+                  <button class="btn-icon btn-view" (click)="viewWorker(worker)" title="Ver detalle">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </button>
                   <button class="btn-icon btn-edit" (click)="editWorker(worker)" title="Editar">
                     <ion-icon name="create-outline"></ion-icon>
                   </button>
@@ -121,8 +124,207 @@
       </div>
     </div>
 
+    <!-- ─── CARDS DE EMPLEADOS (Visible solo en móvil) ─── -->
+    <div class="workers-cards-movil vista-cards">
+      <div class="worker-card" *ngFor="let worker of paginatedWorkers" (click)="viewWorker(worker)">
+        <div class="worker-card-header">
+          <div class="worker-info-header">
+            <div class="worker-avatar">
+              <ion-icon name="person"></ion-icon>
+            </div>
+            <div class="worker-nombre-wrap">
+              <h3 class="worker-nombre">{{ worker.nombre }} {{ worker.apellido }}</h3>
+              <span class="id-badge">#{{ worker.idEmpleado }}</span>
+            </div>
+          </div>
+          <span class="estado-badge" [class.bg-admin]="worker.rol === 'Admin'"
+            [class.bg-super]="worker.rol === 'Supervisor'" [class.bg-empleado]="worker.rol === 'Empleado'">
+            {{ worker.rol }}
+          </span>
+        </div>
+
+        <div class="worker-card-detalles">
+          <div class="worker-detalle-item" *ngIf="worker.cargo?.nombreCargo">
+            <span class="detalle-label">
+              <ion-icon name="construct-outline"></ion-icon> Cargo
+            </span>
+            <span class="detalle-valor cargo-destacado">{{ worker.cargo.nombreCargo }}</span>
+          </div>
+
+          <div class="worker-detalle-item" *ngIf="worker.centroTrabajo?.nombreCentro">
+            <span class="detalle-label">
+              <ion-icon name="business-outline"></ion-icon> Centro
+            </span>
+            <span class="detalle-valor">{{ worker.centroTrabajo.nombreCentro }}</span>
+          </div>
+
+          <div class="worker-detalle-item" *ngIf="worker.departamento?.nombreDepartamento">
+            <span class="detalle-label">
+              <ion-icon name="bag-outline"></ion-icon> Dpto.
+            </span>
+            <span class="detalle-valor">{{ worker.departamento.nombreDepartamento }}</span>
+          </div>
+
+          <div class="worker-detalle-item" *ngIf="worker.telefono">
+            <span class="detalle-label">
+              <ion-icon name="call-outline"></ion-icon> Teléfono
+            </span>
+            <span class="detalle-valor contacto-link">{{ worker.telefono }}</span>
+          </div>
+
+          <div class="worker-detalle-item" *ngIf="worker.email">
+            <span class="detalle-label">
+              <ion-icon name="mail-outline"></ion-icon> Email
+            </span>
+            <span class="detalle-valor email-text">{{ worker.email }}</span>
+          </div>
+        </div>
+
+        <div class="worker-card-acciones" (click)="$event.stopPropagation()">
+          <button class="btn-card-accion btn-ver" (click)="viewWorker(worker)" title="Ver detalles">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>Ver Detalles</span>
+          </button>
+          <button class="btn-card-accion btn-editar" (click)="editWorker(worker)" title="Editar empleado">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío móvil -->
+      <div class="cards-vacia" *ngIf="paginatedWorkers.length === 0">
+        <ion-icon name="people-outline"></ion-icon>
+        <p>No se encontraron empleados</p>
+      </div>
+
+      <!-- Paginación móvil -->
+      <div class="paginacion cards-paginacion" *ngIf="totalPages > 1">
+        <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon> Anterior
+        </button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Siguiente <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
   </div>
 </ion-content>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: VER DETALLE DEL EMPLEADO
+════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isDetalleOpen" (didDismiss)="closeDetalle()" class="modern-modal modal-detalle-worker">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-worker-toolbar">
+        <ion-title class="modal-worker-title">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          Detalle del Empleado
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-modal-accion btn-modal-editar" (click)="editFromDetalle()" title="Editar empleado">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+          <ion-button (click)="closeDetalle()" class="btn-modal-cerrar">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-body" *ngIf="workerSeleccionado">
+      <div class="detalle-worker-sheet">
+
+        <!-- Tarjeta de cabecera -->
+        <div class="detalle-header-card">
+          <div class="detalle-avatar">
+            <ion-icon name="person"></ion-icon>
+          </div>
+          <div class="detalle-header-info">
+            <h2>{{ workerSeleccionado.nombre }} {{ workerSeleccionado.apellido }}</h2>
+            <div class="detalle-badges">
+              <span class="id-badge">#{{ workerSeleccionado.idEmpleado }}</span>
+              <span class="estado-badge" [class.bg-admin]="workerSeleccionado.rol === 'Admin'"
+                [class.bg-super]="workerSeleccionado.rol === 'Supervisor'"
+                [class.bg-empleado]="workerSeleccionado.rol === 'Empleado'">
+                {{ workerSeleccionado.rol }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Puesto y Estructura Organizativa -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="briefcase-outline"></ion-icon> Puesto y Organización
+          </h4>
+          <div class="info-kv-grid">
+            <div class="kv-item">
+              <span class="kv-label">Cargo / Puesto:</span>
+              <span class="kv-val destacada">{{ workerSeleccionado.cargo?.nombreCargo || 'Sin Cargo Asignado' }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Centro de Trabajo:</span>
+              <span class="kv-val">{{ workerSeleccionado.centroTrabajo?.nombreCentro || 'Sin Centro' }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Departamento:</span>
+              <span class="kv-val">{{ workerSeleccionado.departamento?.nombreDepartamento || 'Sin Departamento'
+                }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Nivel de Acceso:</span>
+              <span class="kv-val">{{ workerSeleccionado.rol }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canales de contacto -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="call-outline"></ion-icon> Canales de Contacto
+          </h4>
+          <div class="contacto-items">
+            <div class="contacto-fila" *ngIf="workerSeleccionado.telefono">
+              <span class="c-label">Teléfono:</span>
+              <a class="c-valor tel" [href]="'tel:' + workerSeleccionado.telefono">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ workerSeleccionado.telefono }}
+              </a>
+            </div>
+            <div class="contacto-fila" *ngIf="workerSeleccionado.email">
+              <span class="c-label">Email Corporativo:</span>
+              <a class="c-valor mail" [href]="'mailto:' + workerSeleccionado.email">
+                <ion-icon name="mail-outline"></ion-icon>
+                {{ workerSeleccionado.email }}
+              </a>
+            </div>
+            <div class="contacto-fila" *ngIf="workerSeleccionado.direccion">
+              <span class="c-label">Dirección:</span>
+              <span class="c-valor dir">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ workerSeleccionado.direccion }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeDetalle()">Cerrar</button>
+      <button class="btn-save" (click)="editFromDetalle()">
+        <ion-icon name="create-outline"></ion-icon>
+        Editar Empleado
+      </button>
+    </div>
+  </ng-template>
+</ion-modal>
 
 <!-- MODAL FORMULARIO EMPLEADO -->
 <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modern-modal">
@@ -140,7 +342,7 @@
 
     <ion-content class="modal-body">
       <div class="form-container">
-        
+
         <div class="form-row split">
           <div class="form-group">
             <label>Nombre</label>
@@ -242,7 +444,8 @@
 
     <div class="modal-footer">
       <button class="btn-cancel" (click)="closeModal()">Cancelar</button>
-      <button class="btn-save" (click)="createEmpleado()" [disabled]="!empleado.nombre || !empleado.apellido || !empleado.email">
+      <button class="btn-save" (click)="createEmpleado()"
+        [disabled]="!empleado.nombre || !empleado.apellido || !empleado.email">
         <ion-icon name="save-outline"></ion-icon>
         {{ isEditEmpleado ? 'Actualizar' : 'Guardar' }}
       </button>

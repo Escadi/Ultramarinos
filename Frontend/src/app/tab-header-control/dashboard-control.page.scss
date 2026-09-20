@@ -1,141 +1,283 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Topbar / Dashboard Control
+// Topbar / Dashboard Control — Responsive
+// Breakpoints:
+//   Móvil Pixel 8 : ≤ 430px   (412×915 lógicos)
+//   Tablet        : 431px – 991px
+//   Desktop       : ≥ 992px
 // ─────────────────────────────────────────────────────────────────────────────
 
-$verde: #1a7a4a;
+$verde:       #1a7a4a;
 $verde-claro: #e8f5ee;
-$gris-fondo: #f4f6f9;
-$blanco: #ffffff;
-$borde: #e2e8f0;
-$gris: #6b7280;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
-$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+$gris-fondo:  #f4f6f9;
+$blanco:      #ffffff;
+$borde:       #e2e8f0;
+$gris:        #6b7280;
+$sombra:      0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md:   0 4px 20px rgba(0, 0, 0, 0.1);
 
-$mobile: 768px;
+// Breakpoints
+$bp-mobile-max:  430px;   // Pixel 8 y móviles similares
+$bp-tablet-min:  431px;
+$bp-tablet-max:  991px;
+$bp-desktop-min: 992px;
 
 .app-layout {
-  display: flex;
+  display:        flex;
   flex-direction: column;
-  height: 100vh;
-  background: $gris-fondo;
+  height:         100vh;
+  background:     $gris-fondo;
 }
 
-.btn-logout-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  background: #fff5f5;
-  color: #e53935;
-  border: 1.5px solid #fecaca;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
+// ─── Botón cerrar sesión ──────────────────────────────────────────────────────
 
-  ion-icon {
-    font-size: 1.1rem;
-  }
+.btn-logout-top {
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  background:    #fff5f5;
+  color:         #e53935;
+  border:        1.5px solid #fecaca;
+  border-radius: 10px;
+  font-weight:   700;
+  cursor:        pointer;
+  transition:    all 0.2s;
+
+  ion-icon { font-size: 1.1rem; }
 
   &:hover {
-    background: #e53935;
-    color: white;
+    background:  #e53935;
+    color:       white;
     border-color: #e53935;
   }
 }
 
-// ─── Topbar ──────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// TOPBAR — base (valores compartidos)
+// ─────────────────────────────────────────────────────────────────────────────
 
 .topbar {
-  display: flex;
-  align-items: center;
+  display:         flex;
+  align-items:     center;
   justify-content: space-between;
-  height: 64px;
-  background: $blanco;
-  border-bottom: 1px solid $borde;
-  padding: 0 24px;
-  flex-shrink: 0;
-  z-index: 50;
+  background:      $blanco;
+  border-bottom:   1px solid $borde;
+  flex-shrink:     0;
+  z-index:         50;
+  box-shadow:      $sombra;
+  box-sizing:      border-box;
 
-  @media (max-width: $mobile) {
-    padding: 0 16px;
+  // Safe area handling para Android (Pixel 8), iOS y web
+  padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+  padding-left: max(12px, var(--ion-safe-area-left, env(safe-area-inset-left, 0px)));
+  padding-right: max(12px, var(--ion-safe-area-right, env(safe-area-inset-right, 0px)));
+  min-height: calc(58px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+}
+
+// ── Topbar · Móvil Pixel 8 (≤ 430px) ────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .topbar {
+    min-height: calc(56px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+    height: auto;
+    padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+    padding-bottom: 8px;
+    padding-left: max(10px, var(--ion-safe-area-left, env(safe-area-inset-left, 0px)));
+    padding-right: max(10px, var(--ion-safe-area-right, env(safe-area-inset-right, 0px)));
   }
 }
+
+// ── Topbar · Tablet (431px – 991px) ─────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .topbar {
+    min-height: calc(60px + var(--ion-safe-area-top, env(safe-area-inset-top, 0px)));
+    height: auto;
+    padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+    padding-bottom: 6px;
+    padding-left: max(16px, var(--ion-safe-area-left, env(safe-area-inset-left, 0px)));
+    padding-right: max(16px, var(--ion-safe-area-right, env(safe-area-inset-right, 0px)));
+  }
+}
+
+// ── Topbar · Desktop (≥ 992px) ───────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .topbar {
+    height: 64px;
+    padding: 0 24px;
+  }
+}
+
+// ── Fallback Android Capacitor (Garantiza separación de la barra de estado y cámara) ─
+:host-context(.plt-capacitor.plt-android),
+:host-context(.plt-mobile.plt-android),
+:host-context(.plt-android:not(.plt-browser)) {
+  .topbar {
+    padding-top: max(38px, var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px));
+    min-height: calc(56px + max(38px, var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px)));
+  }
+
+  .mobile-menu .mobile-menu-toolbar {
+    padding-top: max(38px, var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOPBAR LEFT — logos contextuales + hamburger
+// ─────────────────────────────────────────────────────────────────────────────
 
 .topbar-left {
-  display: flex;
+  display:     flex;
   align-items: center;
-  gap: 16px;
+  gap:         10px;
+}
 
-  .btn-menu-mobile {
-    display: none;
+// Hamburger: botón moderno y táctil adaptado
+.btn-menu-mobile {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           38px;
+  height:          38px;
+  min-width:       38px;
+  background:      $verde-claro;
+  color:           $verde;
+  border:          1px solid rgba($verde, 0.25);
+  border-radius:   10px;
+  cursor:          pointer;
+  transition:      all 0.2s;
+  flex-shrink:     0;
+  padding:         0;
 
-    @media (max-width: $mobile) {
-      display: block;
-    }
+  ion-icon {
+    font-size: 1.35rem;
   }
 
-  .topbar-logo {
-    height: 50px;
-    cursor: pointer;
-    transition: transform 0.2s;
+  &:hover {
+    background: darken($verde-claro, 4%);
+  }
 
-    &:hover {
-      transform: scale(1.02);
-    }
+  &:active {
+    background: $verde;
+    color: white;
+    transform: scale(0.95);
+  }
+
+  @media (min-width: #{$bp-desktop-min}) {
+    display:    none !important;
+    visibility: hidden !important;
   }
 }
 
-// ─── Nav Tabs ────────────────────────────────────────────────────────────────
+// Logo base
+.topbar-logo {
+  cursor:     pointer;
+  transition: transform 0.2s, opacity 0.2s;
+
+  &:hover { transform: scale(1.03); }
+}
+
+// Logo COMPACTO — solo Pixel 8 y móviles (≤ 430px)
+.topbar-logo--mobile {
+  height: 28px;
+  max-width: 130px;
+  object-fit: contain;
+  display: none;
+
+  @media (max-width: #{$bp-mobile-max}) {
+    display: block;
+  }
+}
+
+// Logo COMPLETO — Tablet y Desktop
+.topbar-logo--full {
+  display: none;
+
+  @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+    display: block;
+    height: 38px;
+  }
+
+  @media (min-width: #{$bp-desktop-min}) {
+    display: block;
+    height: 48px;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOPBAR NAV — navegación horizontal (solo desktop)
+// ─────────────────────────────────────────────────────────────────────────────
 
 .topbar-nav {
-  display: flex;
+  display:     flex;
   align-items: center;
-  gap: 8px;
-  height: 100%;
+  gap:         8px;
+  height:      100%;
 
-  @media (max-width: $mobile) {
+  // Ocultar en móvil y tablet; menú lateral cubre esas pantallas
+  @media (max-width: #{$bp-tablet-max}) {
     display: none;
   }
 
   .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 100%;
-    padding: 0 16px;
+    display:         flex;
+    align-items:     center;
+    gap:             6px;
+    height:          100%;
+    padding:         0 16px;
     text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #64748b;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s;
+    font-size:       0.88rem;
+    font-weight:     600;
+    color:           #64748b;
+    border-bottom:   3px solid transparent;
+    transition:      all 0.2s;
 
     ion-icon {
       font-size: 1.1rem;
-      color: #000000;
+      color:     #000000;
     }
 
     &:hover {
-      color: $verde;
+      color:      $verde;
       background: rgba($verde, 0.04);
     }
 
     &.active {
-      color: $verde;
+      color:              $verde;
       border-bottom-color: $verde;
-      background: rgba($verde, 0.04);
+      background:         rgba($verde, 0.04);
     }
   }
 }
 
-// ─── Topbar Right ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// TOPBAR RIGHT — avatar + logout
+// ─────────────────────────────────────────────────────────────────────────────
 
 .topbar-right {
-  display: flex;
+  display:     flex;
   align-items: center;
-  gap: 16px;
+  gap:         16px;
+}
+
+// Texto del botón logout: visible solo en desktop
+.logout-label {
+  display: none;
+
+  @media (min-width: #{$bp-desktop-min}) {
+    display: inline;
+    font-size: 0.85rem;
+  }
+}
+
+// Padding del botón logout ajustado por pantalla
+@media (max-width: #{$bp-tablet-max}) {
+  .btn-logout-top {
+    padding: 8px 10px;
+    border-radius: 50%;
+    ion-icon { font-size: 1.2rem; }
+  }
+}
+
+@media (min-width: #{$bp-desktop-min}) {
+  .btn-logout-top { padding: 9px 16px; }
 }
 
 .btn-cart {
@@ -439,6 +581,7 @@ $mobile: 768px;
   .mobile-menu-toolbar {
     --background: #{$blanco};
     border-bottom: 1px solid $borde;
+    padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
   }
 
   .mobile-menu-header {

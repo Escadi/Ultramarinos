@@ -1,21 +1,32 @@
 @use 'sass:color';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TPV — Terminal Punto de Venta
+// TPV — Terminal Punto de Venta — Responsive SCSS
+// Breakpoints:
+//   Móvil  : < 576px  (Pixel 8: 412px)
+//   Tablet : 576px – 991px
+//   Desktop: ≥ 992px
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Variables de color
+// ─── Variables de color ───────────────────────────────────────────────────────
 $verde-primario: #2d7a4f;
-$verde-claro: #e8f5ee;
+$verde-claro:    #e8f5ee;
 $naranja-cobrar: #f5a623;
-$naranja-hover: #e0941a;
-$rojo-anular: #e53935;
-$azul-aparcar: #3d5a80;
-$gris-texto: #555;
-$gris-fondo: #f5f6f8;
-$blanco: #ffffff;
-$borde: #e0e0e0;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.08);
+$naranja-hover:  #e0941a;
+$rojo-anular:    #e53935;
+$azul-aparcar:   #3d5a80;
+$gris-texto:     #555;
+$gris-fondo:     #f5f6f8;
+$blanco:         #ffffff;
+$borde:          #e0e0e0;
+$sombra:         0 2px 12px rgba(0, 0, 0, 0.08);
+
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+$bp-mobile-max:  575px;
+$bp-tablet-min:  576px;
+$bp-tablet-max:  991px;
+$bp-desktop-min: 992px;
+
 
 // ─── Toolbar ────────────────────────────────────────────────────────────────
 
@@ -2318,4 +2329,324 @@ $sombra: 0 2px 12px rgba(0, 0, 0, 0.08);
       }
     }
   }
+}
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 1: TOOLBAR
+// -------------------------------------------------------------------------------
+
+// -- Toolbar � M�vil ----------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .tpv-toolbar {
+    padding: 2px 6px;
+
+    .tpv-title { font-size: 0.88rem; ion-icon { font-size: 1rem; } }
+
+    .search-wrapper { display: none; }
+
+    .btn-facturas-tpv { font-size: 0.72rem; height: 30px; --padding-start: 8px; --padding-end: 8px; }
+  }
+}
+
+// -- Toolbar � Tablet ---------------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .tpv-toolbar {
+    padding: 3px 10px;
+
+    .tpv-title { font-size: 1rem; }
+    .search-wrapper { max-width: 320px; margin: 0 10px; }
+    .btn-facturas-tpv { font-size: 0.8rem; height: 33px; }
+  }
+}
+
+// -- Toolbar � Desktop --------------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .tpv-toolbar {
+    padding: 4px 12px;
+
+    .tpv-title { font-size: 1.1rem; }
+    .search-wrapper { max-width: 480px; margin: 0 16px; }
+    .btn-facturas-tpv { font-size: 0.85rem; height: 36px; }
+  }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 2: BARRA DE SESIONES MULTIUSUARIO
+// -------------------------------------------------------------------------------
+
+// -- Sesiones � M�vil ---------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .sesiones-bar { padding: 6px 8px; gap: 6px; }
+
+  .sesion-tab {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    gap: 4px;
+
+    span { max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  }
+
+  .nueva-sesion-btn {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    gap: 4px;
+
+    span { display: none; }
+  }
+}
+
+// -- Sesiones � Tablet --------------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .sesiones-bar     { padding: 7px 12px; gap: 8px; }
+  .sesion-tab        { font-size: 0.8rem; padding: 6px 12px; }
+  .nueva-sesion-btn  { font-size: 0.8rem; padding: 6px 10px; }
+}
+
+// -- Sesiones � Desktop -------------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .sesiones-bar     { padding: 8px 16px; gap: 10px; }
+  .sesion-tab        { font-size: 0.85rem; padding: 6px 14px; }
+  .nueva-sesion-btn  { font-size: 0.85rem; padding: 6px 14px; }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 3: LAYOUT PRINCIPAL (panel-catalogo / panel-ticket)
+// -------------------------------------------------------------------------------
+
+// -- Layout � M�vil -----------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .tpv-layout { flex-direction: column; }
+
+  .panel-catalogo {
+    padding: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .panel-ticket {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    max-height: 40vh;
+    border-left: none;
+    border-top: 2px solid $borde;
+    padding: 10px;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// -- Layout � Tablet ----------------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .tpv-layout { flex-direction: row; }
+  .panel-catalogo { padding: 12px; }
+  .panel-ticket { width: 260px; min-width: 240px; padding: 12px; }
+}
+
+// -- Layout � Desktop ---------------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .tpv-layout { flex-direction: row; }
+  .panel-catalogo { padding: 16px; }
+  .panel-ticket { width: 300px; min-width: 280px; padding: 16px; }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 4: GRID DE PRODUCTOS
+// -------------------------------------------------------------------------------
+
+// -- Productos � M�vil --------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
+
+  .categorias-scroll { gap: 5px; margin-bottom: 10px; }
+  .categoria-chip { font-size: 0.73rem; }
+
+  .producto-card .producto-info {
+    padding: 5px 5px 0;
+
+    .producto-nombre   { font-size: 0.68rem; }
+    .producto-precio   { font-size: 0.82rem; }
+    .producto-categoria { font-size: 0.6rem; }
+  }
+}
+
+// -- Productos � Tablet -------------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
+
+  .producto-card .producto-info {
+    .producto-nombre { font-size: 0.74rem; }
+    .producto-precio { font-size: 0.9rem; }
+  }
+}
+
+// -- Productos � Desktop ------------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 5: ENTRADA MANUAL + TECLADO NUM�RICO
+// -------------------------------------------------------------------------------
+
+// -- Entrada Manual � M�vil ---------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .display-manual {
+    padding: 10px;
+    border-radius: 10px;
+
+    .display-label { font-size: 0.68rem; margin-bottom: 6px; }
+    .display-valor { padding: 8px 12px; min-height: 42px; }
+    .valor-texto   { font-size: 1.4rem; }
+  }
+
+  .teclado {
+    .teclado-grid .key { height: 44px; font-size: 1.1rem; border-radius: 8px; }
+    .teclado-acciones { .key-borrar, .key-intro { height: 44px; } }
+  }
+}
+
+// -- Entrada Manual � Tablet --------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .display-manual { padding: 12px; }
+  .valor-texto    { font-size: 1.6rem; }
+  .teclado .teclado-grid .key { height: 50px; font-size: 1.15rem; }
+}
+
+// -- Entrada Manual � Desktop -------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .display-manual { padding: 16px; }
+  .valor-texto    { font-size: 1.8rem; }
+  .teclado .teclado-grid .key { height: 56px; font-size: 1.25rem; }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 6: PANEL TICKET
+// -------------------------------------------------------------------------------
+
+// -- Panel Ticket � M�vil -----------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .panel-ticket {
+    .ticket-header .ticket-titulo  { font-size: 0.9rem; }
+    .ticket-header .ticket-cliente { font-size: 0.7rem; }
+
+    .linea-ticket {
+      gap: 7px;
+      .linea-img { width: 32px; height: 32px; }
+      .linea-info .linea-nombre { font-size: 0.7rem; }
+      .linea-info .linea-peso   { font-size: 0.63rem; }
+      .linea-controles .linea-subtotal { font-size: 0.78rem; }
+    }
+
+    .ticket-totales .total-linea {
+      font-size: 0.8rem;
+      &.total-grande { font-size: 1rem; }
+    }
+
+    .ticket-acciones {
+      margin-top: 8px;
+      gap: 6px;
+      .acciones-secundarias button { padding: 8px 6px; font-size: 0.74rem; }
+      .btn-cobrar { padding: 10px; font-size: 0.88rem; }
+    }
+  }
+}
+
+// -- Panel Ticket � Tablet ----------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .panel-ticket {
+    .ticket-header .ticket-titulo { font-size: 1rem; }
+    .linea-ticket .linea-img { width: 36px; height: 36px; }
+    .ticket-totales .total-linea.total-grande { font-size: 1.1rem; }
+    .ticket-acciones {
+      .acciones-secundarias button { padding: 9px 7px; font-size: 0.78rem; }
+      .btn-cobrar { padding: 12px; font-size: 0.92rem; }
+    }
+  }
+}
+
+// -- Panel Ticket � Desktop ---------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .panel-ticket {
+    .ticket-header .ticket-titulo { font-size: 1.1rem; }
+    .linea-ticket .linea-img { width: 40px; height: 40px; }
+    .ticket-totales .total-linea.total-grande { font-size: 1.2rem; }
+    .ticket-acciones {
+      .acciones-secundarias button { padding: 10px 8px; font-size: 0.82rem; }
+      .btn-cobrar { padding: 14px; font-size: 1rem; }
+    }
+  }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 7: MODAL COBRO
+// -------------------------------------------------------------------------------
+
+// -- Modal Cobro � M�vil ------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .modal-cobro {
+    --width: 100%;
+    --height: 95%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .cobro-container { padding: 12px; }
+  .cobro-total-banner .cobro-total-label { font-size: 0.75rem; }
+  .cobro-total-banner .cobro-total-valor { font-size: 1.8rem; }
+  .cobro-tab { padding: 8px 10px; font-size: 0.8rem; }
+  .billete-btn { padding: 8px 10px; font-size: 0.85rem; }
+  .btn-confirmar-cobro { padding: 13px; font-size: 0.9rem; }
+}
+
+// -- Modal Cobro � Tablet -----------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .modal-cobro { --width: 90%; --height: 90%; --border-radius: 16px; }
+  .cobro-container { padding: 16px; }
+  .cobro-total-banner .cobro-total-valor { font-size: 2rem; }
+  .cobro-tab { padding: 10px 14px; font-size: 0.85rem; }
+}
+
+// -- Modal Cobro � Desktop ----------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .modal-cobro { --width: 520px; --height: auto; --border-radius: 20px; }
+  .cobro-container { padding: 20px; }
+  .cobro-total-banner .cobro-total-valor { font-size: 2.2rem; }
+}
+
+
+// -------------------------------------------------------------------------------
+// RESPONSIVE � SECCI�N 8: MODALES CLIENTE Y PESO
+// -------------------------------------------------------------------------------
+
+// -- Modales � M�vil ----------------------------------------------------------
+@media (max-width: #{$bp-mobile-max}) {
+  .modal-cliente { --width: 100%; --height: 90%; --border-radius: 16px 16px 0 0; }
+  .cliente-panel { padding: 12px; gap: 12px; }
+  .cliente-input { padding: 9px 10px; font-size: 0.85rem; }
+  .btn-cliente-manual { padding: 10px; font-size: 0.85rem; }
+
+  .modal-peso-overlay .modal-peso-card { width: 95%; padding: 14px; border-radius: 14px; }
+  .modal-peso-display { padding: 14px 16px; }
+  .modal-peso-valor   { font-size: 2rem; }
+  .modal-teclado-grid .modal-key { height: 44px; font-size: 1.1rem; }
+  .modal-key-confirmar { padding: 10px 12px; font-size: 0.85rem; }
+}
+
+// -- Modales � Tablet ---------------------------------------------------------
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .modal-cliente { --width: 420px; --height: 85%; --border-radius: 16px; }
+  .modal-peso-overlay .modal-peso-card { width: 380px; }
+  .modal-teclado-grid .modal-key { height: 50px; font-size: 1.15rem; }
+}
+
+// -- Modales � Desktop --------------------------------------------------------
+@media (min-width: #{$bp-desktop-min}) {
+  .modal-cliente { --width: 440px; --height: auto; --border-radius: 16px; }
+  .modal-peso-overlay .modal-peso-card { width: 400px; }
+  .modal-teclado-grid .modal-key { height: 56px; font-size: 1.25rem; }
 }

@@ -1007,3 +1007,432 @@ $lc-cols: 1fr 60px 110px 70px 110px;
     padding: 20px !important;
   }
 }
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 1: TOOLBAR Y KPI (facturas)
+// =============================================================================
+
+// -- Movil (< 576px) ----------------------------------------------------------
+@media (max-width: 575px) {
+  .facturas-toolbar {
+    --min-height: 60px;
+    padding: 0 10px;
+  }
+
+  .facturas-title,
+  ion-toolbar.facturas-toolbar ion-title::part(native) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .title-left h1 {
+    font-size: 1.15rem;
+  }
+
+  .kpi-card {
+    min-width: unset;
+    width: 100%;
+    padding: 8px 12px;
+    gap: 10px;
+    border-radius: 10px;
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+    }
+
+    .kpi-valor {
+      font-size: 1.1rem;
+    }
+  }
+
+  .btn-volver-tpv {
+    height: 32px;
+    font-size: 0.78rem;
+    --padding-start: 8px;
+    --padding-end: 10px;
+  }
+}
+
+// -- Tablet (576px - 991px) ---------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .facturas-toolbar {
+    --min-height: 70px;
+    padding: 0 16px;
+  }
+
+  .title-left h1 {
+    font-size: 1.3rem;
+  }
+
+  .kpi-card {
+    min-width: 190px;
+    padding: 10px 16px;
+
+    .kpi-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .kpi-valor {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// -- Desktop (>= 992px) -------------------------------------------------------
+@media (min-width: 992px) {
+  .facturas-toolbar {
+    --min-height: 80px;
+    padding: 0 24px;
+  }
+
+  .title-left h1 {
+    font-size: 1.45rem;
+  }
+
+  .kpi-card {
+    min-width: 220px;
+    padding: 12px 20px;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 2: FILTROS (facturas)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .facturas-container {
+    padding: 10px 10px;
+    gap: 12px;
+  }
+
+  .filtros-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .fecha-range {
+    width: 100%;
+
+    .fecha-btn {
+      flex: 1;
+      justify-content: center;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+    }
+  }
+
+  .filtro-input,
+  .filtro-select {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  .filtros-acciones {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    .btn-limpiar,
+    .btn-aplicar {
+      width: 100%;
+      justify-content: center;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .facturas-container {
+    padding: 14px 16px;
+    gap: 14px;
+  }
+
+  .filtros-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .filtros-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .facturas-container {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+
+  .filtros-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .filtros-row {
+    grid-template-columns: auto 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .filtros-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 3: TABLA DE FACTURAS (facturas)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .tabla-card {
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    min-width: 560px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+
+  .factura-id {
+    font-size: 0.76rem;
+  }
+
+  .cliente-nombre {
+    font-size: 0.78rem;
+  }
+
+  .total-valor {
+    font-size: 0.82rem;
+  }
+
+  .estado-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .btn-accion {
+    width: 26px;
+    height: 26px;
+    font-size: 0.85rem;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .tabla-card {
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    min-width: 680px;
+    padding: 10px 16px;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .tabla-card {
+    border-radius: 14px;
+  }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    padding: 12px 20px;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 4: PAGINACION (facturas)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .paginacion-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px 16px;
+  }
+
+  .paginacion-info {
+    font-size: 0.74rem;
+    text-align: center;
+  }
+
+  .pag-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.78rem;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .paginacion-row {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px 4px;
+  }
+
+  .pag-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.82rem;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .paginacion-row {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 6px 4px;
+  }
+
+  .pag-btn {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 5: MODAL DETALLE DE FACTURA (facturas)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .modal-detalle-factura {
+    --width: 100%;
+    --border-radius: 16px 16px 0 0;
+    --max-height: 94vh;
+  }
+
+  .modal-detalle-toolbar {
+    padding: 0 4px;
+  }
+
+  .modal-detalle-title {
+    font-size: 0.88rem;
+    padding-inline-start: 8px;
+  }
+
+  .btn-modal-accion {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    gap: 4px;
+
+    span { display: none; }
+  }
+
+  .btn-modal-cerrar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .factura-print-area {
+    margin: 8px;
+    padding: 14px 10px;
+    border-radius: 10px;
+  }
+
+  .factura-empresa {
+    gap: 10px;
+
+    .empresa-logo {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
+
+    .empresa-info h2 { font-size: 1rem; }
+    .empresa-info p { font-size: 0.72rem; }
+  }
+
+  .factura-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .lineas-tabla {
+    overflow-x: auto;
+
+    .lineas-cabecera,
+    .linea-fila {
+      min-width: 440px;
+      padding: 6px 8px;
+      font-size: 0.75rem;
+    }
+  }
+
+  .factura-totales {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .modal-detalle-factura {
+    --width: 90%;
+    --border-radius: 14px;
+  }
+
+  .factura-print-area {
+    margin: 14px;
+    padding: 20px 22px;
+  }
+
+  .factura-info-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .modal-detalle-factura {
+    --width: min(760px, 96vw);
+    --border-radius: 18px;
+  }
+
+  .factura-print-area {
+    margin: 20px;
+    padding: 28px 32px;
+  }
+
+  .factura-info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

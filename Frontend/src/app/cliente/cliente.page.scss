@@ -139,14 +139,6 @@ ion-toolbar.clientes-toolbar ion-title::part(native) {
   gap: 16px;
   align-items: end;
   margin-bottom: 16px;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .filtro-grupo {
@@ -541,5 +533,890 @@ $col-template: 120px 2fr 2fr 200px 120px 140px 90px;
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// ─── Cards de Clientes para Móvil (Base) ─────────────────────────────────────
+
+.vista-cards {
+  display: none; // Oculto por defecto en tablet y web
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cliente-card {
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  padding: 16px;
+  box-shadow: $sombra;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.cliente-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cliente-info-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+
+  .cliente-avatar {
+    width: 44px;
+    height: 44px;
+    background: $verde-claro;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $verde;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+}
+
+.cliente-nombres-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+
+  .cliente-nombre-completo {
+    margin: 0;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+}
+
+.cliente-card-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: $gris-fondo;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.cliente-detalle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  .detalle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: $gris;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    ion-icon { font-size: 0.78rem; }
+  }
+
+  .detalle-valor {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    word-break: break-word;
+
+    &.contacto-destacado {
+      color: $verde;
+      font-weight: 700;
+    }
+  }
+}
+
+.cliente-card-acciones {
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #f3f4f6;
+
+  .btn-card-accion {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+
+    ion-icon { font-size: 0.95rem; }
+
+    &.btn-ver {
+      background: $verde-claro;
+      color: $verde;
+      &:hover { background: $verde; color: $blanco; }
+    }
+
+    &.btn-editar {
+      background: #f1f5f9;
+      color: #475569;
+      &:hover { background: #475569; color: $blanco; }
+    }
+  }
+}
+
+.cards-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 16px;
+  background: $blanco;
+  border-radius: 14px;
+  border: 1px solid $borde;
+  color: $gris;
+
+  ion-icon { font-size: 2.6rem; color: $gris; }
+  p { margin: 0; font-size: 0.9rem; font-weight: 500; }
+}
+
+.cards-footer {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 16px;
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 1: TOOLBAR Y KPI (cliente)
+// =============================================================================
+
+// -- Movil (< 576px) ----------------------------------------------------------
+@media (max-width: 575px) {
+  .clientes-toolbar {
+    --min-height: 60px;
+    padding: 0 10px;
+  }
+
+  .clientes-title,
+  ion-toolbar.clientes-toolbar ion-title::part(native) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .title-left h1 {
+    font-size: 1.15rem;
+  }
+
+  .kpi-card {
+    min-width: unset;
+    width: 100%;
+    padding: 8px 12px;
+    gap: 10px;
+    border-radius: 10px;
+
+    .kpi-icon {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+    }
+
+    .kpi-valor {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+// -- Tablet (576px - 991px) ---------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .clientes-toolbar {
+    --min-height: 70px;
+    padding: 0 16px;
+  }
+
+  .title-left h1 {
+    font-size: 1.3rem;
+  }
+
+  .kpi-card {
+    min-width: 190px;
+    padding: 10px 16px;
+  }
+}
+
+// -- Desktop (>= 992px) -------------------------------------------------------
+@media (min-width: 992px) {
+  .clientes-toolbar {
+    --min-height: 80px;
+    padding: 0 24px;
+  }
+
+  .title-left h1 {
+    font-size: 1.45rem;
+  }
+
+  .kpi-card {
+    min-width: 220px;
+    padding: 12px 20px;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 2: FILTROS (cliente)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .clientes-container {
+    padding: 10px 10px;
+    gap: 12px;
+  }
+
+  .filtros-card {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .filtro-input,
+  .filtro-select {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  .filtros-acciones {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    .btn-limpiar,
+    .btn-aplicar {
+      width: 100%;
+      justify-content: center;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .clientes-container {
+    padding: 14px 16px;
+    gap: 14px;
+  }
+
+  .filtros-card {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .filtros-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .clientes-container {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+
+  .filtros-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .filtros-row {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .filtros-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 3: TABLA Y CARDS DE CLIENTES (cliente)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .vista-tabla {
+    display: none !important;
+  }
+
+  .vista-cards {
+    display: flex !important;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .vista-cards {
+    display: none !important;
+  }
+
+  .vista-tabla {
+    display: block !important;
+  }
+
+  .tabla-card {
+    border-radius: 12px;
+    overflow-x: auto;
+  }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    min-width: 700px;
+    padding: 10px 14px;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .vista-cards {
+    display: none !important;
+  }
+
+  .vista-tabla {
+    display: block !important;
+  }
+
+  .tabla-card {
+    border-radius: 14px;
+  }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    padding: 12px 20px;
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 4: PAGINACION (cliente)
+// =============================================================================
+
+// -- Movil --------------------------------------------------------------------
+@media (max-width: 575px) {
+  .tabla-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .page-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
+}
+
+// -- Tablet -------------------------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .tabla-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 16px;
+  }
+
+  .page-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+// -- Desktop ------------------------------------------------------------------
+@media (min-width: 992px) {
+  .tabla-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px 20px;
+  }
+
+  .page-btn {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+// =============================================================================
+// MODALES: VER DETALLE Y EDICIÓN DE CLIENTE (Base)
+// =============================================================================
+
+.modal-detalle-cliente,
+.modal-editar-cliente {
+  --width: min(600px, 94vw);
+  --border-radius: 16px;
+  --max-height: 90vh;
+}
+
+.modal-cliente-toolbar {
+  --background: #{$blanco};
+  --border-color: #{$borde};
+  border-bottom: 1px solid $borde;
+  padding: 0 8px;
+}
+
+.modal-cliente-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: $verde;
+  }
+}
+
+.btn-modal-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+
+  ion-icon { font-size: 0.95rem; }
+
+  &.btn-modal-editar {
+    background: $verde-claro;
+    color: $verde;
+    border-color: rgba($verde, 0.3);
+
+    &:hover {
+      background: $verde;
+      color: white;
+    }
+  }
+}
+
+.btn-modal-cerrar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid $borde;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: $gris;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+}
+
+.modal-cliente-content {
+  --background: #{$gris-fondo};
+}
+
+// Detalle Sheet
+.detalle-cliente-sheet {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detalle-header-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: $blanco;
+  border: 1px solid $borde;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: $sombra;
+
+  .detalle-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: $verde-claro;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: $verde;
+    flex-shrink: 0;
+  }
+
+  .detalle-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.25;
+    }
+
+    .detalle-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.detalle-secciones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  .detalle-bloque {
+    background: $blanco;
+    border: 1px solid $borde;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .bloque-titulo {
+      margin: 0;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: $gris;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      ion-icon { font-size: 0.95rem; color: $verde; }
+    }
+
+    .bloque-texto {
+      margin: 0;
+      font-size: 0.86rem;
+      color: #374151;
+      line-height: 1.45;
+    }
+  }
+}
+
+.contacto-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .contacto-fila {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+
+    .c-label {
+      color: $gris;
+      font-size: 0.76rem;
+      min-width: 60px;
+    }
+
+    .c-valor {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      text-decoration: none;
+      word-break: break-all;
+
+      ion-icon { font-size: 0.85rem; }
+
+      &.tel {
+        color: #15803d;
+        &:hover { text-decoration: underline; }
+      }
+
+      &.mail {
+        color: #1d4ed8;
+        &:hover { text-decoration: underline; }
+      }
+    }
+  }
+}
+
+.info-kv-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .kv-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.82rem;
+
+    .kv-label {
+      color: $gris;
+      font-size: 0.76rem;
+    }
+
+    .kv-val {
+      font-weight: 600;
+      color: #111827;
+
+      &.total-destacado {
+        font-weight: 800;
+        color: $verde;
+        font-size: 0.92rem;
+      }
+    }
+  }
+}
+
+// Modal Form (Edición)
+.modal-form-wrap {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #374151;
+  }
+
+  input, select, textarea {
+    padding: 9px 12px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    color: #111827;
+    background: $blanco;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: $verde;
+      box-shadow: 0 0 0 3px rgba($verde, 0.08);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .input-icon-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    background: $blanco;
+    overflow: hidden;
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: $verde;
+      box-shadow: 0 0 0 3px rgba($verde, 0.08);
+    }
+
+    ion-icon {
+      padding: 0 10px;
+      color: $gris;
+      font-size: 1rem;
+    }
+
+    input {
+      border: none;
+      border-radius: 0;
+      padding-left: 0;
+      flex: 1;
+
+      &:focus {
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.modal-form-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+  border-top: 1px solid $borde;
+
+  .btn-modal-cancelar {
+    padding: 9px 16px;
+    border: 1.5px solid $borde;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: $gris;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: $blanco;
+      color: #374151;
+    }
+  }
+
+  .btn-modal-guardar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 20px;
+    border: none;
+    border-radius: 8px;
+    background: $verde;
+    color: white;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 3px 10px rgba($verde, 0.3);
+
+    ion-icon { font-size: 1rem; }
+
+    &:hover:not(:disabled) {
+      background: darken($verde, 6%);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+}
+
+
+// =============================================================================
+// RESPONSIVE -- SECCION 5: MODALES DE CLIENTE (DETALLE Y EDICIÓN)
+// =============================================================================
+
+// -- Movil (< 576px) ----------------------------------------------------------
+@media (max-width: 575px) {
+  .modal-detalle-cliente,
+  .modal-editar-cliente {
+    --width: 100%;
+    --border-radius: 16px 16px 0 0;
+    --max-height: 94vh;
+  }
+
+  .detalle-secciones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-fila {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .modal-form-acciones {
+    flex-direction: column;
+    gap: 8px;
+
+    .btn-modal-cancelar,
+    .btn-modal-guardar {
+      width: 100%;
+      justify-content: center;
+      padding: 10px;
+    }
+  }
+
+  .btn-modal-accion span {
+    display: none;
+  }
+}
+
+// -- Tablet (576px - 991px) ---------------------------------------------------
+@media (min-width: 576px) and (max-width: 991px) {
+  .modal-detalle-cliente,
+  .modal-editar-cliente {
+    --width: 90%;
+    --border-radius: 14px;
+  }
+}
+
+// -- Desktop (>= 992px) -------------------------------------------------------
+@media (min-width: 992px) {
+  .modal-detalle-cliente,
+  .modal-editar-cliente {
+    --width: 580px;
+    --border-radius: 16px;
   }
 }

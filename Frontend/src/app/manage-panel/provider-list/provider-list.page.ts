@@ -34,6 +34,8 @@ export class ProviderListPage implements OnInit {
 
   // VARIABLES DE LOS MODAL
   isModalOpen: boolean = false;
+  isDetalleOpen: boolean = false;
+  proveedorSeleccionado: any = null;
 
   constructor(
     private router: Router,
@@ -127,6 +129,24 @@ export class ProviderListPage implements OnInit {
     };
     this.updateProveedor = proveedor.CifProveedor;
     this.openModal();
+  }
+
+  viewProveedor(proveedor: any) {
+    this.proveedorSeleccionado = { ...proveedor };
+    this.isDetalleOpen = true;
+  }
+
+  closeDetalle() {
+    this.isDetalleOpen = false;
+    this.proveedorSeleccionado = null;
+  }
+
+  editFromDetalle() {
+    if (this.proveedorSeleccionado) {
+      const p = { ...this.proveedorSeleccionado };
+      this.closeDetalle();
+      this.editProveedor(p);
+    }
   }
 
   // ─── CRUD OPERATIONS ──────────────────────────────────────────────────────

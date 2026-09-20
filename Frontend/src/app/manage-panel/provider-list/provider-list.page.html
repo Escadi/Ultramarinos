@@ -5,7 +5,6 @@
         <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Gestión de Proveedores</ion-title>
     <ion-buttons slot="end">
       <button class="btn-primary" (click)="openModal()">
         <ion-icon name="add-outline"></ion-icon>
@@ -22,7 +21,8 @@
     <div class="actions-bar">
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Buscar por CIF, Nombre, Categoría..." [(ngModel)]="searchTerm" (input)="filterProveedores()">
+        <input type="text" placeholder="Buscar por CIF, Nombre, Categoría..." [(ngModel)]="searchTerm"
+          (input)="filterProveedores()">
       </div>
       <div class="stats-badge">
         <ion-icon name="business-outline"></ion-icon>
@@ -30,8 +30,8 @@
       </div>
     </div>
 
-    <!-- TABLA PRINCIPAL -->
-    <div class="tabla-card">
+    <!-- TABLA PRINCIPAL (Visible en tablet y desktop) -->
+    <div class="tabla-card vista-tabla">
       <div class="tabla-responsive">
         <table>
           <thead>
@@ -58,7 +58,7 @@
               <td class="id-col">
                 <span class="id-badge">{{ p.CifProveedor }}</span>
               </td>
-              
+
               <td>
                 <div class="empleado-info">
                   <div class="avatar-sm">
@@ -69,18 +69,18 @@
                   </div>
                 </div>
               </td>
-              
+
               <td>
                 <div class="contacto-info">
                   <span class="contact-item"><ion-icon name="mail-outline"></ion-icon> {{ p.email || 'N/A' }}</span>
                   <span class="contact-item"><ion-icon name="call-outline"></ion-icon> {{ p.telefono || 'N/A' }}</span>
                 </div>
               </td>
-              
+
               <td>
                 <span class="direccion-text">{{ p.direccion || 'No especificada' }}</span>
               </td>
-              
+
               <td>
                 <span class="estado-badge bg-categoria">
                   <ion-icon name="pricetag-outline"></ion-icon>
@@ -90,6 +90,9 @@
 
               <td class="acciones-col">
                 <div class="acciones-grupo">
+                  <button class="btn-icon btn-view" (click)="viewProveedor(p)" title="Ver detalle">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </button>
                   <button class="btn-icon btn-edit" (click)="editProveedor(p)" title="Editar">
                     <ion-icon name="create-outline"></ion-icon>
                   </button>
@@ -115,8 +118,181 @@
       </div>
     </div>
 
+    <!-- ─── CARDS DE PROVEEDORES (Visible solo en móvil) ─── -->
+    <div class="proveedores-cards-movil vista-cards">
+      <div class="prov-card" *ngFor="let p of paginatedProveedores" (click)="viewProveedor(p)">
+        <div class="prov-card-header">
+          <div class="prov-info-header">
+            <div class="prov-avatar">
+              <ion-icon name="storefront"></ion-icon>
+            </div>
+            <div class="prov-nombre-wrap">
+              <h3 class="prov-nombre">{{ p.nombre }}</h3>
+              <span class="id-badge">{{ p.CifProveedor }}</span>
+            </div>
+          </div>
+          <span class="estado-badge bg-categoria" *ngIf="p.categoria?.nombreCategoria">
+            <ion-icon name="pricetag-outline"></ion-icon>
+            {{ p.categoria.nombreCategoria }}
+          </span>
+        </div>
+
+        <div class="prov-card-detalles">
+          <div class="prov-detalle-item" *ngIf="p.telefono">
+            <span class="detalle-label">
+              <ion-icon name="call-outline"></ion-icon> Teléfono
+            </span>
+            <span class="detalle-valor contacto-link">{{ p.telefono }}</span>
+          </div>
+
+          <div class="prov-detalle-item" *ngIf="p.email">
+            <span class="detalle-label">
+              <ion-icon name="mail-outline"></ion-icon> Email
+            </span>
+            <span class="detalle-valor">{{ p.email }}</span>
+          </div>
+
+          <div class="prov-detalle-item" *ngIf="p.direccion">
+            <span class="detalle-label">
+              <ion-icon name="location-outline"></ion-icon> Dirección
+            </span>
+            <span class="detalle-valor">{{ p.direccion }}</span>
+          </div>
+        </div>
+
+        <div class="prov-card-acciones" (click)="$event.stopPropagation()">
+          <button class="btn-card-accion btn-ver" (click)="viewProveedor(p)" title="Ver detalles">
+            <ion-icon name="eye-outline"></ion-icon>
+            <span>Ver Detalles</span>
+          </button>
+          <button class="btn-card-accion btn-editar" (click)="editProveedor(p)" title="Editar proveedor">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Estado vacío móvil -->
+      <div class="cards-vacia" *ngIf="paginatedProveedores.length === 0">
+        <ion-icon name="business-outline"></ion-icon>
+        <p>No se encontraron proveedores</p>
+      </div>
+
+      <!-- Paginación móvil -->
+      <div class="paginacion cards-paginacion" *ngIf="totalPages > 1">
+        <button class="btn-page" (click)="prevPage()" [disabled]="currentPage === 1">
+          <ion-icon name="chevron-back-outline"></ion-icon> Anterior
+        </button>
+        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <button class="btn-page" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          Siguiente <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
   </div>
 </ion-content>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL: VER DETALLE DEL PROVEEDOR
+════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isDetalleOpen" (didDismiss)="closeDetalle()" class="modern-modal modal-detalle-proveedor">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="modal-prov-toolbar">
+        <ion-title class="modal-prov-title">
+          <ion-icon name="storefront-outline"></ion-icon>
+          Detalle del Proveedor
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-modal-accion btn-modal-editar" (click)="editFromDetalle()" title="Editar proveedor">
+            <ion-icon name="create-outline"></ion-icon>
+            <span>Editar</span>
+          </button>
+          <ion-button (click)="closeDetalle()" class="btn-modal-cerrar">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="modal-body" *ngIf="proveedorSeleccionado">
+      <div class="detalle-prov-sheet">
+
+        <!-- Tarjeta de cabecera -->
+        <div class="detalle-header-card">
+          <div class="detalle-avatar">
+            <ion-icon name="storefront"></ion-icon>
+          </div>
+          <div class="detalle-header-info">
+            <h2>{{ proveedorSeleccionado.nombre }}</h2>
+            <div class="detalle-badges">
+              <span class="id-badge">{{ proveedorSeleccionado.CifProveedor }}</span>
+              <span class="estado-badge bg-categoria" *ngIf="proveedorSeleccionado.categoria?.nombreCategoria">
+                <ion-icon name="pricetag-outline"></ion-icon>
+                {{ proveedorSeleccionado.categoria.nombreCategoria }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canales de contacto -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="call-outline"></ion-icon> Canales de Contacto
+          </h4>
+          <div class="contacto-items">
+            <div class="contacto-fila" *ngIf="proveedorSeleccionado.telefono">
+              <span class="c-label">Teléfono:</span>
+              <a class="c-valor tel" [href]="'tel:' + proveedorSeleccionado.telefono">
+                <ion-icon name="call-outline"></ion-icon>
+                {{ proveedorSeleccionado.telefono }}
+              </a>
+            </div>
+            <div class="contacto-fila" *ngIf="proveedorSeleccionado.email">
+              <span class="c-label">Email:</span>
+              <a class="c-valor mail" [href]="'mailto:' + proveedorSeleccionado.email">
+                <ion-icon name="mail-outline"></ion-icon>
+                {{ proveedorSeleccionado.email }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Información de Ubicación y Fiscal -->
+        <div class="detalle-bloque">
+          <h4 class="bloque-titulo">
+            <ion-icon name="business-outline"></ion-icon> Información Fiscal y Ubicación
+          </h4>
+          <div class="info-kv-grid">
+            <div class="kv-item">
+              <span class="kv-label">CIF / NIF:</span>
+              <span class="kv-val">{{ proveedorSeleccionado.CifProveedor }}</span>
+            </div>
+            <div class="kv-item">
+              <span class="kv-label">Categoría:</span>
+              <span class="kv-val">{{ proveedorSeleccionado.categoria?.nombreCategoria || 'Sin categorizar' }}</span>
+            </div>
+            <div class="kv-item full-width" *ngIf="proveedorSeleccionado.direccion">
+              <span class="kv-label">Dirección Fiscal / Almacén:</span>
+              <span class="kv-val"><ion-icon name="location-outline"></ion-icon> {{ proveedorSeleccionado.direccion
+                }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </ion-content>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeDetalle()">Cerrar</button>
+      <button class="btn-save" (click)="editFromDetalle()">
+        <ion-icon name="create-outline"></ion-icon>
+        Editar Proveedor
+      </button>
+    </div>
+  </ng-template>
+</ion-modal>
 
 <!-- MODAL FORMULARIO PROVEEDOR -->
 <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="modern-modal">
@@ -134,13 +310,14 @@
 
     <ion-content class="modal-body">
       <div class="form-container">
-        
+
         <div class="form-row split">
           <div class="form-group">
             <label>CIF / NIF</label>
             <div class="input-with-icon">
               <ion-icon name="id-card-outline"></ion-icon>
-              <input type="text" [(ngModel)]="Proveedor.CifProveedor" placeholder="B12345678" [disabled]="!!updateProveedor">
+              <input type="text" [(ngModel)]="Proveedor.CifProveedor" placeholder="B12345678"
+                [disabled]="!!updateProveedor">
             </div>
           </div>
           <div class="form-group">
@@ -186,7 +363,8 @@
           <label>Dirección</label>
           <div class="textarea-with-icon">
             <ion-icon name="location-outline"></ion-icon>
-            <textarea [(ngModel)]="Proveedor.direccion" placeholder="Calle, Número, Ciudad, Código Postal..." rows="3"></textarea>
+            <textarea [(ngModel)]="Proveedor.direccion" placeholder="Calle, Número, Ciudad, Código Postal..."
+              rows="3"></textarea>
           </div>
         </div>
 

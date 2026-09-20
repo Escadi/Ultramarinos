@@ -1,11 +1,12 @@
 <!-- ═════════════════════════════════════════════════════════════
-     MENÚ LATERAL (MOBILE)
+     MENÚ LATERAL — visible en Móvil (Pixel 8) y Tablet
 ══════════════════════════════════════════════════════════════ -->
 <ion-menu contentId="main-content" side="start" menuId="mobileMenu" class="mobile-menu">
   <ion-header class="ion-no-border">
     <ion-toolbar class="mobile-menu-toolbar">
       <div class="mobile-menu-header">
-        <img src="assets/icon/InnventoryLogoLogistics.png" alt="Logo" class="mobile-logo"
+        <!-- Logo compacto dentro del drawer -->
+        <img src="assets/icon/minimarketLogo.png" alt="Logo Ultramarinos" class="mobile-logo"
           routerLink="/dashboard-control/dashboard-page" />
         <ion-button fill="clear" class="btn-logout-mobile" (click)="getOut()">
           <ion-icon name="log-out-outline"></ion-icon>
@@ -17,7 +18,7 @@
   <ion-content class="mobile-menu-content">
     <div class="user-profile-mobile">
       <div class="avatar-mobile">
-        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+        <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
       </div>
       <div class="user-info">
         <p class="user-name">Administrador</p>
@@ -51,14 +52,26 @@
 ══════════════════════════════════════════════════════════════ -->
 <div id="main-content" class="app-layout">
 
-  <!-- ─── TOPBAR DE NAVEGACIÓN ─── -->
+  <!-- ─── TOPBAR ─── -->
   <header class="topbar">
+
+    <!-- IZQUIERDA: hamburger + logo contextual -->
     <div class="topbar-left">
-      <ion-menu-button class="btn-menu-mobile"></ion-menu-button>
-      <img src="assets/icon/minimarketLogo.png" alt="Logo" class="topbar-logo"
+      <!-- Botón hamburger: visible en móvil y tablet -->
+      <button class="btn-menu-mobile" (click)="toggleMenu()" aria-label="Abrir menú" title="Menú">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+
+      <!-- Logo MÓVIL (Pixel 8, ≤ 430px) -->
+      <img src="assets/icon/minimarketLogo.png" alt="Ultramarinos" class="topbar-logo topbar-logo--mobile"
+        routerLink="/dashboard-control/dashboard-page" />
+
+      <!-- Logo TABLET (431px – 991px) y DESKTOP (≥ 992px) -->
+      <img src="assets/icon/minimarketLogo.png" alt="Ultramarinos Minimarket" class="topbar-logo topbar-logo--full"
         routerLink="/dashboard-control/dashboard-page" />
     </div>
 
+    <!-- CENTRO: navegación horizontal — solo Desktop (≥ 992px) -->
     <nav class="topbar-nav">
       <a class="nav-item" routerLink="/dashboard-control/dashboard-page" routerLinkActive="active">
         <ion-icon name="home-outline"></ion-icon> Dashboard
@@ -74,14 +87,20 @@
       </a>
     </nav>
 
+    <!-- DERECHA: avatar + logout -->
     <div class="topbar-right">
       <div class="user-dropdown">
         <div class="user-avatar" routerLink="/dashboard-control/setting-page">
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="Avatar" />
         </div>
         <button class="btn-logout-top" (click)="getOut()">
           <ion-icon name="log-out-outline"></ion-icon>
-          Cerrar Sesión
+          <!--
+            Texto "Cerrar Sesión":
+            • Móvil / Tablet → oculto (solo icono para ahorrar espacio)
+            • Desktop        → visible
+          -->
+          <span class="logout-label">Cerrar Sesión</span>
         </button>
       </div>
     </div>

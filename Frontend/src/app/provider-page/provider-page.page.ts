@@ -55,6 +55,10 @@ export class ProviderPagePage implements OnInit {
   // ─── Modal Registrar Compra ───────────────────────────────────────────────
   isModalOpen: boolean = false;
   isVerTodosOpen: boolean = false;
+  isDetalleCompraOpen: boolean = false;
+  compraSeleccionada: Compra | null = null;
+  isDetalleProveedorOpen: boolean = false;
+  proveedorSeleccionado: any = null;
 
   form: any = {
     proveedorId: '',
@@ -98,8 +102,8 @@ export class ProviderPagePage implements OnInit {
   }
 
   // ─── Modal Registrar Compra ───────────────────────────────────────────────
-  abrirModalCompra() {
-    this.form = { proveedorId: '', concepto: '', total: null, estado: 'Pendiente', fecha: new Date().toLocaleDateString('es-ES') };
+  abrirModalCompra(proveedorId?: string) {
+    this.form = { proveedorId: proveedorId || '', concepto: '', total: null, estado: 'Pendiente', fecha: new Date().toLocaleDateString('es-ES') };
     this.isModalOpen = true;
   }
 
@@ -120,6 +124,24 @@ export class ProviderPagePage implements OnInit {
   }
 
   cerrarModal() { this.isModalOpen = false; }
+
+  verDetalleCompra(c: Compra) {
+    this.compraSeleccionada = c;
+    this.isDetalleCompraOpen = true;
+  }
+
+  cerrarDetalleCompra() {
+    this.isDetalleCompraOpen = false;
+  }
+
+  verDetalleProveedor(p: any) {
+    this.proveedorSeleccionado = p;
+    this.isDetalleProveedorOpen = true;
+  }
+
+  cerrarDetalleProveedor() {
+    this.isDetalleProveedorOpen = false;
+  }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
   getEstadoColor(estado: string): string {

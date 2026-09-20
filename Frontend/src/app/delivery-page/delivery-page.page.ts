@@ -208,6 +208,22 @@ export class DeliveryPagePage implements OnInit {
     this.productosSeleccionados.splice(index, 1);
   }
 
+  aumentarCantidad(idx: number) {
+    if (this.productosSeleccionados[idx]) {
+      this.productosSeleccionados[idx].cantidad++;
+    }
+  }
+
+  disminuirCantidad(idx: number) {
+    if (this.productosSeleccionados[idx]) {
+      if (this.productosSeleccionados[idx].cantidad > 1) {
+        this.productosSeleccionados[idx].cantidad--;
+      } else {
+        this.removerProductoDelPedido(idx);
+      }
+    }
+  }
+
   calcularTotalPedido(): number {
     return this.productosSeleccionados.reduce((total, p) => total + (p.producto.precio * p.cantidad), 0);
   }

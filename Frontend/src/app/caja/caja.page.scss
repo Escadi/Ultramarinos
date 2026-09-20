@@ -1,20 +1,32 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Caja — Gestión de Caja
+// Caja — Gestión de Caja — Responsive SCSS
+// Breakpoints:
+//   Móvil  : < 576px
+//   Tablet : 576px – 991px
+//   Desktop: ≥ 992px
 // ─────────────────────────────────────────────────────────────────────────────
 
-$verde: #1a7a4a;
-$verde-claro: #e8f5ee;
-$naranja: #f5a623;
+// ─── Variables ────────────────────────────────────────────────────────────────
+$verde:         #1a7a4a;
+$verde-claro:   #e8f5ee;
+$naranja:       #f5a623;
 $naranja-claro: #fff8ed;
-$rojo: #e53935;
-$rojo-claro: #fff5f5;
-$azul-chip: #1565c0;
-$gris: #6b7280;
-$gris-fondo: #f4f6f9;
-$blanco: #ffffff;
-$borde: #e2e8f0;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
-$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+$rojo:          #e53935;
+$rojo-claro:    #fff5f5;
+$azul-chip:     #1565c0;
+$gris:          #6b7280;
+$gris-fondo:    #f4f6f9;
+$blanco:        #ffffff;
+$borde:         #e2e8f0;
+$sombra:        0 2px 12px rgba(0, 0, 0, 0.07);
+$sombra-md:     0 4px 20px rgba(0, 0, 0, 0.1);
+
+// ─── Breakpoints ──────────────────────────────────────────────────────────────
+$bp-mobile-max:  575px;
+$bp-tablet-min:  576px;
+$bp-tablet-max:  991px;
+$bp-desktop-min: 992px;
+
 
 // ─── Toolbar ─────────────────────────────────────────────────────────────────
 
@@ -1619,3 +1631,532 @@ ESTILOS DE MODALES HISTORIAL Y FACTURA
     margin: 8px 0;
   }
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 1: TOOLBAR (cabecera de estado de caja)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Toolbar · Móvil ──────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .caja-toolbar {
+    --min-height: 56px;
+    padding: 0 12px;
+
+    .caja-main-title .caja-status-wrap {
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .selector-caja {
+        font-size: 0.76rem;
+        padding: 3px 8px;
+
+        ion-icon { font-size: 0.95rem; }
+        .select-caja { font-size: 0.76rem; }
+      }
+
+      .caja-status {
+        font-size: 0.72rem;
+        padding: 4px 10px;
+
+        .status-dot { width: 6px; height: 6px; }
+      }
+    }
+  }
+}
+
+// ── Toolbar · Tablet ─────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .caja-toolbar {
+    --min-height: 64px;
+    padding: 0 18px;
+
+    .caja-main-title .caja-status-wrap {
+      gap: 14px;
+
+      .selector-caja { font-size: 0.82rem; padding: 4px 10px; }
+      .caja-status   { font-size: 0.78rem; padding: 5px 12px; }
+    }
+  }
+}
+
+// ── Toolbar · Desktop ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .caja-toolbar {
+    --min-height: 72px;
+    padding: 0 24px;
+
+    .caja-main-title .caja-status-wrap {
+      gap: 20px;
+
+      .selector-caja { font-size: 0.85rem; padding: 4px 12px; }
+      .caja-status   { font-size: 0.82rem; padding: 6px 14px; }
+    }
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 2: LAYOUT PRINCIPAL (col-izquierda / col-derecha)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Layout · Móvil ───────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .caja-layout {
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .col-izquierda {
+    width: 100%;
+    gap: 12px;
+  }
+
+  // En móvil la columna derecha (registro) se mueve al fondo
+  .col-derecha {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .registro-card {
+    position: static; // quitar sticky en móvil
+    top: unset;
+  }
+}
+
+// ── Layout · Tablet ──────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .caja-layout {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .col-izquierda { width: 100%; gap: 14px; }
+
+  .col-derecha {
+    width: 100%;
+    min-width: unset;
+  }
+
+  // En tablet el registro va en fila horizontal con el resumen
+  .segunda-fila-tablet {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .registro-card { position: static; }
+}
+
+// ── Layout · Desktop ─────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .caja-layout {
+    flex-direction: row;
+    padding: 20px;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .col-izquierda { flex: 1; min-width: 0; }
+
+  .col-derecha {
+    width: 280px;
+    min-width: 260px;
+    flex-shrink: 0;
+  }
+
+  .registro-card {
+    position: sticky;
+    top: 20px;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 3: TARJETAS APERTURA / CIERRE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Acciones · Móvil ─────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .acciones-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .accion-card {
+    padding: 14px 10px;
+
+    h3 { font-size: 0.82rem; margin: 8px 0 3px; }
+    p  { font-size: 0.7rem; }
+  }
+
+  .accion-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}
+
+// ── Acciones · Tablet ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .acciones-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .accion-card {
+    padding: 18px 14px;
+
+    h3 { font-size: 0.9rem; }
+    p  { font-size: 0.75rem; }
+  }
+
+  .accion-icon { width: 48px; height: 48px; font-size: 1.3rem; }
+}
+
+// ── Acciones · Desktop ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .acciones-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .accion-card { padding: 20px 16px; }
+  .accion-icon { width: 52px; height: 52px; font-size: 1.4rem; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 4: RESUMEN DEL TURNO
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Resumen · Móvil ──────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .resumen-card { padding: 14px; }
+
+  .total-estimado .total-valor { font-size: 1.6rem; }
+
+  .metricas-grid {
+    grid-template-columns: 1fr 1fr; // 2 cols en móvil
+    gap: 8px;
+  }
+
+  .metrica-item {
+    padding: 10px;
+
+    .metrica-label { font-size: 0.65rem; }
+    .metrica-valor { font-size: 0.9rem; }
+  }
+}
+
+// ── Resumen · Tablet ─────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .resumen-card { padding: 18px; }
+
+  .total-estimado .total-valor { font-size: 1.8rem; }
+
+  .metricas-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .metrica-item {
+    padding: 12px;
+
+    .metrica-label { font-size: 0.7rem; }
+    .metrica-valor { font-size: 1rem; }
+  }
+}
+
+// ── Resumen · Desktop ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .resumen-card { padding: 20px; }
+
+  .total-estimado .total-valor { font-size: 2rem; }
+
+  .metricas-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .metrica-item { padding: 12px; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 5: TABLA DE MOVIMIENTOS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Movimientos · Móvil ──────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .movimientos-card { padding: 12px; }
+
+  // En móvil ocultamos columna HORA y TIPO queda icono solo
+  .tabla-cabecera,
+  .tabla-fila {
+    grid-template-columns: 70px 1fr 80px; // Sin hora
+  }
+
+  // Ocultar la columna HORA en móvil
+  .tabla-cabecera span:first-child,
+  .tabla-fila .fila-hora { display: none; }
+
+  .tipo-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+
+    span { display: none; } // solo icono
+  }
+
+  .tabla-fila {
+    padding: 8px 6px;
+
+    .fila-concepto  { font-size: 0.75rem; }
+    .fila-usuario   { font-size: 0.65rem; }
+    .fila-importe   { font-size: 0.78rem; }
+  }
+}
+
+// ── Movimientos · Tablet ─────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .movimientos-card { padding: 16px; }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    grid-template-columns: 55px 80px 1fr 90px;
+  }
+
+  .tabla-fila {
+    padding: 9px 7px;
+
+    .fila-hora      { font-size: 0.78rem; }
+    .fila-concepto  { font-size: 0.8rem; }
+    .fila-importe   { font-size: 0.82rem; }
+  }
+}
+
+// ── Movimientos · Desktop ────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .movimientos-card { padding: 20px; }
+
+  .tabla-cabecera,
+  .tabla-fila {
+    grid-template-columns: 60px 90px 1fr 100px;
+  }
+
+  .tabla-fila { padding: 10px 8px; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 6: PANEL REGISTRO MANUAL (col-derecha)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Registro · Móvil ─────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .registro-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .registro-titulo { font-size: 0.88rem; }
+
+  .campo-label { font-size: 0.72rem; }
+
+  .importe-input-wrap .importe-input {
+    padding: 8px 10px;
+    font-size: 0.88rem;
+  }
+
+  .campo-select  { padding: 8px 28px 8px 10px; font-size: 0.8rem; }
+  .campo-textarea { padding: 8px 10px; font-size: 0.8rem; }
+
+  .btn-registrar {
+    padding: 11px;
+    font-size: 0.85rem;
+  }
+}
+
+// ── Registro · Tablet ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .registro-card {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .campo-label { font-size: 0.76rem; }
+
+  .importe-input-wrap .importe-input {
+    padding: 9px 11px;
+    font-size: 0.92rem;
+  }
+
+  .btn-registrar { padding: 12px; font-size: 0.88rem; }
+}
+
+// ── Registro · Desktop ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .registro-card  { padding: 20px; gap: 16px; }
+  .campo-label    { font-size: 0.78rem; }
+  .btn-registrar  { padding: 13px; font-size: 0.9rem; }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 7: MODAL ARQUEO DE CAJA
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Arqueo · Móvil ───────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .arqueo-modal {
+    --width:      100%;
+    --max-height: 95vh;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .arqueo-container { padding: 14px; gap: 14px; }
+
+  .conteo-grid {
+    grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
+    gap: 6px;
+  }
+
+  .conteo-item input { width: 42px; height: 28px; font-size: 0.85rem; }
+
+  .arqueo-footer {
+    padding: 12px 14px;
+    flex-direction: column;
+    gap: 8px;
+
+    button { width: 100%; padding: 11px; font-size: 0.88rem; }
+  }
+}
+
+// ── Arqueo · Tablet ──────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .arqueo-modal {
+    --width:      90%;
+    --max-height: 92vh;
+    --border-radius: 16px;
+  }
+
+  .arqueo-container { padding: 18px; gap: 16px; }
+}
+
+// ── Arqueo · Desktop ─────────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .arqueo-modal {
+    --width:      950px;
+    --max-height: 150vh;
+    --border-radius: 16px;
+  }
+
+  .arqueo-container { padding: 24px; gap: 20px; }
+
+  .arqueo-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 16px 24px;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 8: MODAL APERTURA DE CAJA
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Apertura · Móvil ─────────────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .apertura-modal {
+    --width:         100%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  .apertura-modal .apertura-header {
+    padding: 20px 16px 14px;
+
+    h2 { font-size: 1.1rem; }
+    p  { font-size: 0.8rem; }
+  }
+
+  .apertura-modal .apertura-body { padding: 16px; }
+
+  .apertura-modal .apertura-footer {
+    padding: 12px 16px 20px;
+    flex-direction: column;
+    gap: 8px;
+
+    button { padding: 11px; font-size: 0.88rem; }
+  }
+}
+
+// ── Apertura · Tablet ────────────────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .apertura-modal {
+    --width: 420px;
+    --border-radius: 16px;
+  }
+}
+
+// ── Apertura · Desktop ───────────────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .apertura-modal {
+    --width: 400px;
+    --border-radius: 16px;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE — SECCIÓN 9: MODALES HISTORIAL Y FACTURA (ticket)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Historial/Factura · Móvil ────────────────────────────────────────────────
+@media (max-width: #{$bp-mobile-max}) {
+  .historial-modal,
+  .factura-modal {
+    --height: 95%;
+    --border-radius: 16px 16px 0 0;
+  }
+
+  // Tabla historial en móvil: sin columna HORA
+  .historial-tabla .tabla-cabecera,
+  .historial-tabla .tabla-fila {
+    grid-template-columns: 75px 1fr 80px;
+  }
+
+  .historial-tabla .tabla-cabecera span:first-child,
+  .historial-tabla .tabla-fila .fila-hora { display: none; }
+
+  .ticket-container {
+    padding: 16px;
+    margin: 10px auto;
+  }
+
+  .ticket-header h3 { font-size: 1.1rem; }
+  .ticket-total     { font-size: 1rem; margin: 14px 0; }
+}
+
+// ── Historial/Factura · Tablet ───────────────────────────────────────────────
+@media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
+  .historial-modal,
+  .factura-modal {
+    --height: 90%;
+    --border-radius: 20px 20px 0 0;
+  }
+
+  .ticket-container { max-width: 380px; padding: 20px; }
+}
+
+// ── Historial/Factura · Desktop ──────────────────────────────────────────────
+@media (min-width: #{$bp-desktop-min}) {
+  .historial-modal,
+  .factura-modal {
+    --height: 90%;
+    --border-radius: 20px 20px 0 0;
+  }
+
+  .ticket-container { max-width: 400px; padding: 24px; }
+}

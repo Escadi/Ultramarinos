@@ -24,6 +24,8 @@ export class WorkerListPage implements OnInit {
 
   // Modal Variables
   isModalOpen: boolean = false;
+  isDetalleOpen: boolean = false;
+  workerSeleccionado: any = null;
   isEditEmpleado: number | null = null;
 
   empleado = {
@@ -153,6 +155,24 @@ export class WorkerListPage implements OnInit {
       temporalPassword: worker.temporalPassword
     };
     this.openModal();
+  }
+
+  viewWorker(worker: any) {
+    this.workerSeleccionado = { ...worker };
+    this.isDetalleOpen = true;
+  }
+
+  closeDetalle() {
+    this.isDetalleOpen = false;
+    this.workerSeleccionado = null;
+  }
+
+  editFromDetalle() {
+    if (this.workerSeleccionado) {
+      const w = { ...this.workerSeleccionado };
+      this.closeDetalle();
+      this.editWorker(w);
+    }
   }
 
   // ─── CRUD OPERATIONS ──────────────────────────────────────────────────────

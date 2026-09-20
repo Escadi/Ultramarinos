@@ -62,8 +62,8 @@
     </div>
   </div>
 
-  <!-- ─── Tabla de productos ─── -->
-  <div class="tabla-card">
+  <!-- ─── Tabla de productos (Visible en tablet y desktop) ─── -->
+  <div class="tabla-card vista-tabla">
     <table class="tabla-productos">
       <thead>
         <tr>
@@ -112,6 +112,9 @@
 
           <!-- Acciones -->
           <td class="celda-acciones">
+            <button class="btn-accion btn-ver" (click)="verDetalle(p)" title="Ver detalles">
+              <ion-icon name="eye-outline"></ion-icon>
+            </button>
             <button class="btn-accion btn-editar" (click)="editarProducto(p)" title="Editar">
               <ion-icon name="create-outline"></ion-icon>
             </button>
@@ -132,12 +135,74 @@
     </table>
   </div>
 
+  <!-- ─── Cards de productos (Visible en móvil) ─── -->
+  <div class="productos-cards-movil vista-cards">
+    <div class="prod-card" *ngFor="let p of productosPagina" (click)="verDetalle(p)">
+      <div class="prod-card-top">
+        <div class="prod-card-header-left">
+          <div class="prod-icono" [style.background]="getColorCategoria(p.categoria?.nombreCategoria) + '22'">
+            <ion-icon [name]="getIconoCategoria(p.categoria?.nombreCategoria)"
+              [style.color]="getColorCategoria(p.categoria?.nombreCategoria)">
+            </ion-icon>
+          </div>
+          <div class="prod-card-titulos">
+            <h3 class="prod-card-nombre">{{ p.producto?.nombreProducto }}</h3>
+            <span class="cat-badge" [style.background]="getColorCategoria(p.categoria?.nombreCategoria) + '22'"
+              [style.color]="getColorCategoria(p.categoria?.nombreCategoria)">
+              {{ p.categoria?.nombreCategoria || 'Sin categoría' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="prod-card-acciones" (click)="$event.stopPropagation()">
+          <button class="btn-accion btn-ver" (click)="verDetalle(p)" title="Ver detalles">
+            <ion-icon name="eye-outline"></ion-icon>
+          </button>
+          <button class="btn-accion btn-editar" (click)="editarProducto(p)" title="Editar">
+            <ion-icon name="create-outline"></ion-icon>
+          </button>
+          <button class="btn-accion btn-eliminar" (click)="eliminarProducto(p)" title="Eliminar">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="prod-card-details">
+        <div class="detail-box">
+          <span class="detail-label">Compra</span>
+          <span class="detail-val">€{{ p.precioCompra?.toFixed(2) || '—' }}</span>
+        </div>
+
+        <div class="detail-box highlight">
+          <span class="detail-label">Venta</span>
+          <span class="detail-val precio-destacado">€{{ p.precioVenta?.toFixed(2) || '—' }}</span>
+        </div>
+
+        <div class="detail-box">
+          <span class="detail-label">Stock Actual</span>
+          <span class="stock-badge" [class.stock-ok]="p.cantidad > 15"
+            [class.stock-bajo]="p.cantidad > 0 && p.cantidad <= 15" [class.stock-cero]="p.cantidad === 0">
+            <ion-icon *ngIf="p.cantidad > 0 && p.cantidad <= 15" name="warning-outline"></ion-icon>
+            {{ p.cantidad }} uds
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vacío en móvil -->
+    <div class="cards-vacia" *ngIf="productosPagina.length === 0">
+      <ion-icon name="cube-outline"></ion-icon>
+      <p>No se encontraron productos</p>
+    </div>
+  </div>
+
   <!-- ─── Paginación ─── -->
   <div class="paginacion-bar">
     <p class="pagina-info">
-      Mostrando {{ productosPagina.length }} de {{ productosFiltrados.length }} productos
+      Mostrando <strong>{{ productosPagina.length }}</strong> de <strong>{{ productosFiltrados.length }}</strong> productos
     </p>
-    <div class="pagina-controles">
+
+    <div class="pagina-controles" *ngIf="totalPaginas > 1">
       <button class="btn-pagina" [disabled]="paginaActual === 1" (click)="irPagina(paginaActual - 1)">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </button>
@@ -151,65 +216,174 @@
     </div>
   </div>
 
-  <!-- ─── Modal Nuevo / Editar Producto ─── -->
-  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="cerrarModal()" class="modal-producto">
+  <!-- ─── MODAL: DETALLE DEL PRODUCTO ─── -->
+  <ion-modal [isOpen]="isDetalleOpen" (didDismiss)="cerrarDetalle()" class="modern-modal modal-detalle-producto">
     <ng-template>
-      <ion-header>
-        <ion-toolbar class="modal-toolbar">
-          <ion-title>{{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}</ion-title>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="cube-outline"></ion-icon>
+            Detalle del Producto
+          </ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="cerrarModal()">
+            <button class="btn-modal-accion btn-modal-editar" (click)="editarDesdeDetalle()" title="Editar producto">
+              <ion-icon name="create-outline"></ion-icon>
+              <span>Editar</span>
+            </button>
+            <ion-button (click)="cerrarDetalle()" class="btn-modal-cerrar">
               <ion-icon name="close-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="modal-content">
-        <div class="modal-form">
 
-          <div class="form-grupo">
-            <label>Nombre del Producto</label>
-            <input type="text" [(ngModel)]="form.nombreProducto" placeholder="Ej: Café Molido Premium" />
-          </div>
-
-          <div class="form-grupo">
-            <label>Categoría</label>
-            <select [(ngModel)]="form.idCategoria">
-              <option [value]="0" disabled>Selecciona una categoría</option>
-              <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
-            </select>
-          </div>
-
-          <div class="form-fila">
-            <div class="form-grupo">
-              <label>Precio Compra (€)</label>
-              <input type="number" [(ngModel)]="form.precioCompra" placeholder="0.00" min="0" step="0.01" />
+      <ion-content class="modal-body" *ngIf="productoSeleccionado">
+        <div class="detalle-sheet">
+          <!-- Tarjeta de cabecera -->
+          <div class="detalle-header-card">
+            <div class="detalle-avatar" [style.background]="getColorCategoria(productoSeleccionado.categoria?.nombreCategoria) + '22'" [style.color]="getColorCategoria(productoSeleccionado.categoria?.nombreCategoria)">
+              <ion-icon [name]="getIconoCategoria(productoSeleccionado.categoria?.nombreCategoria)"></ion-icon>
             </div>
-            <div class="form-grupo">
-              <label>Precio Venta (€)</label>
-              <input type="number" [(ngModel)]="form.precioVenta" placeholder="0.00" min="0" step="0.01" />
+            <div class="detalle-header-info">
+              <h2>{{ productoSeleccionado.producto?.nombreProducto }}</h2>
+              <div class="detalle-badges">
+                <span class="id-badge">ID: {{ productoSeleccionado.producto?.idProducto || productoSeleccionado.idDetalleProducto }}</span>
+                <span class="estado-badge" [style.background]="getColorCategoria(productoSeleccionado.categoria?.nombreCategoria) + '22'" [style.color]="getColorCategoria(productoSeleccionado.categoria?.nombreCategoria)" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px;">
+                  <ion-icon [name]="getIconoCategoria(productoSeleccionado.categoria?.nombreCategoria)"></ion-icon>
+                  {{ productoSeleccionado.categoria?.nombreCategoria || 'Sin categoría' }}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div class="form-grupo">
-            <label>Stock Inicial</label>
-            <input type="number" [(ngModel)]="form.cantidad" placeholder="0" min="0" />
+          <!-- Precios y Rentabilidad -->
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="cash-outline"></ion-icon> Precios y Rentabilidad
+            </h4>
+            <div class="info-kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">Precio Compra:</span>
+                <span class="kv-val"><ion-icon name="arrow-down-circle-outline"></ion-icon> €{{ productoSeleccionado.precioCompra ? productoSeleccionado.precioCompra.toFixed(2) : '0.00' }}</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Precio Venta (PVP):</span>
+                <span class="kv-val" style="color: #16a34a;"><ion-icon name="arrow-up-circle-outline"></ion-icon> €{{ productoSeleccionado.precioVenta ? productoSeleccionado.precioVenta.toFixed(2) : '0.00' }}</span>
+              </div>
+              <div class="kv-item full-width">
+                <span class="kv-label">Margen Bruto Estimado:</span>
+                <span class="kv-val">€{{ ((productoSeleccionado.precioVenta || 0) - (productoSeleccionado.precioCompra || 0)).toFixed(2) }} ({{ productoSeleccionado.precioVenta ? (((productoSeleccionado.precioVenta - (productoSeleccionado.precioCompra || 0)) / productoSeleccionado.precioVenta) * 100).toFixed(1) : 0 }}%)</span>
+              </div>
+            </div>
           </div>
 
-          <div class="form-grupo">
-            <label>Descripción</label>
-            <textarea [(ngModel)]="form.descripcion" placeholder="Descripción del producto..." rows="3"></textarea>
+          <!-- Stock e Inventario -->
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="layers-outline"></ion-icon> Inventario y Existencias
+            </h4>
+            <div class="info-kv-grid">
+              <div class="kv-item">
+                <span class="kv-label">Stock Actual:</span>
+                <span class="kv-val">{{ productoSeleccionado.cantidad }} unidades</span>
+              </div>
+              <div class="kv-item">
+                <span class="kv-label">Estado del Stock:</span>
+                <span class="kv-val" [style.color]="productoSeleccionado.cantidad > 15 ? '#16a34a' : (productoSeleccionado.cantidad > 0 ? '#d97706' : '#e53935')">
+                  <ion-icon [name]="productoSeleccionado.cantidad > 15 ? 'checkmark-circle-outline' : 'warning-outline'"></ion-icon>
+                  {{ productoSeleccionado.cantidad > 15 ? 'Stock Óptimo' : (productoSeleccionado.cantidad > 0 ? 'Stock Bajo' : 'Agotado') }}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div class="modal-acciones">
-            <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-            <button class="btn-guardar" (click)="guardarProducto()">
-              <ion-icon name="checkmark-outline"></ion-icon>
-              {{ modoEdicion ? 'Guardar Cambios' : 'Crear Producto' }}
-            </button>
+          <!-- Descripción del Producto -->
+          <div class="detalle-bloque" *ngIf="productoSeleccionado.producto?.descripcion || productoSeleccionado.descripcion">
+            <h4 class="bloque-titulo">
+              <ion-icon name="document-text-outline"></ion-icon> Descripción
+            </h4>
+            <p style="margin: 0; font-size: 0.88rem; color: #475569; line-height: 1.5;">
+              {{ productoSeleccionado.producto?.descripcion || productoSeleccionado.descripcion }}
+            </p>
           </div>
         </div>
       </ion-content>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarDetalle()">Cerrar</button>
+        <button class="btn-save" (click)="editarDesdeDetalle()">
+          <ion-icon name="create-outline"></ion-icon> Editar Producto
+        </button>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- ─── Modal Nuevo / Editar Producto ─── -->
+  <ion-modal [isOpen]="isModalOpen" (ionModalDidDismiss)="cerrarModal()" class="modern-modal modal-producto">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="modal-prov-toolbar">
+          <ion-title class="modal-prov-title">
+            <ion-icon name="cube-outline"></ion-icon>
+            {{ modoEdicion ? 'Editar Producto' : 'Nuevo Producto' }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarModal()" class="btn-modal-cerrar">
+              <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="modal-body">
+        <div class="detalle-sheet">
+          <div class="detalle-bloque">
+            <h4 class="bloque-titulo">
+              <ion-icon name="document-text-outline"></ion-icon> Información del Producto
+            </h4>
+            <div class="modal-form">
+              <div class="form-grupo">
+                <label>Nombre del Producto</label>
+                <input type="text" [(ngModel)]="form.nombreProducto" placeholder="Ej: Café Molido Premium" />
+              </div>
+
+              <div class="form-grupo">
+                <label>Categoría</label>
+                <select [(ngModel)]="form.idCategoria">
+                  <option [value]="0" disabled>Selecciona una categoría</option>
+                  <option *ngFor="let cat of categorias" [value]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
+                </select>
+              </div>
+
+              <div class="form-fila">
+                <div class="form-grupo">
+                  <label>Precio Compra (€)</label>
+                  <input type="number" [(ngModel)]="form.precioCompra" placeholder="0.00" min="0" step="0.01" />
+                </div>
+                <div class="form-grupo">
+                  <label>Precio Venta (€)</label>
+                  <input type="number" [(ngModel)]="form.precioVenta" placeholder="0.00" min="0" step="0.01" />
+                </div>
+              </div>
+
+              <div class="form-grupo">
+                <label>Stock Inicial</label>
+                <input type="number" [(ngModel)]="form.cantidad" placeholder="0" min="0" />
+              </div>
+
+              <div class="form-grupo">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="form.descripcion" placeholder="Descripción del producto..." rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn-save" (click)="guardarProducto()" [disabled]="!form.nombreProducto || !form.precioVenta">
+          <ion-icon name="checkmark-outline"></ion-icon>
+          {{ modoEdicion ? 'Guardar Cambios' : 'Crear Producto' }}
+        </button>
+      </div>
     </ng-template>
   </ion-modal>
 
