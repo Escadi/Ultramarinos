@@ -27,7 +27,7 @@ public class DetallePedidoProveedorDTO {
     /**
      * Convierte una entidad {@link DetallePedidoProveedor} en su DTO.
      */
-    public static DetallePedidoProveedorDTO fromEntity(DetallePedidoProveedor entity) {
+    public DetallePedidoProveedorDTO fromEntity(DetallePedidoProveedor entity) {
         if (entity == null) {
             return null;
         }

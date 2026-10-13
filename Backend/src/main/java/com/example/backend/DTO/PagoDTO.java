@@ -26,7 +26,7 @@ public class PagoDTO {
     /**
      * Convierte una entidad {@link Pago} en su DTO.
      */
-    public static PagoDTO fromEntity(Pago entity) {
+    public PagoDTO fromEntity(Pago entity) {
         if (entity == null) {
             return null;
         }

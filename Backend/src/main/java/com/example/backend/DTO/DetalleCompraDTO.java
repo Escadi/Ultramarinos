@@ -29,7 +29,7 @@ public class DetalleCompraDTO {
     /**
      * Convierte una entidad {@link DetalleCompra} en su DTO.
      */
-    public static DetalleCompraDTO fromEntity(DetalleCompra entity) {
+    public DetalleCompraDTO fromEntity(DetalleCompra entity) {
         if (entity == null) {
             return null;
         }

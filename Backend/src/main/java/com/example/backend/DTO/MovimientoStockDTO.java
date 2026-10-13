@@ -29,7 +29,7 @@ public class MovimientoStockDTO {
     /**
      * Convierte una entidad {@link MovimientoStock} en su DTO.
      */
-    public static MovimientoStockDTO fromEntity(MovimientoStock entity) {
+    public MovimientoStockDTO fromEntity(MovimientoStock entity) {
         if (entity == null) {
             return null;
         }

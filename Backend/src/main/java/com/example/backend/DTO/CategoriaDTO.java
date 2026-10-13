@@ -16,7 +16,7 @@ public class CategoriaDTO {
     /**
      * Convierte una entidad en su DTO.
      */
-    public static CategoriaDTO fromEntity(Categoria entity) {
+    public CategoriaDTO fromEntity(Categoria entity) {
         if (entity == null) {
             return null;
         }

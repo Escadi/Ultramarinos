@@ -18,7 +18,7 @@ public class RolTrabajadorDTO {
     /**
      * Convierte una entidad {@link RolTrabajador} en su DTO.
      */
-    public static RolTrabajadorDTO fromEntity(RolTrabajador entity) {
+    public RolTrabajadorDTO fromEntity(RolTrabajador entity) {
         if (entity == null) {
             return null;
         }

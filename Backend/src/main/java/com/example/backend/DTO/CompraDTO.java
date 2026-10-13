@@ -30,7 +30,7 @@ public class CompraDTO {
     /**
      * Convierte una entidad {@link Compra} en su DTO.
      */
-    public static CompraDTO fromEntity(Compra entity) {
+    public CompraDTO fromEntity(Compra entity) {
         if (entity == null) {
             return null;
         }

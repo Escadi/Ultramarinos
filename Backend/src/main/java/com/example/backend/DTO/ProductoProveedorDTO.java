@@ -27,7 +27,7 @@ public class ProductoProveedorDTO {
     /**
      * Convierte una entidad {@link ProductoProveedor} en su DTO.
      */
-    public static ProductoProveedorDTO fromEntity(ProductoProveedor entity) {
+    public  ProductoProveedorDTO fromEntity(ProductoProveedor entity) {
         if (entity == null) {
             return null;
         }

@@ -27,7 +27,7 @@ public class FacturaDTO {
     /**
      * Convierte una entidad {@link Factura} en su DTO.
      */
-    public static FacturaDTO fromEntity(Factura entity) {
+    public FacturaDTO fromEntity(Factura entity) {
         if (entity == null) {
             return null;
         }

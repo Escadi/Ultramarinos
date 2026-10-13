@@ -28,7 +28,7 @@ public class EmpleadoDTO {
     /**
      * Convierte una entidad {@link Empleado} en su DTO.
      */
-    public static EmpleadoDTO fromEntity(Empleado entity) {
+    public EmpleadoDTO fromEntity(Empleado entity) {
         if (entity == null) {
             return null;
         }

@@ -21,7 +21,7 @@ public class TelefonoClienteDTO {
     /**
      * Convierte una entidad {@link TelefonoCliente} en su DTO.
      */
-    public static TelefonoClienteDTO fromEntity(TelefonoCliente entity) {
+    public TelefonoClienteDTO fromEntity(TelefonoCliente entity) {
         if (entity == null) {
             return null;
         }

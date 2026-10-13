@@ -18,7 +18,7 @@ public class RolClienteDTO {
     /**
      * Convierte una entidad {@link RolCliente} en su DTO.
      */
-    public static RolClienteDTO fromEntity(RolCliente entity) {
+    public  RolClienteDTO fromEntity(RolCliente entity) {
         if (entity == null) {
             return null;
         }

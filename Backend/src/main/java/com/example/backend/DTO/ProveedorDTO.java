@@ -23,7 +23,7 @@ public class ProveedorDTO {
     /**
      * Convierte una entidad {@link Proveedor} en su DTO.
      */
-    public static ProveedorDTO fromEntity(Proveedor entity) {
+    public  ProveedorDTO fromEntity(Proveedor entity) {
         if (entity == null) {
             return null;
         }

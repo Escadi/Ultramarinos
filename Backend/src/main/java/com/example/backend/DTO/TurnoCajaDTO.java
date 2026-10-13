@@ -26,7 +26,7 @@ public class TurnoCajaDTO {
     /**
      * Convierte una entidad {@link TurnoCaja} en su DTO.
      */
-    public static TurnoCajaDTO fromEntity(TurnoCaja entity) {
+    public  TurnoCajaDTO fromEntity(TurnoCaja entity) {
         if (entity == null) {
             return null;
         }

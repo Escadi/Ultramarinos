@@ -20,7 +20,7 @@ public class TpvDTO {
     /**
      * Convierte una entidad {@link Tpv} en su DTO.
      */
-    public static TpvDTO fromEntity(Tpv entity) {
+    public TpvDTO fromEntity(Tpv entity) {
         if (entity == null) {
             return null;
         }
