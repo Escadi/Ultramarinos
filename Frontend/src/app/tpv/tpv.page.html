@@ -10,13 +10,11 @@
       <ion-searchbar [(ngModel)]="busqueda" placeholder="Buscar productos por nombre, código o scan..."
         class="tpv-searchbar" debounce="200">
       </ion-searchbar>
+      <button class="btn-escanear-toolbar" (click)="scanQR()" title="Escanear código de barras con la cámara">
+        <ion-icon name="barcode-outline"></ion-icon>
+        <span class="btn-scan-text">Escanear</span>
+      </button>
     </div>
-    <ion-buttons slot="end">
-      <ion-button class="btn-facturas-tpv" routerLink="/dashboard-control/facturas">
-        <ion-icon name="document-text-outline" slot="start"></ion-icon>
-        Facturas
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -103,7 +101,8 @@
             <div class="producto-info">
               <p class="producto-nombre">{{ producto.nombre }}</p>
               <p class="producto-categoria">{{ producto.categoria }}</p>
-              <p class="producto-precio">€{{ producto.precio.toFixed(2) }}<span class="precio-unidad" *ngIf="producto.categoria === 'Frutas y Verduras'">/kg</span></p>
+              <p class="producto-precio">€{{ producto.precio.toFixed(2) }}<span class="precio-unidad"
+                  *ngIf="producto.categoria === 'Frutas y Verduras'">/kg</span></p>
             </div>
           </div>
         </div>
@@ -189,13 +188,31 @@
     <!-- ═══════════════════════════════════════════════════════
          PANEL DERECHO — Ticket Actual
     ═══════════════════════════════════════════════════════ -->
-    <div class="panel-ticket">
+    <!-- Botón flotante "Ver Ticket" para móvil -->
+    <button class="btn-ver-ticket-mobile" (click)="toggleTicketMobile()" *ngIf="sesionActiva">
+      <ion-icon name="receipt-outline"></ion-icon>
+      <span>Detalles Ticket</span>
+      <span class="badge-items" *ngIf="sesionActiva && sesionActiva.lineasTicket.length > 0">
+        {{ sesionActiva.lineasTicket.length }}
+      </span>
+    </button>
+
+    <!-- Overlay backdrop para móvil -->
+    <div class="ticket-mobile-backdrop" [class.visible]="ticketMobileVisible" (click)="toggleTicketMobile()"></div>
+
+    <div class="panel-ticket" [class.mobile-open]="ticketMobileVisible">
 
       <!-- Cabecera ticket -->
       <div class="ticket-header" *ngIf="sesionActiva">
         <div>
           <h3 class="ticket-titulo">Ticket: {{ sesionActiva.nombreEmpleado }}</h3>
-          <p class="ticket-cliente">{{ sesionActiva.clienteActual }}</p>
+          <div class="ticket-subtitulo-row">
+            <p class="ticket-cliente">{{ sesionActiva.clienteActual }}</p>
+            <button class="pill-aparcados-header" *ngIf="ticketsAparcados.length > 0" (click)="abrirModalAparcados()" title="Ver facturas en espera">
+              <ion-icon name="pause-circle"></ion-icon>
+              <span>{{ ticketsAparcados.length }} en espera</span>
+            </button>
+          </div>
         </div>
         <div class="header-actions">
           <ion-button fill="clear" class="btn-scan-qr" (click)="scanQR()" title="Escanear Producto">
@@ -204,6 +221,10 @@
           <ion-button fill="clear" class="add-cliente-btn" title="Añadir Cliente" (click)="abrirClienteModal()">
             <ion-icon name="person-add-outline" slot="icon-only"></ion-icon>
           </ion-button>
+          <!-- Cerrar ticket overlay en móvil -->
+          <button class="btn-cerrar-ticket-mobile" (click)="toggleTicketMobile()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
         </div>
       </div>
 
@@ -235,13 +256,14 @@
               <button class="btn-qty" (click)="aumentarCantidad(linea)">+</button>
             </div>
             <!-- Botón eliminar para líneas por peso -->
-              <button class="btn-qty btn-qty-del" *ngIf="linea.esPorPeso" (click)="eliminarLinea(linea)" title="Eliminar">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-              <!-- Subtotal: peso usa precio directo (ya calculado), normal usa precio×cantidad -->
-              <p class="linea-subtotal">
-                €{{ linea.esPorPeso ? linea.producto.precio.toFixed(2) : (linea.producto.precio * linea.cantidad).toFixed(2) }}
-              </p>
+            <button class="btn-qty btn-qty-del" *ngIf="linea.esPorPeso" (click)="eliminarLinea(linea)" title="Eliminar">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+            <!-- Subtotal: peso usa precio directo (ya calculado), normal usa precio×cantidad -->
+            <p class="linea-subtotal">
+              €{{ linea.esPorPeso ? linea.producto.precio.toFixed(2) : (linea.producto.precio *
+              linea.cantidad).toFixed(2) }}
+            </p>
           </div>
         </div>
       </div>
@@ -274,13 +296,18 @@
       <!-- Botones de acción -->
       <div class="ticket-acciones">
         <div class="acciones-secundarias">
-          <button class="btn-aparcar" (click)="aparcar()">
+          <button class="btn-aparcar" (click)="aparcar()" [disabled]="!sesionActiva || (sesionActiva.lineasTicket.length === 0 && ticketsAparcados.length === 0)" title="Aparcar factura actual para atender a otro cliente">
             <ion-icon name="pause-circle-outline"></ion-icon>
-            Aparcar
+            <span>Aparcar</span>
           </button>
-          <button class="btn-anular" (click)="anular()">
+          <button class="btn-recuperar" (click)="abrirModalAparcados()" [class.has-aparcados]="ticketsAparcados.length > 0" title="Ver facturas aparcadas">
+            <ion-icon name="file-tray-full-outline"></ion-icon>
+            <span>Aparcadas</span>
+            <span class="badge-aparcadas-count" *ngIf="ticketsAparcados.length > 0">{{ ticketsAparcados.length }}</span>
+          </button>
+          <button class="btn-anular" (click)="anular()" [disabled]="!sesionActiva || sesionActiva.lineasTicket.length === 0" title="Anular líneas del ticket">
             <ion-icon name="close-circle-outline"></ion-icon>
-            Anular
+            <span>Anular</span>
           </button>
         </div>
         <button class="btn-cobrar" (click)="abrirModalCobro()"
@@ -293,6 +320,140 @@
     </div>
   </div>
 </ion-content>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL ESCÁNER — Cámara para leer códigos de barras
+═══════════════════════════════════════════════════════════ -->
+<div class="scanner-overlay" *ngIf="scannerOpen">
+  <div class="scanner-container">
+
+    <!-- Cabecera del escáner -->
+    <div class="scanner-header">
+      <div class="scanner-header-info">
+        <ion-icon name="scan-outline"></ion-icon>
+        <span>Escáner de Códigos</span>
+        <span class="scanner-perm-badge" [class.badge-ok]="scannerPermisoEstado === 'concedido'"
+          [class.badge-error]="scannerPermisoDenegado">
+          <ion-icon
+            [name]="scannerPermisoEstado === 'concedido' ? 'checkmark-circle' : (scannerPermisoDenegado ? 'close-circle' : 'videocam-outline')"></ion-icon>
+          {{ scannerPermisoEstado === 'concedido' ? 'Cámara lista' : (scannerPermisoDenegado ? 'Sin permiso' :
+          'Iniciando') }}
+        </span>
+      </div>
+      <div class="scanner-header-actions">
+        <!-- Botón linterna si está disponible -->
+        <button class="scanner-action-btn" *ngIf="scannerTieneLinterna && !scannerPermisoDenegado"
+          (click)="toggleLinterna()" [class.active]="scannerLinternaActiva" title="Linterna">
+          <ion-icon [name]="scannerLinternaActiva ? 'flash' : 'flash-outline'"></ion-icon>
+        </button>
+        <!-- Botón cambiar de cámara -->
+        <button class="scanner-action-btn" *ngIf="!scannerPermisoDenegado" (click)="cambiarCamara()"
+          title="Cambiar de cámara">
+          <ion-icon name="camera-reverse-outline"></ion-icon>
+        </button>
+        <!-- Botón cerrar -->
+        <button class="scanner-close-btn" (click)="cerrarScanner()" title="Cerrar escáner">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Vista de cámara -->
+    <div class="scanner-camera-wrap">
+      <video #scannerVideo autoplay playsinline muted class="scanner-video"
+        [class.hidden-video]="scannerPermisoDenegado || scannerIniciando"></video>
+      <canvas #scannerCanvas class="scanner-canvas-hidden"></canvas>
+
+      <!-- Estado: Solicitando acceso / Cargando -->
+      <div class="scanner-state-card scanner-loading-card" *ngIf="scannerIniciando">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <h4>Conectando con la cámara...</h4>
+        <p>Acepta la solicitud de permisos en la ventana emergente de tu navegador.</p>
+      </div>
+
+      <!-- Estado: Permiso denegado / Solicitar permiso -->
+      <div class="scanner-state-card scanner-permission-card" *ngIf="scannerPermisoDenegado && !scannerIniciando">
+        <div class="perm-icon-bubble">
+          <ion-icon name="videocam-off-outline"></ion-icon>
+        </div>
+        <h3>Permiso de Cámara Requerido</h3>
+        <p class="perm-description">
+          Para escanear códigos de barras de los productos con tu móvil, debes conceder acceso a la cámara.
+        </p>
+
+        <div class="perm-instrucciones">
+          <div class="instruccion-item">
+            <span class="inst-num">1</span>
+            <span>Pulsa el botón <strong>"Dar permisos a la cámara"</strong> abajo.</span>
+          </div>
+          <div class="instruccion-item">
+            <span class="inst-num">2</span>
+            <span>Si el navegador ya bloqueó el acceso, pulsa el <strong>candado 🔒</strong> en la barra de direcciones
+              y activa <strong>Permitir Cámara</strong>.</span>
+          </div>
+        </div>
+
+        <button class="btn-dar-permiso" (click)="solicitarPermisoCamara()">
+          <ion-icon name="videocam-outline"></ion-icon>
+          Dar permisos a la cámara
+        </button>
+
+        <p class="perm-error-raw" *ngIf="scannerError">
+          <ion-icon name="alert-circle-outline"></ion-icon> {{ scannerError }}
+        </p>
+      </div>
+
+      <!-- Marco de enfoque (activo cuando la cámara funciona) -->
+      <div class="scanner-focus-frame" *ngIf="!scannerPermisoDenegado && !scannerIniciando">
+        <div class="scanner-corner tl"></div>
+        <div class="scanner-corner tr"></div>
+        <div class="scanner-corner bl"></div>
+        <div class="scanner-corner br"></div>
+        <!-- Línea de escaneo animada -->
+        <div class="scanner-line" *ngIf="!scannerProductoEncontrado && !scannerError"></div>
+      </div>
+
+      <!-- Feedback: producto encontrado -->
+      <div class="scanner-found" *ngIf="scannerProductoEncontrado">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <div class="scanner-found-info">
+          <strong>{{ scannerProductoEncontrado.nombre }}</strong>
+          <span>€{{ scannerProductoEncontrado.precio.toFixed(2) }} — Añadido al ticket</span>
+        </div>
+      </div>
+
+      <!-- Error de producto no encontrado -->
+      <div class="scanner-error-banner" *ngIf="scannerError && !scannerPermisoDenegado && !scannerIniciando">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ scannerError }}</span>
+      </div>
+    </div>
+
+    <!-- Instrucciones y Acciones inferiores -->
+    <div class="scanner-instructions">
+      <ng-container *ngIf="!scannerPermisoDenegado">
+        <p *ngIf="!scannerError">Apunta la cámara al código de barras del producto</p>
+        <p *ngIf="scannerError" class="scanner-error-text">{{ scannerError }}</p>
+        <div class="scanner-formats">
+          <span>EAN-13</span><span>EAN-8</span><span>Code 128</span><span>QR</span><span>UPC</span>
+        </div>
+      </ng-container>
+
+      <div class="scanner-footer-actions">
+        <button class="btn-footer-permiso" (click)="solicitarPermisoCamara()" title="Reintentar o solicitar permiso">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>Dar / Comprobar Permiso</span>
+        </button>
+        <button class="btn-footer-cambiar" (click)="cambiarCamara()" *ngIf="!scannerPermisoDenegado"
+          title="Cambiar cámara">
+          <ion-icon name="camera-reverse-outline"></ion-icon>
+          <span>{{ scannerFacingMode === 'environment' ? 'Usar frontal' : 'Usar trasera' }}</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════
      MODAL PESO — Introducir kg al seleccionar F&V del catálogo
@@ -555,7 +716,7 @@
         <div class="cobro-panel exito-container" *ngIf="cobroFase === 'exito'">
           <ion-icon name="checkmark-circle" class="icono-exito"></ion-icon>
           <h2>Cobro realizado</h2>
-          
+
           <div class="info-cobro">
             <div class="importe-total">€{{ cobroExitosoImporte.toFixed(2) }}</div>
             <div class="metodo-label">{{ cobroExitosoMetodoLabel }}</div>
@@ -575,74 +736,15 @@
 </ion-modal>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: CREAR NUEVO CLIENTE (FORMULARIO)
-═══════════════════════════════════════════════════════════════════════════ -->
-<ion-modal [isOpen]="isNuevoClienteModalOpen" class="modal-cliente" (didDismiss)="cerrarNuevoClienteModal()">
-  <ng-template>
-    <ion-header class="ion-no-border">
-      <ion-toolbar class="cliente-toolbar">
-        <ion-title class="cliente-title">
-          <ion-icon name="person-add-outline"></ion-icon>
-          Nuevo Cliente
-        </ion-title>
-        <ion-buttons slot="end">
-          <button class="btn-cliente-cerrar" (click)="cerrarNuevoClienteModal()">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="cliente-content">
-      <div class="cliente-panel">
-
-        <div class="cliente-seccion">
-          <h4>Datos del Cliente</h4>
-
-          <div class="cliente-input-wrap">
-            <ion-icon name="person-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Nombre *" [(ngModel)]="nuevoCliente.nombre" />
-          </div>
-
-          <div class="cliente-input-wrap">
-            <ion-icon name="people-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Apellidos" [(ngModel)]="nuevoCliente.apellidos" />
-          </div>
-
-          <div class="cliente-input-wrap">
-            <ion-icon name="call-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Contacto (Tel / Email)"
-              [(ngModel)]="nuevoCliente.contacto" />
-          </div>
-
-          <div class="cliente-input-wrap" style="padding: 0;">
-            <select class="cliente-input" style="padding-left: 12px;" [(ngModel)]="nuevoCliente.tipo">
-              <option value="Fiel">Fiel</option>
-              <option value="Profesional">Profesional</option>
-              <option value="Ocasional">Ocasional</option>
-            </select>
-          </div>
-
-          <button class="btn-cliente-manual" style="margin-top: 10px;" [disabled]="!nuevoCliente.nombre.trim()"
-            (click)="guardarNuevoCliente()">
-            <ion-icon name="save-outline"></ion-icon> Guardar y Asignar
-          </button>
-        </div>
-
-      </div>
-    </ion-content>
-  </ng-template>
-</ion-modal>
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODAL: AÑADIR CLIENTE
+     MODAL: AÑADIR O CREAR CLIENTE (UNIFICADO PARA WEB Y MÓVIL)
 ═══════════════════════════════════════════════════════════════════════════ -->
 <ion-modal [isOpen]="isClienteModalOpen" class="modal-cliente" (didDismiss)="cerrarClienteModal()">
   <ng-template>
     <ion-header class="ion-no-border">
       <ion-toolbar class="cliente-toolbar">
         <ion-title class="cliente-title">
-          <ion-icon name="person-add-outline"></ion-icon>
-          Añadir Cliente al Ticket
+          <ion-icon name="people-outline"></ion-icon>
+          Cliente del Ticket
         </ion-title>
         <ion-buttons slot="end">
           <button class="btn-cliente-cerrar" (click)="cerrarClienteModal()">
@@ -650,62 +752,233 @@
           </button>
         </ion-buttons>
       </ion-toolbar>
+
+      <!-- Selector de pestañas para evitar modales superpuestos en Web/Móvil -->
+      <div class="cliente-modal-tabs">
+        <button class="tab-btn" [class.active]="tabClienteModal === 'buscar'" (click)="tabClienteModal = 'buscar'">
+          <ion-icon name="search-outline"></ion-icon>
+          <span>Buscar / Rápido</span>
+        </button>
+        <button class="tab-btn" [class.active]="tabClienteModal === 'nuevo'" (click)="tabClienteModal = 'nuevo'">
+          <ion-icon name="person-add-outline"></ion-icon>
+          <span>Registrar Nuevo</span>
+        </button>
+      </div>
     </ion-header>
 
     <ion-content class="cliente-content">
       <div class="cliente-panel">
 
-        <!-- 1. Búsqueda de cliente existente -->
-        <div class="cliente-seccion">
-          <h4>Buscar Cliente Existente</h4>
-          <div class="cliente-input-wrap">
-            <ion-icon name="search-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Buscar por nombre o teléfono..."
-              [(ngModel)]="clienteSearchQuery" />
-          </div>
+        <!-- ─── PESTAÑA 1: BUSCAR O ASIGNAR MANUAL RÁPIDO ─── -->
+        <ng-container *ngIf="tabClienteModal === 'buscar'">
+          <!-- 1. Búsqueda de cliente existente -->
+          <div class="cliente-seccion">
+            <h4>Buscar Cliente Registrado</h4>
+            <div class="cliente-input-wrap">
+              <ion-icon name="search-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Buscar por nombre o teléfono..."
+                [(ngModel)]="clienteSearchQuery" />
+            </div>
 
-          <div class="cliente-lista" *ngIf="clientesFiltradosModal.length > 0">
-            <div class="cliente-item" *ngFor="let cliente of clientesFiltradosModal"
-              (click)="seleccionarClienteModal(cliente)">
-              <div class="cliente-item-info">
-                <strong>{{ cliente.nombre }} {{ cliente.apellidos }}</strong>
-                <span>{{ cliente.contacto }}</span>
+            <div class="cliente-lista" *ngIf="clientesFiltradosModal.length > 0">
+              <div class="cliente-item" *ngFor="let cliente of clientesFiltradosModal"
+                (click)="seleccionarClienteModal(cliente)">
+                <div class="cliente-item-info">
+                  <strong>{{ cliente.nombre }} {{ cliente.apellidos }}</strong>
+                  <span>{{ cliente.contacto }}</span>
+                </div>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
               </div>
-              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+            <div class="cliente-no-results" *ngIf="clienteSearchQuery && clientesFiltradosModal.length === 0">
+              No se encontraron clientes registrados con ese criterio.
             </div>
           </div>
-          <div class="cliente-no-results" *ngIf="clienteSearchQuery && clientesFiltradosModal.length === 0">
-            No se encontraron clientes.
+
+          <div class="cliente-divider"><span>O BIEN</span></div>
+
+          <!-- 2. Cliente manual rápido -->
+          <div class="cliente-seccion">
+            <h4>Cliente Manual (Solo para este ticket)</h4>
+            <div class="cliente-input-wrap">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Ej: Juan Pérez" [(ngModel)]="clienteManualNombre"
+                (keyup.enter)="asignarClienteManual()" />
+            </div>
+            <div class="cliente-input-wrap">
+              <ion-icon name="card-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Ej: 12345678Z (CIF/NIF Opcional)"
+                [(ngModel)]="clienteManualCif" (keyup.enter)="asignarClienteManual()" />
+            </div>
+            <button class="btn-cliente-manual" [disabled]="!clienteManualNombre.trim()"
+              (click)="asignarClienteManual()">
+              <ion-icon name="checkmark-outline"></ion-icon> Asignar a Este Ticket
+            </button>
           </div>
+
+          <!-- 3. Acceso directo a crear nuevo -->
+          <div class="cliente-crear-nuevo">
+            <p>¿Deseas registrar un cliente nuevo permanente?</p>
+            <button class="btn-cambiar-a-nuevo" (click)="tabClienteModal = 'nuevo'">
+              <ion-icon name="person-add-outline"></ion-icon>
+              Formulario de Nuevo Cliente
+            </button>
+          </div>
+        </ng-container>
+
+        <!-- ─── PESTAÑA 2: FORMULARIO DE ALTA DE NUEVO CLIENTE ─── -->
+        <ng-container *ngIf="tabClienteModal === 'nuevo'">
+          <div class="cliente-seccion">
+            <h4>Nuevo Registro de Cliente</h4>
+            <p class="cliente-subtitulo-form">Se guardará permanentemente y se asociará al ticket activo.</p>
+
+            <div class="cliente-input-wrap">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Nombre *" [(ngModel)]="nuevoCliente.nombre" />
+            </div>
+
+            <div class="cliente-input-wrap">
+              <ion-icon name="people-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Apellidos" [(ngModel)]="nuevoCliente.apellidos" />
+            </div>
+
+            <div class="cliente-input-wrap">
+              <ion-icon name="call-outline"></ion-icon>
+              <input type="text" class="cliente-input" placeholder="Contacto (Teléfono o Email)"
+                [(ngModel)]="nuevoCliente.contacto" />
+            </div>
+
+            <div class="cliente-input-wrap" style="padding: 0;">
+              <select class="cliente-input" style="padding-left: 12px;" [(ngModel)]="nuevoCliente.tipo">
+                <option value="Fiel">Fiel</option>
+                <option value="Profesional">Profesional</option>
+                <option value="Ocasional">Ocasional</option>
+              </select>
+            </div>
+
+            <div class="acciones-nuevo-cliente">
+              <button class="btn-volver-buscar" (click)="tabClienteModal = 'buscar'">
+                Volver
+              </button>
+              <button class="btn-cliente-manual" [disabled]="!nuevoCliente.nombre.trim()"
+                (click)="guardarNuevoCliente()">
+                <ion-icon name="save-outline"></ion-icon> Guardar y Asignar
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODAL: FACTURAS Y TICKETS APARCADOS (EN ESPERA)
+═══════════════════════════════════════════════════════════════════════════ -->
+<ion-modal [isOpen]="isAparcadasModalOpen" class="modal-aparcadas" (didDismiss)="cerrarModalAparcados()">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="aparcadas-toolbar">
+        <ion-title class="aparcadas-title">
+          <ion-icon name="pause-circle-outline"></ion-icon>
+          <span>Facturas Aparcadas</span>
+          <span class="aparcadas-header-badge" *ngIf="ticketsAparcados.length > 0">{{ ticketsAparcados.length }}</span>
+        </ion-title>
+        <ion-buttons slot="end">
+          <button class="btn-aparcadas-cerrar" (click)="cerrarModalAparcados()">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="aparcadas-content">
+      <div class="aparcadas-panel">
+
+        <!-- Banner descriptivo -->
+        <div class="aparcadas-banner" *ngIf="ticketsAparcados.length > 0">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>Selecciona una factura en espera para recuperarla en el TPV y completar el cobro.</span>
         </div>
 
-        <div class="cliente-divider"><span>O</span></div>
-
-        <!-- 2. Cliente manual rápido -->
-        <div class="cliente-seccion">
-          <h4>Cliente Manual (Sólo para este ticket)</h4>
-          <div class="cliente-input-wrap">
-            <ion-icon name="person-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Ej: Juan Pérez" [(ngModel)]="clienteManualNombre"
-              (keyup.enter)="asignarClienteManual()" />
+        <!-- Estado vacío -->
+        <div class="aparcadas-vacio" *ngIf="ticketsAparcados.length === 0">
+          <div class="aparcadas-vacio-icon">
+            <ion-icon name="pause-circle-outline"></ion-icon>
           </div>
-          <div class="cliente-input-wrap">
-            <ion-icon name="card-outline"></ion-icon>
-            <input type="text" class="cliente-input" placeholder="Ej: 12345678Z (Opcional)"
-              [(ngModel)]="clienteManualCif" (keyup.enter)="asignarClienteManual()" />
-          </div>
-          <button class="btn-cliente-manual" [disabled]="!clienteManualNombre.trim()" (click)="asignarClienteManual()">
-            <ion-icon name="checkmark-outline"></ion-icon> Asignar al Ticket
+          <h3>No hay facturas aparcadas</h3>
+          <p>Cuando un cliente necesite esperar (por ejemplo para ir a por la cartera o coger más productos), pulsa el botón <strong>"Aparcar"</strong> en el ticket para dejarlo guardado y poder atender al siguiente cliente sin perder nada.</p>
+          <button class="btn-volver-tpv" (click)="cerrarModalAparcados()">
+            Volver al TPV
           </button>
         </div>
 
-        <!-- 3. Crear nuevo cliente -->
-        <div class="cliente-crear-nuevo">
-          <p>¿Es un cliente recurrente?</p>
-          <ion-button expand="block" fill="outline" class="btn-nuevo-cliente" (click)="abrirNuevoClienteModal()">
-            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-            Crear Nuevo Cliente
-          </ion-button>
+        <!-- Lista de facturas aparcadas -->
+        <div class="aparcadas-grid" *ngIf="ticketsAparcados.length > 0">
+          <div class="aparcada-card" *ngFor="let t of ticketsAparcados">
+            <!-- Cabecera de la tarjeta -->
+            <div class="aparcada-card-top">
+              <div class="aparcada-badge-id">
+                <ion-icon name="receipt-outline"></ion-icon>
+                <span>#{{ t.id }}</span>
+              </div>
+              <div class="aparcada-hora">
+                <ion-icon name="time-outline"></ion-icon>
+                <span>{{ t.hora }}</span>
+              </div>
+              <div class="aparcada-total">
+                €{{ t.total.toFixed(2) }}
+              </div>
+            </div>
+
+            <!-- Datos principales -->
+            <div class="aparcada-card-info">
+              <div class="aparcada-cliente-row">
+                <div class="avatar-cliente">
+                  <ion-icon name="person"></ion-icon>
+                </div>
+                <div class="cliente-datos">
+                  <span class="cliente-nombre">{{ t.cliente }}</span>
+                  <span class="empleado-atendio">Atendido por {{ t.empleado }}</span>
+                </div>
+              </div>
+
+              <!-- Nota opcional -->
+              <div class="aparcada-nota-box" *ngIf="t.nota">
+                <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                <span>"{{ t.nota }}"</span>
+              </div>
+
+              <!-- Resumen artículos -->
+              <div class="aparcada-resumen-box">
+                <div class="resumen-header">
+                  <span class="count-badge">{{ calcularTotalArticulos(t) }} artículos</span>
+                  <span class="subtotal-desc">Base: €{{ t.subtotal.toFixed(2) }} | IVA: €{{ t.iva.toFixed(2) }}</span>
+                </div>
+
+                <div class="mini-lineas-scroll">
+                  <div class="mini-linea-item" *ngFor="let l of t.lineasTicket">
+                    <span class="mini-qty" *ngIf="!l.esPorPeso">{{ l.cantidad }}x</span>
+                    <span class="mini-qty" *ngIf="l.esPorPeso">{{ l.kg?.toFixed(2) }}kg</span>
+                    <span class="mini-nombre">{{ l.producto.nombre }}</span>
+                    <span class="mini-precio">€{{ (l.esPorPeso ? l.producto.precio : (l.producto.precio * l.cantidad)).toFixed(2) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="aparcada-card-actions">
+              <button class="btn-accion-recuperar" (click)="recuperarTicketAparcado(t)">
+                <ion-icon name="arrow-undo-outline"></ion-icon>
+                <span>Recuperar en TPV</span>
+              </button>
+              <button class="btn-accion-eliminar" (click)="confirmarEliminarAparcado(t, $event)" title="Descartar este ticket">
+                <ion-icon name="trash-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
         </div>
 
       </div>

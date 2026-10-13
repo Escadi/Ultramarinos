@@ -9,7 +9,8 @@ CREATE DATABASE minimarket;
 -- ============================================
 -- ROL CLIENTE
 -- ============================================
-CREATE SEQUENCE seq_rolcliente_id  INCREMENT BY 1 START WITH 1;
+
+CREATE SEQUENCE rolcliente_id_seq;
 
 CREATE TABLE rolCliente (
     id BIGINT NOT NULL,
@@ -24,7 +25,7 @@ CREATE TABLE rolCliente (
 -- CLIENTE
 -- ============================================
 
-CREATE SEQUENCE seq_cliente_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE cliente_id_seq;
 
 CREATE TABLE cliente (
     id BIGINT NOT NULL,
@@ -43,7 +44,7 @@ CREATE TABLE cliente (
 -- TELEFONO CLIENTE
 -- ============================================
 
-CREATE SEQUENCE seq_telefono_cliente_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE telefono_cliente_id_seq;
 
 CREATE TABLE telefono_cliente (
     id BIGINT NOT NULL,
@@ -59,7 +60,7 @@ CREATE TABLE telefono_cliente (
 -- TPV
 -- ============================================
 
-CREATE SEQUENCE seq_tpv_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE tpv_id_seq;
 
 CREATE TABLE tpv (
     id BIGINT NOT NULL,
@@ -75,7 +76,7 @@ CREATE TABLE tpv (
 -- ROL TRABAJADOR
 -- ============================================
 
-CREATE SEQUENCE seq_roltrabajador_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE rol_trabajador_id_seq;
 
 CREATE TABLE rol_trabajador (
     id BIGINT NOT NULL,
@@ -89,7 +90,7 @@ CREATE TABLE rol_trabajador (
 -- EMPLEADO
 -- ============================================
 
-CREATE SEQUENCE seq_empleado_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE empleado_id_seq;
 
 CREATE TABLE empleado (
     id BIGINT NOT NULL,
@@ -110,7 +111,7 @@ CREATE TABLE empleado (
 -- TURNO CAJA
 -- ============================================
 
-CREATE SEQUENCE seq_turno_caja_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE turno_caja_id_seq;
 
 CREATE TABLE turno_caja (
     id BIGINT NOT NULL,
@@ -129,7 +130,7 @@ CREATE TABLE turno_caja (
 -- CATEGORIA
 -- ============================================
 
-CREATE SEQUENCE seq_categoria_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE categoria_id_seq;
 
 CREATE TABLE categoria (
     id BIGINT NOT NULL,
@@ -144,7 +145,7 @@ CREATE TABLE categoria (
 -- PRODUCTO
 -- ============================================
 
-CREATE SEQUENCE seq_producto_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE producto_id_seq;
 
 CREATE TABLE producto (
     id BIGINT NOT NULL,
@@ -171,7 +172,7 @@ CREATE TABLE producto (
 -- VENTA
 -- ============================================
 
-CREATE SEQUENCE seq_venta_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE venta_id_seq;
 
 CREATE TABLE venta (
     id BIGINT NOT NULL,
@@ -197,7 +198,7 @@ CREATE TABLE venta (
 -- DETALLE VENTA
 -- ============================================
 
-CREATE SEQUENCE seq_detalle_venta_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE detalle_venta_id_seq;
 
 CREATE TABLE detalle_venta (
     id BIGINT NOT NULL,
@@ -224,7 +225,7 @@ CREATE TABLE detalle_venta (
 -- PAGO
 -- ============================================
 
-CREATE SEQUENCE seq_pago_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE pago_id_seq;
 
 CREATE TABLE pago (
     id BIGINT NOT NULL,
@@ -243,7 +244,7 @@ CREATE TABLE pago (
 -- FACTURA
 -- ============================================
 
-CREATE SEQUENCE seq_factura_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE factura_id_seq;
 
 CREATE TABLE factura (
     id BIGINT NOT NULL,
@@ -262,7 +263,7 @@ CREATE TABLE factura (
 -- PROVEEDOR
 -- ============================================
 
-CREATE SEQUENCE seq_proveedor_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE proveedor_id_seq;
 
 CREATE TABLE proveedor (
     id BIGINT NOT NULL,
@@ -282,7 +283,7 @@ CREATE TABLE proveedor (
 -- PRODUCTO PROVEEDOR
 -- ============================================
 
-CREATE SEQUENCE seq_producto_proveedor_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE producto_proveedor_id_seq;
 
 CREATE TABLE producto_proveedor (
     id BIGINT NOT NULL,
@@ -303,7 +304,7 @@ CREATE TABLE producto_proveedor (
 -- PEDIDO PROVEEDOR
 -- ============================================
 
-CREATE SEQUENCE seq_pedido_proveedor_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE pedido_proveedor_id_seq;
 
 CREATE TABLE pedido_proveedor (
     id BIGINT NOT NULL,
@@ -323,7 +324,7 @@ CREATE TABLE pedido_proveedor (
 -- DETALLE PEDIDO PROVEEDOR
 -- ============================================
 
-CREATE SEQUENCE seq_detalle_pedido_proveedor_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE detalle_pedido_proveedor_id_seq;
 
 CREATE TABLE detalle_pedido_proveedor (
     id BIGINT NOT NULL,
@@ -350,7 +351,7 @@ CREATE TABLE detalle_pedido_proveedor (
 -- COMPRA
 -- ============================================
 
-CREATE SEQUENCE seq_compra_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE compra_id_seq;
 
 CREATE TABLE compra (
     id BIGINT NOT NULL,
@@ -372,7 +373,7 @@ CREATE TABLE compra (
 -- DETALLE COMPRA
 -- ============================================
 
-CREATE SEQUENCE seq_detalle_compra_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE detalle_compra_id_seq;
 
 CREATE TABLE detalle_compra (
     id BIGINT NOT NULL,
@@ -398,7 +399,7 @@ CREATE TABLE detalle_compra (
 -- MOVIMIENTO STOCK
 -- ============================================
 
-CREATE SEQUENCE seq_movimiento_stock_id  INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE movimiento_stock_id_seq;
 
 CREATE TABLE movimiento_stock (
     id BIGINT NOT NULL,
@@ -414,3 +415,4 @@ CREATE TABLE movimiento_stock (
     CONSTRAINT fk_movimiento_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id),
     CONSTRAINT chk_movimiento_cantidad CHECK (cantidad > 0)
 );
+

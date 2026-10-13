@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class movimientoStock {
+public class MovimientoStock {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -37,11 +37,11 @@ public class movimientoStock {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "producto_id", nullable = false)
-    private producto producto;
+    private Producto producto;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empleado_id")
-    private empleado empleado;
+    private Empleado empleado;
 
     @PrePersist
     public void prePersist() {

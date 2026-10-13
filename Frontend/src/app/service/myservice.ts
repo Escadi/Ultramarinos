@@ -49,6 +49,20 @@ export interface SesionTPV {
   clienteActual: string;
 }
 
+export interface TicketAparcado {
+  id: string;
+  fecha: string;
+  hora: string;
+  timestamp: number;
+  empleado: string;
+  cliente: string;
+  nota?: string;
+  lineasTicket: LineaTicketTPV[];
+  subtotal: number;
+  iva: number;
+  total: number;
+}
+
 // ⚠️  MODO MOCK — Todos los endpoints están desactivados.
 //     Los métodos devuelven datos falsos para poder trabajar el frontend sin backend.
 //     Para reactivar el backend, restaura las llamadas a HttpClient.
@@ -69,6 +83,9 @@ export class Myservice {
 
   private _sesionesTPV = new BehaviorSubject<SesionTPV[]>([]);
   public sesionesTPV$ = this._sesionesTPV.asObservable();
+
+  private _ticketsAparcados = new BehaviorSubject<TicketAparcado[]>(this._cargarTicketsAparcados());
+  public ticketsAparcados$ = this._ticketsAparcados.asObservable();
 
   // ─── Lógica Caja ───
   abrirCaja(empleado: string, fondoInicial: number) {
@@ -216,6 +233,50 @@ export class Myservice {
 
   actualizarSesionTPV(sesiones: SesionTPV[]) {
     this._sesionesTPV.next(sesiones);
+  }
+
+  // ─── Lógica Facturas y Tickets Aparcados (TPV) ───
+  private _cargarTicketsAparcados(): TicketAparcado[] {
+    try {
+      const data = localStorage.getItem('ultramarinos_tpv_aparcados');
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  private _guardarTicketsAparcadosStorage(tickets: TicketAparcado[]) {
+    try {
+      localStorage.setItem('ultramarinos_tpv_aparcados', JSON.stringify(tickets));
+    } catch (e) {
+      console.error('Error guardando tickets aparcados en localStorage', e);
+    }
+  }
+
+  getTicketsAparcados(): TicketAparcado[] {
+    return this._ticketsAparcados.getValue();
+  }
+
+  aparcarTicket(ticket: Omit<TicketAparcado, 'id' | 'fecha' | 'hora' | 'timestamp'> & { nota?: string }): TicketAparcado {
+    const ahora = new Date();
+    const id = 'AP-' + Math.floor(1000 + Math.random() * 9000);
+    const nuevo: TicketAparcado = {
+      ...ticket,
+      id,
+      fecha: ahora.toLocaleDateString('es-ES'),
+      hora: ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: ahora.getTime()
+    };
+    const lista = [nuevo, ...this._ticketsAparcados.getValue()];
+    this._ticketsAparcados.next(lista);
+    this._guardarTicketsAparcadosStorage(lista);
+    return nuevo;
+  }
+
+  eliminarTicketAparcado(id: string): void {
+    const lista = this._ticketsAparcados.getValue().filter(t => t.id !== id);
+    this._ticketsAparcados.next(lista);
+    this._guardarTicketsAparcadosStorage(lista);
   }
 
   // ─────────────────────────────────────────────────────────────────────────────

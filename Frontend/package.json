@@ -31,6 +31,7 @@
     "@capacitor/status-bar": "8.0.1",
     "@ionic/angular": "^8.8.0",
     "@ionic/pwa-elements": "^3.4.0",
+    "barcode-detector": "^3.2.2",
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",

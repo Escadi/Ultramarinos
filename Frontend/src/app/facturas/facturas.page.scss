@@ -1,90 +1,77 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Facturas — Historial de Facturas
+// Facturas — Historial y Gestión de Facturas (Diseño Moderno & Limpio)
 // ─────────────────────────────────────────────────────────────────────────────
 
-$verde: #1a7a4a;
-$verde-claro: #e8f5ee;
-$gris: #6b7280;
-$gris-fondo: #f4f6f9;
-$blanco: #ffffff;
-$borde: #e2e8f0;
-$sombra: 0 2px 12px rgba(0, 0, 0, 0.07);
-$sombra-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+$verde:        #1a7a4a;
+$verde-dark:   #135c36;
+$verde-light:  #16a34a;
+$verde-claro:  #e8f5ee;
+$verde-tint:   #f0fdf4;
+$gris:         #64748b;
+$gris-texto:   #334155;
+$gris-dark:    #0f172a;
+$gris-fondo:   #f8fafc;
+$blanco:       #ffffff;
+$borde:        #e2e8f0;
+$borde-soft:   #f1f5f9;
 
-// ─── Toolbar ─────────────────────────────────────────────────────────────────
+$sombra-sm:    0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+$sombra-md:    0 4px 16px rgba(0, 0, 0, 0.05);
+$sombra-lg:    0 10px 25px rgba(0, 0, 0, 0.08);
+
+// ─── Toolbar Principal ────────────────────────────────────────────────────────
 
 .facturas-toolbar {
   --background: #{$blanco};
   --border-color: #{$borde};
-  --min-height: 80px;
-  padding: 0 24px;
-  box-shadow: $sombra;
+  border-bottom: 1px solid $borde;
+  padding: 8px 16px;
+  box-shadow: $sombra-sm;
 }
 
-// Botón de vuelta al TPV
-.btn-volver-tpv {
-  --background: transparent;
-  --background-hover: #{$verde-claro};
-  --color: #{$verde};
-  --border-color: #{rgba($verde, 0.35)};
-  --border-width: 1.5px;
-  --border-style: solid;
-  --border-radius: 8px;
-  --padding-start: 12px;
-  --padding-end: 14px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  height: 36px;
-  margin-right: 8px;
-  letter-spacing: 0.2px;
-  transition: all 0.18s;
-
-  &:hover {
-    --background: #{$verde};
-    --color: #{$blanco};
-  }
-}
-
-
-.facturas-title {
-  padding: 0;
-
-  > ion-title,
-  &.ios,
-  &.md {
-    padding: 0;
-  }
-}
-
-// Override ion-title's internal flex
-ion-toolbar.facturas-toolbar ion-title {
-  padding-inline-start: 0;
-  padding-inline-end: 0;
-}
-
-.facturas-title,
-ion-toolbar.facturas-toolbar ion-title::part(native) {
+.facturas-toolbar-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 12px 0;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .title-left {
-  h1 {
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: #111827;
-    margin: 0 0 2px;
-    line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .title-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: $verde-claro;
+    color: $verde;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 1px solid rgba($verde, 0.2);
+    box-shadow: 0 2px 8px rgba($verde, 0.12);
   }
 
-  p {
-    font-size: 0.8rem;
-    color: $gris;
-    margin: 0;
-    font-weight: 400;
+  .title-text-group {
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: $gris-dark;
+      margin: 0 0 2px;
+      letter-spacing: -0.3px;
+    }
+
+    p {
+      font-size: 0.78rem;
+      color: $gris;
+      margin: 0;
+      font-weight: 500;
+    }
   }
 }
 
@@ -94,49 +81,50 @@ ion-toolbar.facturas-toolbar ion-title::part(native) {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: $blanco;
-  border: 1.5px solid $borde;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fbf9 100%);
+  border: 1.5px solid rgba($verde, 0.25);
   border-radius: 14px;
-  padding: 12px 20px;
-  box-shadow: $sombra;
-  min-width: 220px;
-}
+  padding: 10px 18px;
+  box-shadow: 0 2px 10px rgba($verde, 0.08);
 
-.kpi-icon {
-  width: 44px;
-  height: 44px;
-  background: $verde-claro;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: $verde;
-  font-size: 1.3rem;
-  flex-shrink: 0;
-}
-
-.kpi-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-
-  .kpi-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: $gris;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  .kpi-valor {
+  .kpi-icon {
+    width: 40px;
+    height: 40px;
+    background: $verde;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $blanco;
     font-size: 1.3rem;
-    font-weight: 800;
-    color: #111827;
-    letter-spacing: -0.5px;
+    box-shadow: 0 3px 8px rgba($verde, 0.3);
+    flex-shrink: 0;
+  }
+
+  .kpi-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    .kpi-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: $verde-dark;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .kpi-valor {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: $gris-dark;
+      letter-spacing: -0.4px;
+      line-height: 1.1;
+    }
   }
 }
 
-// ─── Content ─────────────────────────────────────────────────────────────────
+// ─── Contenedor y Fondo ───────────────────────────────────────────────────────
 
 .facturas-content {
   --background: #{$gris-fondo};
@@ -146,33 +134,71 @@ ion-toolbar.facturas-toolbar ion-title::part(native) {
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-// ─── Filtros ─────────────────────────────────────────────────────────────────
+// ─── Filtros Card ────────────────────────────────────────────────────────────
 
 .filtros-card {
   background: $blanco;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid $borde;
-  padding: 20px;
-  box-shadow: $sombra;
+  box-shadow: $sombra-sm;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filtros-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $borde-soft;
+  padding-bottom: 12px;
+
+  .filtros-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: $gris-dark;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+
+    ion-icon {
+      color: $verde;
+      font-size: 1.1rem;
+    }
+  }
+
+  .btn-limpiar-link {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #fef2f2;
+    }
+  }
 }
 
 .filtros-row {
   display: grid;
-  grid-template-columns: auto 1fr 1fr 1fr;
-  gap: 16px;
-  align-items: end;
-  margin-bottom: 16px;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
 }
 
 .filtro-grupo {
@@ -182,359 +208,558 @@ ion-toolbar.facturas-toolbar ion-title::part(native) {
 }
 
 .filtro-label {
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   font-weight: 700;
-  color: #374151;
+  color: $gris;
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
 
-// Rango de fechas
 .fecha-range {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .fecha-btn {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 9px 12px;
   border: 1.5px solid $borde;
-  border-radius: 8px;
+  border-radius: 10px;
   background: $blanco;
-  font-size: 0.85rem;
-  color: #374151;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: $gris-texto;
   cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  transition: all 0.18s;
 
   ion-icon {
-    font-size: 0.95rem;
-    color: $gris;
+    font-size: 1rem;
+    color: $verde;
   }
 
   &:hover {
     border-color: $verde;
-    color: $verde;
-
-    ion-icon { color: $verde; }
+    background: $verde-tint;
   }
 }
 
 .fecha-sep {
   color: $gris;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-// Input con ícono
-.input-wrap {
+.input-wrap,
+.select-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   border: 1.5px solid $borde;
-  border-radius: 8px;
+  border-radius: 10px;
   background: $blanco;
-  overflow: hidden;
-  transition: border-color 0.2s;
+  transition: all 0.18s;
 
   &:focus-within {
     border-color: $verde;
-    box-shadow: 0 0 0 3px rgba($verde, 0.09);
+    box-shadow: 0 0 0 3px rgba($verde, 0.12);
   }
 
   .input-icon {
-    padding: 0 10px;
-    color: $gris;
-    font-size: 1rem;
-    flex-shrink: 0;
+    position: absolute;
+    left: 12px;
+    font-size: 1.05rem;
+    color: #94a3b8;
+    pointer-events: none;
   }
 
   .filtro-input {
-    flex: 1;
+    width: 100%;
+    padding: 9px 12px 9px 36px;
     border: none;
     outline: none;
-    padding: 9px 10px 9px 0;
-    font-size: 0.85rem;
-    color: #111827;
     background: transparent;
-    min-width: 0;
+    font-size: 0.86rem;
+    color: $gris-dark;
+    font-weight: 500;
 
-    &::placeholder { color: #9ca3af; }
+    &::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
   }
-}
-
-// Select
-.select-wrap {
-  position: relative;
 
   .filtro-select {
     width: 100%;
-    padding: 10px 36px 10px 12px;
-    border: 1.5px solid $borde;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    color: #374151;
-    background: $blanco;
+    padding: 9px 32px 9px 12px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.86rem;
+    color: $gris-dark;
+    font-weight: 600;
     appearance: none;
     cursor: pointer;
-    outline: none;
-    transition: border-color 0.2s;
-
-    &:focus {
-      border-color: $verde;
-      box-shadow: 0 0 0 3px rgba($verde, 0.09);
-    }
   }
 
   .select-icon {
     position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: $gris;
-    font-size: 0.9rem;
+    right: 12px;
+    font-size: 1rem;
+    color: #94a3b8;
     pointer-events: none;
   }
 }
 
-// Acciones de filtros
 .filtros-acciones {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  padding-top: 4px;
-  border-top: 1px solid $borde;
-}
+  border-top: 1px solid $borde-soft;
+  padding-top: 12px;
 
-.btn-limpiar {
-  padding: 9px 16px;
-  border: 1.5px solid $borde;
-  border-radius: 8px;
-  background: transparent;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: $gris;
-  cursor: pointer;
-  transition: all 0.2s;
+  .btn-limpiar {
+    padding: 9px 18px;
+    border: 1.5px solid $borde;
+    border-radius: 10px;
+    background: $blanco;
+    color: $gris-texto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
 
-  &:hover {
-    border-color: #9ca3af;
-    color: #374151;
-    background: $gris-fondo;
+    &:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+  }
+
+  .btn-aplicar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 22px;
+    border: none;
+    border-radius: 10px;
+    background: $verde;
+    color: $blanco;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba($verde, 0.3);
+    transition: all 0.18s;
+
+    ion-icon {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      background: $verde-dark;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba($verde, 0.4);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
   }
 }
 
-.btn-aplicar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 20px;
-  background: $verde;
-  color: $blanco;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.18s;
-  box-shadow: 0 3px 10px rgba($verde, 0.3);
+// ─── Tabla Card ──────────────────────────────────────────────────────────────
 
-  ion-icon { font-size: 0.95rem; }
-
-  &:hover {
-    background: darken($verde, 6%);
-    transform: translateY(-1px);
-    box-shadow: 0 5px 14px rgba($verde, 0.35);
-  }
-
-  &:active { transform: scale(0.97); }
-}
-
-// ─── Tabla ───────────────────────────────────────────────────────────────────
-
-$col-template: 120px 120px 1fr 90px 140px 110px 90px;
+$col-layout: 140px 140px 1fr 110px 130px 115px 95px;
 
 .tabla-card {
   background: $blanco;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid $borde;
-  box-shadow: $sombra;
+  box-shadow: $sombra-sm;
   overflow: hidden;
 }
 
 .tabla-cabecera {
   display: grid;
-  grid-template-columns: $col-template;
-  padding: 10px 20px;
-  background: $gris-fondo;
-  border-bottom: 2px solid $borde;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: $gris;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-
-  > div { padding: 0 6px; }
-  .col-total, .col-acciones { text-align: right; }
-}
-
-.tabla-fila {
-  display: grid;
-  grid-template-columns: $col-template;
-  padding: 12px 20px;
+  grid-template-columns: $col-layout;
   align-items: center;
-  border-bottom: 1px solid $gris-fondo;
-  cursor: pointer;
-  transition: background 0.15s;
-  animation: fadeInRow 0.2s ease;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-bottom: 2px solid $borde;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 
-  &:hover { background: lighten($verde-claro, 3%); }
-  &:last-child { border-bottom: none; }
+  > div {
+    padding: 0 8px;
+  }
 
-  > div { padding: 0 6px; }
-  .col-total, .col-acciones {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+  .col-total {
+    text-align: right;
+  }
+
+  .col-acciones {
+    text-align: right;
   }
 }
 
-// Columnas específicas
-.factura-id {
+// Estado Vacío
+.tabla-vacia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+
+  .vacia-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: $gris-dark;
+  }
+
+  p {
+    margin: 0 0 16px;
+    font-size: 0.86rem;
+    color: $gris;
+  }
+
+  .btn-limpiar {
+    padding: 8px 16px;
+    border: 1.5px solid $borde;
+    border-radius: 10px;
+    background: $blanco;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: $verde;
+    cursor: pointer;
+    &:hover { background: $verde-tint; border-color: $verde; }
+  }
+}
+
+// Fila de datos
+.tabla-fila {
+  display: grid;
+  grid-template-columns: $col-layout;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  background: $blanco;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: #f8fafc;
+    box-shadow: inset 3px 0 0 $verde;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > div {
+    padding: 0 8px;
+  }
+
+  .mobile-card-top {
+    display: none;
+  }
+
+  .total-label-mobile {
+    display: none;
+  }
+}
+
+// ─── Estilos de Columnas Individuales ────────────────────────────────────────
+
+.factura-id-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
   font-size: 0.82rem;
   font-weight: 700;
-  color: $verde;
+  border: 1px solid #bbf7d0;
+
+  ion-icon {
+    font-size: 0.95rem;
+    color: #16a34a;
+  }
 }
 
 .col-fecha {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 
   .fecha-principal {
-    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: #374151;
+    color: $gris-dark;
+
+    ion-icon {
+      font-size: 0.9rem;
+      color: $verde;
+    }
   }
 
   .fecha-hora {
-    font-size: 0.72rem;
-    color: $gris;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.74rem;
+    color: #94a3b8;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 0.8rem;
+    }
   }
 }
 
-.cliente-nombre {
-  font-size: 0.85rem;
-  color: #1e293b;
-  font-weight: 500;
+.cliente-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-  &.cliente-ocasional {
-    color: $verde;
-    font-style: italic;
+  .cliente-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #e0f2fe;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+
+    &.avatar-ocasional {
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+  }
+
+  .cliente-textos {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+
+    .cliente-nombre {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: $gris-dark;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &.cliente-ocasional {
+        color: #64748b;
+        font-style: italic;
+      }
+    }
+
+    .cliente-tipo {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
   }
 }
 
-.total-valor {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #111827;
+.col-total {
+  text-align: right;
+
+  .total-valor {
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: $gris-dark;
+    letter-spacing: -0.3px;
+  }
 }
 
+// Método de Pago Chips
 .metodo-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.8rem;
-  color: #374151;
-  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
 
-  ion-icon { font-size: 0.95rem; color: $gris; }
+  ion-icon {
+    font-size: 0.95rem;
+  }
+
+  &.metodo-efectivo {
+    background: #f0fdf4;
+    color: #15803d;
+    border-color: #bbf7d0;
+  }
+
+  &.metodo-tarjeta {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+  }
+
+  &.metodo-transferencia {
+    background: #faf5ff;
+    color: #7e22ce;
+    border-color: #e9d5ff;
+  }
+
+  &.metodo-sin {
+    background: #f8fafc;
+    color: #94a3b8;
+  }
 }
 
 .metodo-sin {
-  font-size: 0.85rem;
-  color: #d1d5db;
+  color: #cbd5e1;
+  font-weight: 600;
 }
 
-// Badges de estado
+// Badges de Estado con Punto Luminoso
 .estado-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
+  letter-spacing: 0.2px;
+
+  .estado-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
 
   &.estado-pagada {
-    background: #dcfce7;
-    color: #15803d;
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+
+    .estado-dot {
+      background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
   }
 
   &.estado-pendiente {
-    background: #fff7ed;
-    color: #c2410c;
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+
+    .estado-dot {
+      background: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
   }
 
   &.estado-anulada {
-    background: #fee2e2;
-    color: #b91c1c;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+
+    .estado-dot {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+  }
+
+  &.estado-stamp {
+    font-size: 0.82rem;
+    padding: 6px 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
   }
 }
 
-// Botones de acción
+// Botones de Acción
 .col-acciones {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
-}
 
-.btn-accion {
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.18s;
+  .btn-accion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition: all 0.18s;
 
-  &.btn-ver {
-    background: $verde-claro;
-    color: $verde;
+    ion-icon {
+      font-size: 1.05rem;
+    }
 
-    &:hover {
-      background: $verde;
-      color: $blanco;
+    &.btn-ver {
+      background: $verde-claro;
+      color: $verde;
+      border-color: rgba($verde, 0.25);
+
+      &:hover {
+        background: $verde;
+        color: $blanco;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba($verde, 0.3);
+      }
+    }
+
+    &.btn-pdf {
+      width: 32px;
+      padding: 0;
+      background: #eff6ff;
+      color: #2563eb;
+      border-color: #bfdbfe;
+
+      &:hover {
+        background: #2563eb;
+        color: $blanco;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+      }
     }
   }
-
-  &.btn-pdf {
-    background: #eff6ff;
-    color: #2563eb;
-
-    &:hover {
-      background: #2563eb;
-      color: $blanco;
-    }
-  }
-}
-
-.tabla-vacia {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 48px 24px;
-  color: #9ca3af;
-
-  ion-icon { font-size: 2.5rem; }
-  p { font-size: 0.9rem; margin: 0; }
 }
 
 // ─── Paginación ──────────────────────────────────────────────────────────────
@@ -543,117 +768,119 @@ $col-template: 120px 120px 1fr 90px 140px 110px 90px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 4px;
-}
+  padding: 4px 6px;
+  flex-wrap: wrap;
+  gap: 12px;
 
-.paginacion-info {
-  font-size: 0.8rem;
-  color: $verde;
-  font-weight: 600;
-}
-
-.paginacion-botones {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.pag-btn {
-  width: 34px;
-  height: 34px;
-  border: 1.5px solid $borde;
-  border-radius: 8px;
-  background: $blanco;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #374151;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-
-  &:hover:not(:disabled):not(.puntos) {
-    border-color: $verde;
-    color: $verde;
-    background: $verde-claro;
-  }
-
-  &.activa {
-    background: $verde;
-    color: $blanco;
-    border-color: $verde;
-    box-shadow: 0 2px 8px rgba($verde, 0.35);
-  }
-
-  &.puntos {
-    border: none;
-    background: transparent;
-    cursor: default;
+  .paginacion-info {
+    font-size: 0.82rem;
     color: $gris;
+
+    strong {
+      color: $gris-dark;
+    }
   }
 
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
+  .paginacion-botones {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .pag-btn {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 8px;
+      border-radius: 8px;
+      border: 1.5px solid $borde;
+      background: $blanco;
+      color: $gris-texto;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+
+      &:hover:not(:disabled):not(.puntos) {
+        border-color: $verde;
+        color: $verde;
+        background: $verde-tint;
+      }
+
+      &.activa {
+        background: $verde;
+        color: $blanco;
+        border-color: $verde;
+        box-shadow: 0 2px 6px rgba($verde, 0.25);
+      }
+
+      &.puntos {
+        cursor: default;
+        border: none;
+        background: transparent;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
   }
-
-  ion-icon { font-size: 0.9rem; }
 }
 
-// ─── Animaciones ─────────────────────────────────────────────────────────────
-
-@keyframes fadeInRow {
-  from { opacity: 0; transform: translateY(-3px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-// ─── Modal Detalle de Factura ─────────────────────────────────────────────────
+// ─── Modal Detalle de Factura (Documento Ejecutivo) ──────────────────────────
 
 .modal-detalle-factura {
-  --width: min(760px, 96vw);
+  --width: min(800px, 95vw);
   --border-radius: 18px;
-  --max-height: 92vh;
+  --max-height: 94vh;
 }
 
-// Toolbar del modal
 .modal-detalle-toolbar {
   --background: #{$blanco};
-  --border-color: #{$borde};
   border-bottom: 1px solid $borde;
-  padding: 0 8px;
+  padding: 4px 12px;
 }
 
 .modal-detalle-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #111827;
-  padding-inline-start: 16px;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: $gris-dark;
+  padding-inline-start: 8px;
 
-  ion-icon {
-    font-size: 1.15rem;
+  .title-badge-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: $verde-claro;
     color: $verde;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
   }
 }
 
-// Botones de acción del modal
 .btn-modal-accion {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: 8px;
-  border: 1.5px solid $borde;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.18s;
-  margin: 0 4px;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+  margin: 0 3px;
 
-  ion-icon { font-size: 1rem; }
+  ion-icon {
+    font-size: 1rem;
+  }
 
   &.btn-imprimir {
     background: $verde-claro;
@@ -663,7 +890,17 @@ $col-template: 120px 120px 1fr 90px 140px 110px 90px;
     &:hover {
       background: $verde;
       color: $blanco;
-      border-color: $verde;
+    }
+  }
+
+  &.btn-ticket {
+    background: #fffbeb;
+    color: #d97706;
+    border-color: #fde68a;
+
+    &:hover {
+      background: #d97706;
+      color: $blanco;
     }
   }
 
@@ -675,7 +912,6 @@ $col-template: 120px 120px 1fr 90px 140px 110px 90px;
     &:hover {
       background: #2563eb;
       color: $blanco;
-      border-color: #2563eb;
     }
   }
 }
@@ -686,14 +922,14 @@ $col-template: 120px 120px 1fr 90px 140px 110px 90px;
   border-radius: 8px;
   border: 1.5px solid $borde;
   background: transparent;
+  color: $gris;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  color: $gris;
+  font-size: 1.25rem;
   cursor: pointer;
-  margin-left: 4px;
-  transition: all 0.18s;
+  margin-left: 6px;
+  transition: all 0.15s;
 
   &:hover {
     background: #fee2e2;
@@ -702,281 +938,448 @@ $col-template: 120px 120px 1fr 90px 140px 110px 90px;
   }
 }
 
-// Content del modal
 .modal-detalle-content {
   --background: #{$gris-fondo};
 }
 
-// ─── Área imprimible ─────────────────────────────────────────────────────────
+// ─── Hoja de Factura (Área Imprimible) ────────────────────────────────────────
 
 .factura-print-area {
   background: $blanco;
   margin: 20px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid $borde;
   box-shadow: $sombra-md;
-  padding: 28px 32px;
+  padding: 32px 36px;
   display: flex;
   flex-direction: column;
-  gap: 0;
-
-  @media (max-width: 600px) {
-    margin: 12px;
-    padding: 20px 16px;
-  }
+  gap: 20px;
 }
 
-// Encabezado empresa + número
+// Cabecera de la Factura
 .factura-header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  margin-bottom: 20px;
-
-  @media (max-width: 600px) {
-    flex-direction: column;
-    gap: 16px;
-  }
+  justify-content: space-between;
+  gap: 24px;
 }
 
 .factura-empresa {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 
   .empresa-logo {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     background: $verde-claro;
-    border-radius: 12px;
+    color: $verde;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $verde;
-    font-size: 1.6rem;
-    border: 2px solid rgba($verde, 0.2);
+    font-size: 1.8rem;
+    border: 2px solid rgba($verde, 0.25);
     flex-shrink: 0;
   }
 
   .empresa-info {
     h2 {
-      margin: 0 0 4px;
-      font-size: 1.25rem;
+      margin: 0 0 2px;
+      font-size: 1.35rem;
       font-weight: 800;
-      color: #111827;
+      color: $gris-dark;
+      letter-spacing: -0.3px;
+    }
+
+    .empresa-tagline {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: $verde;
+      margin-bottom: 4px;
     }
 
     p {
       margin: 0;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: $gris;
-      line-height: 1.5;
+      line-height: 1.4;
     }
   }
 }
 
 .factura-meta {
-  text-align: right;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
 
+  .factura-tipo-pill {
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
   .factura-numero-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
+    text-align: right;
 
-  .factura-meta-label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: $gris;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-  }
+    .factura-meta-label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: $gris;
+      letter-spacing: 0.5px;
+    }
 
-  .factura-numero-valor {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: $verde;
-  }
-}
-
-.factura-divider {
-  border: none;
-  border-top: 1.5px solid $borde;
-  margin: 20px 0;
-}
-
-// Grid de info (cliente, fecha, método, TPV)
-.factura-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 0;
-
-  @media (max-width: 500px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.info-bloque {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  .info-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: $gris;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-
-    ion-icon { font-size: 0.85rem; }
-  }
-
-  .info-valor {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #111827;
-
-    &.metodo-con-icono {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-
-      ion-icon { font-size: 1rem; color: $gris; }
+    .factura-numero-valor {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: $verde;
+      letter-spacing: -0.4px;
     }
   }
 }
 
-// ─── Tabla de líneas ─────────────────────────────────────────────────────────
+.factura-divider {
+  border-top: 1.5px solid $borde;
+  margin: 0;
+}
 
+// Tarjetas de Cliente y Emisión
+.factura-info-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.factura-card-block {
+  background: #f8fafc;
+  border: 1px solid $borde;
+  border-radius: 12px;
+  padding: 14px 16px;
+
+  .card-block-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $gris;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+
+    ion-icon {
+      font-size: 0.95rem;
+      color: $verde;
+    }
+  }
+
+  .card-block-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .cliente-nombre-doc {
+      margin: 0;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: $gris-dark;
+    }
+
+    .info-kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+
+      .kv-title {
+        color: $gris;
+        font-weight: 500;
+      }
+
+      .kv-val {
+        font-weight: 600;
+        color: $gris-dark;
+
+        &.metodo-highlight {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          color: $verde;
+        }
+      }
+    }
+  }
+}
+
+// Tabla de Líneas de Factura
 .lineas-section {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.lineas-titulo {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #374151;
-  margin: 0 0 10px;
+.lineas-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .lineas-titulo {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: $gris-dark;
+
+    ion-icon {
+      color: $verde;
+      font-size: 1.05rem;
+    }
+  }
+
+  .lineas-count-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: $gris;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
 }
 
-$lc-cols: 1fr 60px 110px 70px 110px;
+$lineas-cols: 36px 1fr 60px 105px 65px 110px;
 
 .lineas-tabla {
-  border-radius: 10px;
-  overflow: hidden;
   border: 1px solid $borde;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .lineas-cabecera {
   display: grid;
-  grid-template-columns: $lc-cols;
-  padding: 8px 14px;
-  background: $gris-fondo;
+  grid-template-columns: $lineas-cols;
+  align-items: center;
+  padding: 9px 14px;
+  background: #f1f5f9;
   border-bottom: 2px solid $borde;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: $gris;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 
-  > div { padding: 0 4px; }
+  > div {
+    padding: 0 4px;
+  }
+
+  .lc-num { text-align: center; }
   .lc-cant, .lc-precio, .lc-iva, .lc-total { text-align: right; }
 }
 
 .linea-fila {
   display: grid;
-  grid-template-columns: $lc-cols;
-  padding: 10px 14px;
+  grid-template-columns: $lineas-cols;
   align-items: center;
-  border-bottom: 1px solid $gris-fondo;
-  font-size: 0.85rem;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.84rem;
 
-  &:last-child { border-bottom: none; }
-  &:nth-child(even) { background: lighten($gris-fondo, 1%); }
+  &:last-child {
+    border-bottom: none;
+  }
 
-  > div { padding: 0 4px; }
-  .lc-desc { color: #1e293b; font-weight: 500; }
-  .lc-cant, .lc-precio, .lc-iva, .lc-total {
-    text-align: right;
-    color: #374151;
+  &:nth-child(even) {
+    background: #fafbfc;
+  }
+
+  > div {
+    padding: 0 4px;
+  }
+
+  .lc-num {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.76rem;
     font-weight: 600;
   }
-  .lc-total { color: #111827; font-weight: 700; }
+
+  .lc-desc .linea-desc-texto {
+    font-weight: 600;
+    color: $gris-dark;
+  }
+
+  .lc-cant {
+    text-align: right;
+    .cant-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: $gris-dark;
+      font-weight: 700;
+    }
+  }
+
+  .lc-precio, .lc-iva {
+    text-align: right;
+    color: $gris-texto;
+    font-weight: 500;
+  }
+
+  .lc-total {
+    text-align: right;
+    font-weight: 700;
+    color: $gris-dark;
+  }
 }
 
-// ─── Totales ─────────────────────────────────────────────────────────────────
+// Bloque inferior: Totales y Nota Legal
+.factura-resumen-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.factura-nota-legal {
+  .nota-caja {
+    background: #f8fafc;
+    border: 1px dashed $borde;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    .nota-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: $verde;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin: 0 0 10px;
+      font-size: 0.74rem;
+      color: $gris;
+      line-height: 1.4;
+    }
+
+    .nota-qr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      ion-icon {
+        font-size: 2rem;
+        color: $gris-dark;
+      }
+
+      .nota-qr-info {
+        display: flex;
+        flex-direction: column;
+
+        span {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: $gris-dark;
+        }
+
+        small {
+          font-size: 0.65rem;
+          color: #94a3b8;
+          font-family: monospace;
+        }
+      }
+    }
+  }
+}
 
 .factura-totales {
-  margin-left: auto;
-  min-width: 260px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  border: 1px solid $borde;
-  border-radius: 10px;
+  border: 1.5px solid $borde;
+  border-radius: 12px;
   overflow: hidden;
-  margin-top: 0;
-}
+  background: $blanco;
 
-.total-fila {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 9px 16px;
-  border-bottom: 1px solid $gris-fondo;
-  font-size: 0.85rem;
+  .total-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.84rem;
 
-  &:last-child { border-bottom: none; }
-
-  span:first-child { color: $gris; font-weight: 500; }
-  span:last-child  { color: #374151; font-weight: 600; }
-
-  &.total-final {
-    background: $verde;
-    padding: 12px 16px;
-
-    span:first-child {
-      color: rgba($blanco, 0.9);
-      font-weight: 700;
-      font-size: 0.88rem;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
+    .tot-label {
+      color: $gris;
+      font-weight: 500;
     }
 
-    span:last-child {
-      color: $blanco;
-      font-size: 1.1rem;
-      font-weight: 800;
+    .tot-val {
+      color: $gris-dark;
+      font-weight: 700;
+    }
+
+    &.total-final {
+      background: linear-gradient(135deg, $verde 0%, $verde-dark 100%);
+      padding: 12px 16px;
+      border-bottom: none;
+
+      .total-final-info {
+        display: flex;
+        flex-direction: column;
+
+        .tot-final-title {
+          font-size: 0.88rem;
+          font-weight: 800;
+          color: $blanco;
+          letter-spacing: 0.4px;
+        }
+
+        .tot-final-sub {
+          font-size: 0.68rem;
+          color: rgba($blanco, 0.8);
+        }
+      }
+
+      .total-final-num {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: $blanco;
+        letter-spacing: -0.4px;
+      }
     }
   }
 }
 
-// ─── Pie de factura ──────────────────────────────────────────────────────────
-
+// Pie de Factura
 .factura-pie {
   text-align: center;
-  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
 
   p {
-    font-size: 0.72rem;
-    color: #9ca3af;
     margin: 0;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    font-weight: 500;
   }
 }
 
-// ─── Estilos de impresión ────────────────────────────────────────────────────
+// ─── Estilos de Impresión (@media print) ──────────────────────────────────────
 
 @media print {
-  ion-app > *:not(ion-modal) { display: none !important; }
+  ion-app > *:not(ion-modal) {
+    display: none !important;
+  }
 
   ion-modal.modal-detalle-factura {
     position: fixed !important;
@@ -996,7 +1399,7 @@ $lc-cols: 1fr 60px 110px 70px 110px;
   }
 
   .modal-detalle-content {
-    --background: white;
+    --background: white !important;
   }
 
   .factura-print-area {
@@ -1004,435 +1407,172 @@ $lc-cols: 1fr 60px 110px 70px 110px;
     border: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    padding: 20px !important;
+    padding: 16px !important;
   }
 }
 
+// ─── Responsive Móvil y Tablet ───────────────────────────────────────────────
 
-// =============================================================================
-// RESPONSIVE -- SECCION 1: TOOLBAR Y KPI (facturas)
-// =============================================================================
-
-// -- Movil (< 576px) ----------------------------------------------------------
-@media (max-width: 575px) {
-  .facturas-toolbar {
-    --min-height: 60px;
-    padding: 0 10px;
-  }
-
-  .facturas-title,
-  ion-toolbar.facturas-toolbar ion-title::part(native) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 0;
-  }
-
-  .title-left h1 {
-    font-size: 1.15rem;
-  }
-
-  .kpi-card {
-    min-width: unset;
-    width: 100%;
-    padding: 8px 12px;
-    gap: 10px;
-    border-radius: 10px;
-
-    .kpi-icon {
-      width: 36px;
-      height: 36px;
-      font-size: 1.1rem;
-    }
-
-    .kpi-valor {
-      font-size: 1.1rem;
-    }
-  }
-
-  .btn-volver-tpv {
-    height: 32px;
-    font-size: 0.78rem;
-    --padding-start: 8px;
-    --padding-end: 10px;
-  }
-}
-
-// -- Tablet (576px - 991px) ---------------------------------------------------
-@media (min-width: 576px) and (max-width: 991px) {
-  .facturas-toolbar {
-    --min-height: 70px;
-    padding: 0 16px;
-  }
-
-  .title-left h1 {
-    font-size: 1.3rem;
-  }
-
-  .kpi-card {
-    min-width: 190px;
-    padding: 10px 16px;
-
-    .kpi-icon {
-      width: 40px;
-      height: 40px;
-    }
-
-    .kpi-valor {
-      font-size: 1.2rem;
-    }
-  }
-}
-
-// -- Desktop (>= 992px) -------------------------------------------------------
-@media (min-width: 992px) {
-  .facturas-toolbar {
-    --min-height: 80px;
-    padding: 0 24px;
-  }
-
-  .title-left h1 {
-    font-size: 1.45rem;
-  }
-
-  .kpi-card {
-    min-width: 220px;
-    padding: 12px 20px;
-  }
-}
-
-
-// =============================================================================
-// RESPONSIVE -- SECCION 2: FILTROS (facturas)
-// =============================================================================
-
-// -- Movil --------------------------------------------------------------------
-@media (max-width: 575px) {
+@media (max-width: 860px) {
   .facturas-container {
-    padding: 10px 10px;
-    gap: 12px;
-  }
-
-  .filtros-card {
-    padding: 12px;
-    border-radius: 10px;
-  }
-
-  .filtros-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .fecha-range {
-    width: 100%;
-
-    .fecha-btn {
-      flex: 1;
-      justify-content: center;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-    }
-  }
-
-  .filtro-input,
-  .filtro-select {
-    padding: 8px 10px;
-    font-size: 0.82rem;
-  }
-
-  .filtros-acciones {
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-
-    .btn-limpiar,
-    .btn-aplicar {
-      width: 100%;
-      justify-content: center;
-      padding: 9px 12px;
-      font-size: 0.82rem;
-    }
-  }
-}
-
-// -- Tablet -------------------------------------------------------------------
-@media (min-width: 576px) and (max-width: 991px) {
-  .facturas-container {
-    padding: 14px 16px;
+    padding: 14px;
     gap: 14px;
   }
 
-  .filtros-card {
-    padding: 16px;
-    border-radius: 12px;
-  }
-
-  .filtros-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .filtros-acciones {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-}
-
-// -- Desktop ------------------------------------------------------------------
-@media (min-width: 992px) {
-  .facturas-container {
-    padding: 20px 24px;
-    gap: 16px;
-  }
-
-  .filtros-card {
-    padding: 20px;
-    border-radius: 14px;
-  }
-
-  .filtros-row {
-    grid-template-columns: auto 1fr 1fr 1fr;
-    gap: 16px;
-  }
-
-  .filtros-acciones {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-}
-
-
-// =============================================================================
-// RESPONSIVE -- SECCION 3: TABLA DE FACTURAS (facturas)
-// =============================================================================
-
-// -- Movil --------------------------------------------------------------------
-@media (max-width: 575px) {
-  .tabla-card {
-    border-radius: 10px;
-    overflow-x: auto;
-  }
-
-  .tabla-cabecera,
-  .tabla-fila {
-    min-width: 560px;
-    padding: 8px 12px;
-    font-size: 0.75rem;
-  }
-
-  .factura-id {
-    font-size: 0.76rem;
-  }
-
-  .cliente-nombre {
-    font-size: 0.78rem;
-  }
-
-  .total-valor {
-    font-size: 0.82rem;
-  }
-
-  .estado-badge {
-    font-size: 0.68rem;
-    padding: 3px 8px;
-  }
-
-  .btn-accion {
-    width: 26px;
-    height: 26px;
-    font-size: 0.85rem;
-  }
-}
-
-// -- Tablet -------------------------------------------------------------------
-@media (min-width: 576px) and (max-width: 991px) {
-  .tabla-card {
-    border-radius: 12px;
-    overflow-x: auto;
-  }
-
-  .tabla-cabecera,
-  .tabla-fila {
-    min-width: 680px;
-    padding: 10px 16px;
-  }
-}
-
-// -- Desktop ------------------------------------------------------------------
-@media (min-width: 992px) {
-  .tabla-card {
-    border-radius: 14px;
-  }
-
-  .tabla-cabecera,
-  .tabla-fila {
-    padding: 12px 20px;
-  }
-}
-
-
-// =============================================================================
-// RESPONSIVE -- SECCION 4: PAGINACION (facturas)
-// =============================================================================
-
-// -- Movil --------------------------------------------------------------------
-@media (max-width: 575px) {
-  .paginacion-row {
+  .factura-header {
     flex-direction: column;
-    align-items: center;
+    gap: 16px;
+  }
+
+  .factura-meta {
+    align-items: flex-start;
+    text-align: left;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    .factura-numero-wrap {
+      text-align: left;
+    }
+  }
+
+  .factura-info-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .factura-resumen-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  // En pantallas móviles: la tabla pasa a tarjetas independientes
+  .tabla-cabecera {
+    display: none;
+  }
+
+  .tabla-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .tabla-fila {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: $blanco;
+    border-radius: 14px;
+    border: 1.5px solid $borde;
+    box-shadow: $sombra-sm;
+    margin-bottom: 12px;
+    padding: 14px;
     gap: 10px;
-    padding: 8px 4px 16px;
+
+    &:hover {
+      box-shadow: $sombra-md;
+      transform: translateY(-1px);
+    }
+
+    .mobile-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 10px;
+    }
+
+    .col-id {
+      display: none;
+    }
+
+    .col-estado {
+      display: none;
+    }
+
+    .col-fecha {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .col-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+
+      .total-label-mobile {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $gris;
+        text-transform: uppercase;
+      }
+
+      .total-valor {
+        font-size: 1.15rem;
+        color: $verde;
+      }
+    }
+
+    .col-metodo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .col-acciones {
+      justify-content: stretch;
+      padding-top: 4px;
+
+      .btn-accion {
+        flex: 1;
+        height: 36px;
+      }
+    }
   }
 
-  .paginacion-info {
-    font-size: 0.74rem;
-    text-align: center;
-  }
-
-  .pag-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 0.78rem;
-  }
-}
-
-// -- Tablet -------------------------------------------------------------------
-@media (min-width: 576px) and (max-width: 991px) {
-  .paginacion-row {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 8px 4px;
-  }
-
-  .pag-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.82rem;
-  }
-}
-
-// -- Desktop ------------------------------------------------------------------
-@media (min-width: 992px) {
-  .paginacion-row {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 6px 4px;
-  }
-
-  .pag-btn {
-    width: 34px;
-    height: 34px;
-  }
-}
-
-
-// =============================================================================
-// RESPONSIVE -- SECCION 5: MODAL DETALLE DE FACTURA (facturas)
-// =============================================================================
-
-// -- Movil --------------------------------------------------------------------
-@media (max-width: 575px) {
   .modal-detalle-factura {
     --width: 100%;
     --border-radius: 16px 16px 0 0;
-    --max-height: 94vh;
-  }
-
-  .modal-detalle-toolbar {
-    padding: 0 4px;
-  }
-
-  .modal-detalle-title {
-    font-size: 0.88rem;
-    padding-inline-start: 8px;
-  }
-
-  .btn-modal-accion {
-    padding: 6px 8px;
-    font-size: 0.72rem;
-    gap: 4px;
-
-    span { display: none; }
-  }
-
-  .btn-modal-cerrar {
-    width: 28px;
-    height: 28px;
   }
 
   .factura-print-area {
     margin: 8px;
-    padding: 14px 10px;
-    border-radius: 10px;
+    padding: 18px 14px;
   }
 
-  .factura-empresa {
-    gap: 10px;
+  // Líneas de la factura adaptadas a móvil
+  .lineas-cabecera {
+    display: none;
+  }
 
-    .empresa-logo {
-      width: 40px;
-      height: 40px;
-      font-size: 1.2rem;
+  .linea-fila {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px 12px;
+    gap: 6px;
+
+    .lc-num {
+      display: none;
     }
 
-    .empresa-info h2 { font-size: 1rem; }
-    .empresa-info p { font-size: 0.72rem; }
-  }
-
-  .factura-info-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .lineas-tabla {
-    overflow-x: auto;
-
-    .lineas-cabecera,
-    .linea-fila {
-      min-width: 440px;
-      padding: 6px 8px;
-      font-size: 0.75rem;
+    .lc-desc {
+      width: 100%;
+      font-size: 0.9rem;
     }
-  }
 
-  .factura-totales {
-    width: 100%;
-    max-width: 100%;
-  }
-}
+    .lc-cant, .lc-precio, .lc-iva, .lc-total {
+      font-size: 0.8rem;
+    }
 
-// -- Tablet -------------------------------------------------------------------
-@media (min-width: 576px) and (max-width: 991px) {
-  .modal-detalle-factura {
-    --width: 90%;
-    --border-radius: 14px;
-  }
-
-  .factura-print-area {
-    margin: 14px;
-    padding: 20px 22px;
-  }
-
-  .factura-info-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-}
-
-// -- Desktop ------------------------------------------------------------------
-@media (min-width: 992px) {
-  .modal-detalle-factura {
-    --width: min(760px, 96vw);
-    --border-radius: 18px;
-  }
-
-  .factura-print-area {
-    margin: 20px;
-    padding: 28px 32px;
-  }
-
-  .factura-info-grid {
-    grid-template-columns: repeat(4, 1fr);
+    .lc-total {
+      color: $verde;
+      font-weight: 800;
+    }
   }
 }

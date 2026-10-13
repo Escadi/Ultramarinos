@@ -91,6 +91,7 @@ export class ClientePage implements OnInit {
   clientesFiltrados: Cliente[] = [];
 
   // ─── Modales ────────────────────────────────────────────────────────────────
+  modoFormCliente: 'crear' | 'editar' = 'crear';
   isDetalleOpen: boolean = false;
   isEditarOpen: boolean = false;
   clienteSeleccionado: Cliente | null = null;
@@ -151,8 +152,28 @@ export class ClientePage implements OnInit {
     this.clienteSeleccionado = null;
   }
 
-  // ─── Métodos para Modal Edición ─────────────────────────────────────────────
+  // ─── Métodos para Crear / Editar Cliente ────────────────────────────────────
+  abrirCrear() {
+    this.modoFormCliente = 'crear';
+    const nextNum = this.clientes.length + 1;
+    this.clienteForm = {
+      idString: `#CLI-${String(nextNum).padStart(5, '0')}`,
+      nombre: '',
+      apellidos: '',
+      contacto: '',
+      telefono: '',
+      email: '',
+      tipo: 'Fiel',
+      fechaCreacion: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      direccion: '',
+      cifNif: '',
+      notas: ''
+    };
+    this.isEditarOpen = true;
+  }
+
   abrirEditar(cliente: Cliente) {
+    this.modoFormCliente = 'editar';
     this.clienteForm = {
       ...cliente,
       telefono: cliente.telefono || (cliente.contacto.includes('@') ? '' : cliente.contacto),
@@ -178,9 +199,13 @@ export class ClientePage implements OnInit {
     // Actualiza contacto si aplica
     this.clienteForm.contacto = this.clienteForm.telefono || this.clienteForm.email || this.clienteForm.contacto;
 
-    const idx = this.clientes.findIndex(c => c.idString === this.clienteForm.idString);
-    if (idx !== -1) {
-      this.clientes[idx] = { ...this.clienteForm };
+    if (this.modoFormCliente === 'crear') {
+      this.clientes.unshift({ ...this.clienteForm });
+    } else {
+      const idx = this.clientes.findIndex(c => c.idString === this.clienteForm.idString);
+      if (idx !== -1) {
+        this.clientes[idx] = { ...this.clienteForm };
+      }
     }
     this.aplicarFiltros();
     this.isEditarOpen = false;

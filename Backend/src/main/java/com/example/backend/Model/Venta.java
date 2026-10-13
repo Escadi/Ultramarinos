@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class venta {
+public class Venta {
 
     @Id
     @GeneratedValue(
@@ -46,15 +46,15 @@ public class venta {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cliente_id", nullable = false)
-    private cliente cliente;
+    private Cliente cliente;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tpv_id", nullable = false)
-    private tpv tpv;
+    private Tpv tpv;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "turno_caja_id", nullable = false)
-    private turnoCaja turnoCaja;
+    private TurnoCaja turnoCaja;
 
     @PrePersist
     public void prePersist() {

@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class detalleVenta {
+public class DetalleVenta {
 
     @Id
     @GeneratedValue(
@@ -41,9 +41,9 @@ public class detalleVenta {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "venta_id", nullable = false)
-    private venta venta;
+    private Venta venta;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "producto_id", nullable = false)
-    private producto producto;
+    private Producto producto;
 }

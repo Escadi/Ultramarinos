@@ -43,6 +43,10 @@ export class DashboardControlPage implements OnInit {
     this.menuCtrl.toggle('mobileMenu');
   }
 
+  closeMenu() {
+    this.menuCtrl.close('mobileMenu');
+  }
+
   ngOnInit() {
     this.getAllData();
     // SUSCRIBIRSE A LOS CAMBIOS DE DATOS GLOBALES PARA QUE SE ACTUALICE EL CARRITO

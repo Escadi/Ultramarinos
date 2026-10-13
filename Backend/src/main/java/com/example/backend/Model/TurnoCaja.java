@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class turnoCaja {
+public class TurnoCaja {
 
 
     @Id
@@ -43,5 +43,5 @@ public class turnoCaja {
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_turno_empleado")
     )
-    private empleado empleado;
+    private Empleado empleado;
 }

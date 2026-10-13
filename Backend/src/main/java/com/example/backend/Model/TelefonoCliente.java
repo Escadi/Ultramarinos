@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class telefonoCliente {
+public class TelefonoCliente {
 
     @Id
     @GeneratedValue(
@@ -31,5 +31,5 @@ public class telefonoCliente {
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_telefono_cliente")
     )
-    private cliente cliente;
+    private Cliente cliente;
 }

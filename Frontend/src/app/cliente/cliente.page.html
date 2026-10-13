@@ -5,14 +5,20 @@
         <h1>Clientes</h1>
         <p>Gestión y fidelización de clientes</p>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <ion-icon name="people-outline"></ion-icon>
+      <div class="toolbar-actions">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <ion-icon name="people-outline"></ion-icon>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">TOTAL CLIENTES</span>
+            <span class="kpi-valor">{{ clientes.length }}</span>
+          </div>
         </div>
-        <div class="kpi-info">
-          <span class="kpi-label">TOTAL CLIENTES</span>
-          <span class="kpi-valor">{{ clientes.length }}</span>
-        </div>
+        <button class="btn-nuevo-cliente" (click)="abrirCrear()">
+          <ion-icon name="person-add-outline"></ion-icon>
+          <span>Nuevo Cliente</span>
+        </button>
       </div>
     </ion-title>
   </ion-toolbar>
@@ -333,8 +339,8 @@
       <ion-header class="ion-no-border">
         <ion-toolbar class="modal-cliente-toolbar">
           <ion-title class="modal-cliente-title">
-            <ion-icon name="create-outline"></ion-icon>
-            Editar Cliente ({{ clienteForm.idString }})
+            <ion-icon [name]="modoFormCliente === 'crear' ? 'person-add-outline' : 'create-outline'"></ion-icon>
+            {{ modoFormCliente === 'crear' ? 'Nuevo Cliente' : 'Editar Cliente' }} ({{ clienteForm.idString }})
           </ion-title>
           <ion-buttons slot="end">
             <button class="btn-modal-cerrar" (click)="cerrarEditar()" title="Cerrar">
@@ -412,7 +418,7 @@
             </button>
             <button class="btn-modal-guardar" (click)="guardarCliente()" [disabled]="!clienteForm.nombre.trim()">
               <ion-icon name="checkmark-outline"></ion-icon>
-              Guardar Cambios
+              {{ modoFormCliente === 'crear' ? 'Crear Cliente' : 'Guardar Cambios' }}
             </button>
           </div>
 

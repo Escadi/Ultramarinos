@@ -7,8 +7,8 @@
       <div class="mobile-menu-header">
         <!-- Logo compacto dentro del drawer -->
         <img src="assets/icon/minimarketLogo.png" alt="Logo Ultramarinos" class="mobile-logo"
-          routerLink="/dashboard-control/dashboard-page" />
-        <ion-button fill="clear" class="btn-logout-mobile" (click)="getOut()">
+          routerLink="/dashboard-control/dashboard-page" (click)="closeMenu()" />
+        <ion-button fill="clear" class="btn-logout-mobile" (click)="getOut()" title="Cerrar sesión">
           <ion-icon name="log-out-outline"></ion-icon>
         </ion-button>
       </div>
@@ -22,28 +22,65 @@
       </div>
       <div class="user-info">
         <p class="user-name">Administrador</p>
-        <p class="user-role" routerLink="/dashboard-control/setting-page">Ver perfil</p>
+        <p class="user-role" routerLink="/dashboard-control/setting-page" (click)="closeMenu()">Ver perfil</p>
       </div>
     </div>
 
-    <div class="nav-links-mobile">
-      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/dashboard-page"
-        routerLinkActive="active-tab">
-        <ion-icon name="home-outline" slot="start"></ion-icon> Dashboard
-      </ion-button>
-      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/tpv"
-        routerLinkActive="active-tab">
-        <ion-icon name="storefront-outline" slot="start"></ion-icon> TPV
-      </ion-button>
-      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/caja"
-        routerLinkActive="active-tab">
-        <ion-icon name="cash-outline" slot="start"></ion-icon> Caja
-      </ion-button>
-      <ion-button fill="clear" expand="block" class="nav-btn" routerLink="/dashboard-control/delivery-page"
-        routerLinkActive="active-tab">
-        <ion-icon name="car-outline" slot="start"></ion-icon> Pedido Cliente
-      </ion-button>
+    <!-- Título de sección estilo modal -->
+    <div class="mobile-nav-section-title">
+      <ion-icon name="grid-outline"></ion-icon>
+      <span>Navegación</span>
     </div>
+
+    <nav class="nav-links-mobile">
+      <a class="nav-btn" routerLink="/dashboard-control/dashboard-page" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="home-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">Dashboard</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+
+      <a class="nav-btn" routerLink="/dashboard-control/tpv" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">TPV</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+
+      <a class="nav-btn" routerLink="/dashboard-control/caja" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="cash-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">Caja</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+
+      <a class="nav-btn" routerLink="/dashboard-control/cliente" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="people-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">Clientes</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+
+      <a class="nav-btn" routerLink="/dashboard-control/facturas" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="receipt-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">Facturas</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+
+      <a class="nav-btn" routerLink="/dashboard-control/delivery-page" routerLinkActive="active-tab" (click)="closeMenu()">
+        <span class="nav-btn-icon-wrap">
+          <ion-icon name="car-outline"></ion-icon>
+        </span>
+        <span class="nav-btn-text">Pedido Cliente</span>
+        <ion-icon name="chevron-forward-outline" class="nav-btn-chevron"></ion-icon>
+      </a>
+    </nav>
   </ion-content>
 </ion-menu>
 
@@ -81,6 +118,12 @@
       </a>
       <a class="nav-item" routerLink="/dashboard-control/caja" routerLinkActive="active">
         <ion-icon name="cash-outline"></ion-icon> Caja
+      </a>
+      <a class="nav-item" routerLink="/dashboard-control/cliente" routerLinkActive="active">
+        <ion-icon name="people-outline"></ion-icon> Clientes
+      </a>
+      <a class="nav-item" routerLink="/dashboard-control/facturas" routerLinkActive="active">
+        <ion-icon name="receipt-outline"></ion-icon> Facturas
       </a>
       <a class="nav-item" routerLink="/dashboard-control/delivery-page" routerLinkActive="active">
         <ion-icon name="car-outline"></ion-icon> Pedido Cliente

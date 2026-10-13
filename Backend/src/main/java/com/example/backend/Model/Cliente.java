@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class cliente {
+public class Cliente {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -41,7 +41,7 @@ public class cliente {
             name = "rolcliente_id",
             foreignKey = @ForeignKey(name = "fk_cliente_rol")
     )
-    private rolCliente rolCliente;
+    private RolCliente rolCliente;
 
     @PrePersist
     public void prePersist() {

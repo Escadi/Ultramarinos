@@ -1,7 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AlertController } from '@ionic/angular';
-import { Myservice, SesionTPV, LineaTicketTPV } from '../service/myservice';
+import { Component, OnInit, OnDestroy, NgZone, ViewChild, ElementRef } from '@angular/core';
+import { AlertController, ToastController } from '@ionic/angular';
+import { Myservice, SesionTPV, LineaTicketTPV, TicketAparcado } from '../service/myservice';
 import { Subscription } from 'rxjs';
+import { Capacitor } from '@capacitor/core';
+import { Camera } from '@capacitor/camera';
+import 'barcode-detector/polyfill';
 
 interface Producto {
   id: number;
@@ -21,6 +24,13 @@ interface Producto {
   standalone: false
 })
 export class TPVPage implements OnInit, OnDestroy {
+
+  // ─── Ticket móvil (overlay) ─────────────────────────────────────────────────
+  ticketMobileVisible = false;
+
+  toggleTicketMobile() {
+    this.ticketMobileVisible = !this.ticketMobileVisible;
+  }
 
   // ─── Pestañas panel izquierdo ────────────────────────────────────────────────
   pestanaActiva: 'catalogo' | 'manual' = 'catalogo';
@@ -74,9 +84,33 @@ export class TPVPage implements OnInit, OnDestroy {
     return +(kg * this.modalPesoProducto.precio).toFixed(2);
   }
 
+  // ─── Escáner de códigos de barras (cámara) ──────────────────────────────────
+  scannerOpen = false;
+  scannerStream: MediaStream | null = null;
+  scannerAnimFrame: any = null;
+  scannerDetector: any = null;
+  scannerError = '';
+  scannerLastCode = '';
+  scannerProductoEncontrado: Producto | null = null;
+  scannerCooldown = false;
+  scannerIniciando = false;
+  scannerPermisoEstado: 'concedido' | 'denegado' | 'solicitando' | 'desconocido' = 'desconocido';
+  scannerPermisoDenegado = false;
+  scannerFacingMode: 'environment' | 'user' = 'environment';
+  scannerTieneLinterna = false;
+  scannerLinternaActiva = false;
+  @ViewChild('scannerVideo') scannerVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('scannerCanvas') scannerCanvas!: ElementRef<HTMLCanvasElement>;
+
+  // ─── Facturas y Tickets Aparcados ────────────────────────────────────────────
+  ticketsAparcados: TicketAparcado[] = [];
+  isAparcadasModalOpen: boolean = false;
+
   constructor(
     private myservice: Myservice,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private ngZone: NgZone
   ) { }
 
   ngOnInit() {
@@ -86,10 +120,17 @@ export class TPVPage implements OnInit, OnDestroy {
         this.sesionActivaIndex = Math.max(0, this.sesiones.length - 1);
       }
     });
+
+    this.sub.add(
+      this.myservice.ticketsAparcados$.subscribe(tickets => {
+        this.ticketsAparcados = tickets;
+      })
+    );
   }
 
   ngOnDestroy() {
     this.sub.unsubscribe();
+    this.cerrarScanner();
   }
 
   // ─── Gestión de Sesiones ─────────────────────────────────────────────────────
@@ -266,17 +307,187 @@ export class TPVPage implements OnInit, OnDestroy {
   get iva(): number { return this.subtotal * (this.IVA_PORCENTAJE / 100); }
   get total(): number { return this.subtotal + this.iva; }
 
-  // ─── Acciones ticket ─────────────────────────────────────────────────────────
-  aparcar() {
-    if (!this.sesionActiva) return;
-    console.log('Ticket aparcado:', this.sesionActiva.lineasTicket);
+  // ─── Acciones ticket: Aparcar y Recuperar ──────────────────────────────────
+  abrirModalAparcados() {
+    this.isAparcadasModalOpen = true;
   }
 
-  anular() {
+  cerrarModalAparcados() {
+    this.isAparcadasModalOpen = false;
+  }
+
+  async aparcar() {
     if (!this.sesionActiva) return;
+
+    // Si el ticket no tiene líneas
+    if (this.sesionActiva.lineasTicket.length === 0) {
+      if (this.ticketsAparcados.length > 0) {
+        this.abrirModalAparcados();
+      } else {
+        this.mostrarToast('No hay productos en el ticket para aparcar.', 'warning');
+      }
+      return;
+    }
+
+    const cliente = this.sesionActiva.clienteActual;
+    const tieneCliente = cliente && cliente !== 'Cliente Directo' && cliente !== 'Cliente Ocasional';
+
+    const alert = await this.alertController.create({
+      header: 'Aparcar Factura / Ticket',
+      subHeader: `${this.sesionActiva.lineasTicket.length} artículo(s) — Total: €${this.total.toFixed(2)}`,
+      message: 'El ticket se pondrá en espera para que puedas atender a otro cliente y recuperarlo después.',
+      inputs: [
+        {
+          name: 'nota',
+          type: 'text',
+          placeholder: 'Nota o referencia (ej: Fue al cajero / coche)',
+          value: tieneCliente ? cliente : ''
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Aparcar',
+          handler: (data) => {
+            this.ejecutarAparcar(data.nota);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  ejecutarAparcar(nota?: string) {
+    if (!this.sesionActiva || this.sesionActiva.lineasTicket.length === 0) return;
+
+    const nuevo = this.myservice.aparcarTicket({
+      empleado: this.sesionActiva.nombreEmpleado,
+      cliente: this.sesionActiva.clienteActual || 'Cliente Directo',
+      nota: (nota || '').trim(),
+      lineasTicket: JSON.parse(JSON.stringify(this.sesionActiva.lineasTicket)),
+      subtotal: this.subtotal,
+      iva: this.iva,
+      total: this.total
+    });
+
+    // Vaciar ticket activo para el siguiente cliente
     this.sesionActiva.lineasTicket = [];
     this.sesionActiva.clienteActual = 'Cliente Directo';
     this._guardarSesiones();
+
+    this.mostrarToast(`✓ Ticket #${nuevo.id} aparcado. TPV libre para el siguiente cliente.`, 'success');
+  }
+
+  async recuperarTicketAparcado(ticket: TicketAparcado) {
+    if (!this.sesionActiva) return;
+
+    // Si el ticket actual en pantalla ya contiene artículos
+    if (this.sesionActiva.lineasTicket.length > 0) {
+      const alert = await this.alertController.create({
+        header: 'Ticket actual con productos',
+        message: `El TPV ya tiene ${this.sesionActiva.lineasTicket.length} producto(s) (€${this.total.toFixed(2)}). ¿Qué deseas hacer con él antes de recuperar el ticket #${ticket.id}?`,
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          },
+          {
+            text: 'Aparcar actual y cargar este',
+            handler: () => {
+              this.ejecutarAparcar('Aparcado al recuperar #' + ticket.id);
+              this._cargarTicketEnSesion(ticket);
+              this.cerrarModalAparcados();
+            }
+          },
+          {
+            text: 'Descartar actual y cargar',
+            role: 'destructive',
+            handler: () => {
+              this._cargarTicketEnSesion(ticket);
+              this.cerrarModalAparcados();
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      // Si el TPV está libre, cargar directamente
+      this._cargarTicketEnSesion(ticket);
+      this.cerrarModalAparcados();
+    }
+  }
+
+  private _cargarTicketEnSesion(ticket: TicketAparcado) {
+    if (!this.sesionActiva) return;
+    this.sesionActiva.lineasTicket = JSON.parse(JSON.stringify(ticket.lineasTicket));
+    this.sesionActiva.clienteActual = ticket.cliente;
+    this._guardarSesiones();
+    this.myservice.eliminarTicketAparcado(ticket.id);
+    this.mostrarToast(`✓ Factura #${ticket.id} (${ticket.cliente}) recuperada en el TPV.`, 'success');
+  }
+
+  async confirmarEliminarAparcado(ticket: TicketAparcado, event?: Event) {
+    if (event) event.stopPropagation();
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar ticket aparcado',
+      message: `¿Deseas descartar definitivamente la factura #${ticket.id} (€${ticket.total.toFixed(2)})?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.myservice.eliminarTicketAparcado(ticket.id);
+            this.mostrarToast(`Factura #${ticket.id} descartada.`, 'medium');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  calcularTotalArticulos(ticket: TicketAparcado): number {
+    return ticket.lineasTicket.reduce((sum, l) => sum + (l.esPorPeso ? 1 : l.cantidad), 0);
+  }
+
+  async anular() {
+    if (!this.sesionActiva || this.sesionActiva.lineasTicket.length === 0) return;
+
+    const alert = await this.alertController.create({
+      header: 'Anular ticket',
+      message: '¿Estás seguro de que deseas anular todas las líneas del ticket actual?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Sí, anular',
+          role: 'destructive',
+          handler: () => {
+            this.sesionActiva!.lineasTicket = [];
+            this.sesionActiva!.clienteActual = 'Cliente Directo';
+            this._guardarSesiones();
+            this.mostrarToast('Ticket anulado.', 'medium');
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async mostrarToast(message: string, color: 'success' | 'warning' | 'danger' | 'medium' = 'success') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'top'
+    });
+    await toast.present();
   }
 
   // ─── Modal de Cobro ──────────────────────────────────────────────────────────
@@ -351,15 +562,29 @@ export class TPVPage implements OnInit, OnDestroy {
     );
   }
 
-  abrirClienteModal() {
+  // ─── Modal de Gestión de Cliente (Buscar / Nuevo) ───────────────────────────
+  tabClienteModal: 'buscar' | 'nuevo' = 'buscar';
+  isNuevoClienteModalOpen = false;
+  nuevoCliente = {
+    nombre: '',
+    apellidos: '',
+    contacto: '',
+    tipo: 'Ocasional'
+  };
+
+  abrirClienteModal(tab: 'buscar' | 'nuevo' = 'buscar') {
+    this.tabClienteModal = tab;
     this.isClienteModalOpen = true;
+    this.isNuevoClienteModalOpen = false;
     this.clienteSearchQuery = '';
     this.clienteManualNombre = '';
     this.clienteManualCif = '';
+    this.nuevoCliente = { nombre: '', apellidos: '', contacto: '', tipo: 'Ocasional' };
   }
 
   cerrarClienteModal() {
     this.isClienteModalOpen = false;
+    this.isNuevoClienteModalOpen = false;
   }
 
   seleccionarClienteModal(cliente: any) {
@@ -382,22 +607,12 @@ export class TPVPage implements OnInit, OnDestroy {
     this.cerrarClienteModal();
   }
 
-  // ─── Modal Crear Nuevo Cliente ───────────────────────────────────────────────
-  isNuevoClienteModalOpen = false;
-  nuevoCliente = {
-    nombre: '',
-    apellidos: '',
-    contacto: '',
-    tipo: 'Ocasional'
-  };
-
   abrirNuevoClienteModal() {
-    this.isNuevoClienteModalOpen = true;
-    this.nuevoCliente = { nombre: '', apellidos: '', contacto: '', tipo: 'Directa' };
+    this.abrirClienteModal('nuevo');
   }
 
   cerrarNuevoClienteModal() {
-    this.isNuevoClienteModalOpen = false;
+    this.cerrarClienteModal();
   }
 
   guardarNuevoCliente() {
@@ -417,10 +632,8 @@ export class TPVPage implements OnInit, OnDestroy {
     // Añadir a la lista de búsqueda
     this.clientesGuardados.unshift(clienteCreado);
 
-    // Asignar al ticket
+    // Asignar al ticket y cerrar modal
     this.seleccionarClienteModal(clienteCreado);
-
-    this.cerrarNuevoClienteModal();
   }
 
 
@@ -615,26 +828,255 @@ export class TPVPage implements OnInit, OnDestroy {
     }
   }
 
-  // ─── Lector QR / Código de Barras (Mock) ───────────────────────────────────
+  // ─── Lector de Códigos de Barras (Cámara real + Permisos) ──────────────────
   async scanQR() {
-    if (!this.sesionActiva) return;
+    if (!this.sesionActiva) {
+      alert('Debes tener una sesión o caja activa para escanear productos.');
+      return;
+    }
+    this.scannerError = '';
+    this.scannerLastCode = '';
+    this.scannerProductoEncontrado = null;
+    this.scannerCooldown = false;
+    this.scannerOpen = true;
 
-    const alert = await this.alertController.create({
-      header: 'Escáner QR / Código de Barras',
-      message: 'Simulando lectura de cámara en dispositivo móvil o tablet...',
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Simular Lectura Exitosa',
-          handler: () => {
-            // Escoge un producto aleatorio del catálogo
-            const productoAleatorio = this.productos[Math.floor(Math.random() * this.productos.length)];
-            this.agregarAlTicket(productoAleatorio, 1);
+    await this.iniciarCamara();
+  }
+
+  async solicitarPermisoCamara() {
+    this.scannerPermisoDenegado = false;
+    this.scannerError = '';
+    this.scannerPermisoEstado = 'solicitando';
+    await this.iniciarCamara();
+  }
+
+  async iniciarCamara() {
+    this.scannerIniciando = true;
+    this.scannerError = '';
+    this.scannerPermisoDenegado = false;
+
+    // 1. En Capacitor (Android / iOS nativo), solicitar permisos nativos
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const check = await Camera.checkPermissions();
+        if (check.camera !== 'granted') {
+          const res = await Camera.requestPermissions({ permissions: ['camera'] });
+          if (res.camera !== 'granted') {
+            this.scannerPermisoDenegado = true;
+            this.scannerPermisoEstado = 'denegado';
+            this.scannerIniciando = false;
+            this.scannerError = 'Permiso denegado. Concede permisos de cámara en Ajustes de la App.';
+            return;
           }
         }
-      ]
-    });
-    await alert.present();
+      } catch (capErr) {
+        console.warn('Advertencia comprobando permisos con Capacitor:', capErr);
+      }
+    }
+
+    // 2. Comprobar disponibilidad de mediaDevices
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.scannerPermisoDenegado = true;
+      this.scannerPermisoEstado = 'denegado';
+      this.scannerIniciando = false;
+      this.scannerError = 'Tu navegador o entorno no permite acceso a la cámara (se requiere HTTPS o localhost).';
+      return;
+    }
+
+    // 3. Inicializar BarcodeDetector si está disponible
+    try {
+      if (!this.scannerDetector && (window as any).BarcodeDetector) {
+        this.scannerDetector = new (window as any).BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'code_93',
+                    'codabar', 'itf', 'upc_a', 'upc_e', 'qr_code', 'data_matrix']
+        });
+      }
+    } catch (detErr) {
+      console.warn('BarcodeDetector init:', detErr);
+    }
+
+    // 4. Detener stream anterior si estuviera activo
+    if (this.scannerStream) {
+      this.scannerStream.getTracks().forEach(t => t.stop());
+      this.scannerStream = null;
+    }
+
+    // 5. Solicitar getUserMedia (desencadena el popup del navegador para pedir permisos)
+    try {
+      this.scannerStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: this.scannerFacingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
+
+      this.scannerPermisoEstado = 'concedido';
+      this.scannerPermisoDenegado = false;
+      this.scannerIniciando = false;
+
+      // Verificar si el track soporta linterna (flash)
+      const track = this.scannerStream.getVideoTracks()[0];
+      if (track && (track.getCapabilities as any)) {
+        try {
+          const caps = (track.getCapabilities as any)();
+          this.scannerTieneLinterna = !!caps?.torch;
+        } catch (_) {
+          this.scannerTieneLinterna = false;
+        }
+      }
+
+      // Conectar stream al elemento video
+      setTimeout(() => {
+        if (this.scannerVideo?.nativeElement && this.scannerStream) {
+          const video = this.scannerVideo.nativeElement;
+          video.srcObject = this.scannerStream;
+          video.play().then(() => {
+            this.startScanLoop();
+          }).catch(err => {
+            console.error('Error al reproducir video:', err);
+            this.scannerError = 'No se pudo iniciar el visor de cámara.';
+          });
+        }
+      }, 300);
+
+    } catch (err: any) {
+      console.error('Error al acceder a la cámara:', err);
+      this.scannerIniciando = false;
+      this.scannerPermisoDenegado = true;
+      this.scannerPermisoEstado = 'denegado';
+
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        this.scannerError = 'Permiso de cámara denegado. Haz clic en "Dar permisos a la cámara" o autoriza en el candado 🔒 de la barra de direcciones.';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        this.scannerError = 'No se encontró ninguna cámara disponible en este dispositivo.';
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        this.scannerError = 'La cámara está siendo utilizada por otra aplicación.';
+      } else {
+        this.scannerError = 'Error al acceder a la cámara: ' + (err.message || err);
+      }
+    }
+  }
+
+  async cambiarCamara() {
+    this.scannerFacingMode = this.scannerFacingMode === 'environment' ? 'user' : 'environment';
+    if (this.scannerStream) {
+      this.scannerStream.getTracks().forEach(t => t.stop());
+      this.scannerStream = null;
+    }
+    await this.iniciarCamara();
+  }
+
+  async toggleLinterna() {
+    if (!this.scannerStream) return;
+    const track = this.scannerStream.getVideoTracks()[0];
+    if (!track) return;
+    try {
+      this.scannerLinternaActiva = !this.scannerLinternaActiva;
+      await (track as any).applyConstraints({
+        advanced: [{ torch: this.scannerLinternaActiva }]
+      });
+    } catch (e) {
+      console.warn('Error alternando linterna:', e);
+    }
+  }
+
+  private startScanLoop() {
+    if (!this.scannerVideo?.nativeElement || !this.scannerCanvas?.nativeElement) return;
+
+    const video = this.scannerVideo.nativeElement;
+    const canvas = this.scannerCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const scan = async () => {
+      if (!this.scannerOpen || !this.scannerDetector || this.scannerPermisoDenegado) return;
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        try {
+          const barcodes = await this.scannerDetector.detect(canvas);
+          if (barcodes.length > 0 && !this.scannerCooldown) {
+            const code = barcodes[0].rawValue;
+            if (code && code !== this.scannerLastCode) {
+              this.ngZone.run(() => {
+                this.scannerLastCode = code;
+                this.procesarCodigoEscaneado(code);
+              });
+            }
+          }
+        } catch (e) {
+          // Ignorar errores de frame individuales
+        }
+      }
+
+      this.scannerAnimFrame = requestAnimationFrame(scan);
+    };
+
+    this.scannerAnimFrame = requestAnimationFrame(scan);
+  }
+
+  procesarCodigoEscaneado(codigo: string) {
+    // Buscar por código exacto o por ID
+    const producto = this.productos.find(
+      p => p.codigo === codigo || p.id.toString() === codigo
+    );
+
+    if (producto) {
+      this.scannerProductoEncontrado = producto;
+      this.scannerCooldown = true;
+
+      // Vibrar si la API está disponible
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+
+      // Añadir automáticamente al ticket
+      this.agregarAlTicket(producto, 1);
+
+      // Cooldown para evitar lecturas duplicadas
+      setTimeout(() => {
+        this.scannerCooldown = false;
+        this.scannerProductoEncontrado = null;
+        this.scannerLastCode = '';
+      }, 2000);
+    } else {
+      this.scannerProductoEncontrado = null;
+      this.scannerError = `Código "${codigo}" no encontrado en el catálogo`;
+      setTimeout(() => {
+        this.scannerError = '';
+        this.scannerLastCode = '';
+      }, 2500);
+    }
+  }
+
+  cerrarScanner() {
+    this.scannerOpen = false;
+    this.scannerIniciando = false;
+    this.scannerPermisoDenegado = false;
+    this.scannerLinternaActiva = false;
+
+    // Detener el loop de escaneo
+    if (this.scannerAnimFrame) {
+      cancelAnimationFrame(this.scannerAnimFrame);
+      this.scannerAnimFrame = null;
+    }
+
+    // Detener la cámara
+    if (this.scannerStream) {
+      this.scannerStream.getTracks().forEach(track => track.stop());
+      this.scannerStream = null;
+    }
+
+    // Limpiar detector
+    this.scannerDetector = null;
+    this.scannerError = '';
+    this.scannerLastCode = '';
+    this.scannerProductoEncontrado = null;
   }
 
   confirmarEntrada() {

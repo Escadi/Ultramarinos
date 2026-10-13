@@ -578,10 +578,17 @@ $bp-desktop-min: 992px;
 // ─── Mobile Menu ─────────────────────────────────────────────────────────────
 
 .mobile-menu {
+  --width: 300px;
+  --max-width: 85vw;
+
   .mobile-menu-toolbar {
     --background: #{$blanco};
     border-bottom: 1px solid $borde;
     padding-top: var(--ion-safe-area-top, env(safe-area-inset-top, 0px));
+  }
+
+  .mobile-menu-content {
+    --background: #{$gris-fondo};
   }
 
   .mobile-menu-header {
@@ -591,12 +598,16 @@ $bp-desktop-min: 992px;
     padding: 10px 16px;
 
     .mobile-logo {
-      height: 26px;
+      height: 28px;
+      cursor: pointer;
     }
 
     .btn-logout-mobile {
       color: #ef4444;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      height: 36px;
     }
   }
 
@@ -604,27 +615,36 @@ $bp-desktop-min: 992px;
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 20px;
+    padding: 18px 20px;
     border-bottom: 1px solid $borde;
-    background: #fafbfc;
+    background: $blanco;
 
     .avatar-mobile {
       width: 48px;
       height: 48px;
-      border-radius: 50%;
+      border-radius: 12px;
       overflow: hidden;
+      border: 1.5px solid $borde;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      flex-shrink: 0;
 
       img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
       }
     }
 
     .user-info {
+      min-width: 0;
+
       .user-name {
         margin: 0 0 2px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.02rem;
         font-weight: 700;
         color: #111827;
+        letter-spacing: -0.2px;
       }
 
       .user-role {
@@ -633,35 +653,122 @@ $bp-desktop-min: 992px;
         color: $verde;
         font-weight: 600;
         cursor: pointer;
+        transition: color 0.15s;
+
+        &:hover {
+          color: #135c36;
+          text-decoration: underline;
+        }
       }
     }
   }
 
+  // Título de sección idéntico al estilo modal (.bloque-titulo / .filtro-label)
+  .mobile-nav-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 20px 8px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    ion-icon {
+      font-size: 0.95rem;
+      color: $verde;
+    }
+  }
+
   .nav-links-mobile {
-    padding: 12px 0;
+    padding: 6px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
     .nav-btn {
-      --padding-start: 20px;
-      --color: #374151;
-      font-weight: 600;
-      font-size: 0.95rem;
-      justify-content: flex-start;
-      height: 50px;
-      margin: 4px 12px;
-      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: $blanco;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      cursor: pointer;
+      user-select: none;
 
-      ion-icon {
-        color: #9ca3af;
-        margin-right: 12px;
-        font-size: 1.2rem;
+      .nav-btn-icon-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #f1f5f9;
+        color: #475569;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+
+        ion-icon {
+          font-size: 1.2rem;
+        }
+      }
+
+      .nav-btn-text {
+        flex: 1;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.96rem;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        text-transform: none;
+        color: #111827;
+        line-height: 1.2;
+      }
+
+      .nav-btn-chevron {
+        font-size: 1.05rem;
+        color: #94a3b8;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+
+      &:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        transform: translateX(2px);
+
+        .nav-btn-chevron {
+          transform: translateX(2px);
+          color: $verde;
+        }
+      }
+
+      &:active {
+        transform: scale(0.98);
       }
 
       &.active-tab {
-        --color: #{$verde};
-        --background: #{$verde-claro};
+        background: $verde-claro;
+        border-color: rgba($verde, 0.35);
+        box-shadow: 0 3px 10px rgba($verde, 0.12);
 
-        ion-icon {
+        .nav-btn-icon-wrap {
+          background: $verde;
+          color: $blanco;
+          box-shadow: 0 2px 6px rgba($verde, 0.3);
+        }
+
+        .nav-btn-text {
           color: $verde;
+          font-weight: 800;
+        }
+
+        .nav-btn-chevron {
+          color: $verde;
+          transform: translateX(2px);
         }
       }
     }

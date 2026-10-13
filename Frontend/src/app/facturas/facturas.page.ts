@@ -202,6 +202,135 @@ export class FacturasPage implements OnInit {
     this.imprimirFactura();
   }
 
+  imprimirTicket() {
+    if (!this.facturaDetalle) return;
+
+    const f = this.facturaDetalle;
+
+    // Generar líneas HTML del ticket
+    let lineasHtml = '';
+    f.lineas.forEach((l) => {
+      const lineTotal = (l.cantidad * l.precioUnitario).toFixed(2);
+      lineasHtml += `
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+          <span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 6px;">${l.cantidad}x ${l.descripcion}</span>
+          <span style="white-space: nowrap;">€${lineTotal}</span>
+        </div>`;
+    });
+
+    const fechaStr = new Date(f.fecha).toLocaleString('es-ES', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    const html = `<html><head><title>Ticket - ${f.id}</title><style>
+      body {
+        font-family: 'Courier New', Courier, monospace;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+      }
+      .ticket {
+        width: 80mm;
+        padding: 5mm;
+        text-align: left;
+        color: #000;
+      }
+      .center { text-align: center; }
+      h2 { font-size: 18px; margin: 0 0 2mm 0; }
+      h3 { font-size: 14px; margin: 0 0 1mm 0; }
+      p { font-size: 11px; margin: 1px 0; }
+      .sep { border-top: 1px dashed #000; margin: 4mm 0; }
+      .sep-doble { border-top: 2px dashed #000; margin: 4mm 0; }
+      .fila { display: flex; justify-content: space-between; font-size: 12px; margin: 1px 0; }
+      .fila-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-top: 3mm; }
+      .fila-sub { display: flex; justify-content: space-between; font-size: 11px; color: #333; margin: 1px 0; }
+      .badge { display: inline-block; padding: 1px 6px; border: 1px solid #000; border-radius: 3px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+      @media print {
+        @page { size: 80mm auto; margin: 0; }
+        body { margin: 0; padding: 0; }
+      }
+    </style></head><body><div class="ticket">
+
+      <div class="center">
+        <h2>TIENDA PUEBLO</h2>
+        <p>Calle Mayor, 1 · 28001 Madrid</p>
+        <p>CIF: B-12345678 · Tel: 910 000 000</p>
+      </div>
+
+      <div class="sep-doble"></div>
+
+      <div class="center">
+        <h3>COPIA DE TICKET</h3>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="fila"><span>Nº Factura:</span><span>${f.id}</span></div>
+      <div class="fila"><span>Fecha:</span><span>${fechaStr}</span></div>
+      <div class="fila"><span>Cliente:</span><span>${f.clienteNombre || 'Cliente Ocasional'}</span></div>
+      ${f.metodoPago ? `<div class="fila"><span>Método:</span><span>${f.metodoPago}</span></div>` : ''}
+      <div class="fila"><span>Estado:</span><span class="badge">${f.estado}</span></div>
+
+      <div class="sep-doble"></div>
+
+      ${lineasHtml}
+
+      <div class="sep"></div>
+
+      <div class="fila-sub"><span>Subtotal (sin IVA)</span><span>€${f.subtotal.toFixed(2)}</span></div>
+      <div class="fila-sub"><span>IVA (21%)</span><span>€${f.totalIva.toFixed(2)}</span></div>
+
+      <div class="sep"></div>
+
+      <div class="fila-total">
+        <span>TOTAL:</span>
+        <span>€${f.total.toFixed(2)}</span>
+      </div>
+
+      <div class="sep-doble"></div>
+
+      <p class="center" style="margin-top: 4mm; font-size: 11px;">¡Gracias por su compra!</p>
+      <p class="center" style="font-size: 9px; color: #666; margin-top: 2mm;">TiendaPueblo © ${this.anioActual}</p>
+      <p class="center" style="font-size: 9px; color: #999; margin-top: 1mm;">--- Copia de factura ---</p>
+
+    </div></body></html>`;
+
+    // Crear iframe oculto, escribir el HTML y lanzar impresión
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.top = '-10000px';
+    iframe.style.left = '-10000px';
+    iframe.style.width = '80mm';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(html);
+      doc.close();
+
+      setTimeout(() => {
+        try {
+          iframe.contentWindow?.focus();
+          iframe.contentWindow?.print();
+        } catch (e) {
+          console.error('Error al imprimir ticket:', e);
+        } finally {
+          setTimeout(() => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+          }, 1000);
+        }
+      }, 150);
+    }
+  }
+
   private generarLineasDemo(totalFinal: number): FacturaLinea[] {
     const productos = [
       'Pan artesano 500g', 'Leche entera 1L', 'Aceite oliva virgen 1L',

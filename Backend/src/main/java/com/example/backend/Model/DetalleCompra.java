@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class detalleCompra {
+public class DetalleCompra {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
@@ -40,9 +40,9 @@ public class detalleCompra {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "compra_id", nullable = false)
-    private compra compra;
+    private Compra compra;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "producto_id", nullable = false)
-    private producto producto;
+    private Producto producto;
 }

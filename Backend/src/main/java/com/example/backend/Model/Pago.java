@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class pago {
+public class Pago {
 
     @Id
     @GeneratedValue(
@@ -36,7 +36,7 @@ public class pago {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "venta_id", nullable = false)
-    private venta venta;
+    private Venta venta;
 
     @PrePersist
     public void prePersist() {

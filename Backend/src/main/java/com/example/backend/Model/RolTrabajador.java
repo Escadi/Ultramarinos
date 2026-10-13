@@ -1,4 +1,4 @@
-package com.example.backend.model;
+package com.example.backend.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class rolTrabajador {
+public class RolTrabajador {
 
 
     @Id

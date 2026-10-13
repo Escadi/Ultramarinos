@@ -53,17 +53,60 @@ $bp-desktop-min: 992px;
 
   .search-wrapper {
     flex: 1;
-    max-width: 480px;
-    margin: 0 16px;
+    max-width: 520px;
+    margin: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .tpv-searchbar {
+    flex: 1;
     --background: #{$gris-fondo};
     --border-radius: 20px;
     --box-shadow: none;
     --placeholder-color: #aaa;
     padding: 0;
     height: 38px;
+  }
+
+  .btn-escanear-toolbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, $verde-primario, #1b5e20);
+    color: $blanco;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(45, 122, 79, 0.35);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(45, 122, 79, 0.45);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    @media (max-width: 575px) {
+      padding: 0 10px;
+      .btn-scan-text {
+        display: none;
+      }
+    }
   }
 
   .notif-btn {
@@ -325,10 +368,42 @@ $bp-desktop-min: 992px;
       margin: 0 0 2px;
     }
 
+    .ticket-subtitulo-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .ticket-cliente {
       font-size: 0.78rem;
       color: $gris-texto;
       margin: 0;
+    }
+
+    .pill-aparcados-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      ion-icon {
+        font-size: 0.85rem;
+        color: #d97706;
+      }
+
+      &:hover {
+        background: #fde68a;
+        transform: translateY(-1px);
+      }
     }
 
     .header-actions {
@@ -560,8 +635,48 @@ $bp-desktop-min: 992px;
         border-color: $azul-aparcar;
         color: $azul-aparcar;
 
-        &:hover {
+        &:hover:not(:disabled) {
           background: rgba($azul-aparcar, 0.08);
+        }
+
+        &:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn-recuperar {
+        background: transparent;
+        border-color: #64748b;
+        color: #475569;
+        position: relative;
+
+        &:hover {
+          background: rgba(100, 116, 139, 0.08);
+        }
+
+        &.has-aparcados {
+          background: #fffbeb;
+          border-color: #f59e0b;
+          color: #b45309;
+          font-weight: 700;
+
+          &:hover {
+            background: #fef3c7;
+          }
+        }
+
+        .badge-aparcadas-count {
+          background: #f59e0b;
+          color: #ffffff;
+          font-size: 0.68rem;
+          font-weight: 700;
+          padding: 1px 5px;
+          border-radius: 999px;
+          min-width: 17px;
+          text-align: center;
+          line-height: 1.2;
+          box-shadow: 0 1px 2px rgba(245, 158, 11, 0.4);
         }
       }
 
@@ -1792,6 +1907,402 @@ $bp-desktop-min: 992px;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// MODAL DE FACTURAS APARCADAS
+// ═══════════════════════════════════════════════════════════════════════════
+
+.modal-aparcadas {
+  --width: min(560px, 96vw);
+  --border-radius: 18px;
+  --max-height: 90vh;
+}
+
+.aparcadas-toolbar {
+  --background: #{$blanco};
+  border-bottom: 1px solid $borde;
+  padding: 4px 8px;
+}
+
+.aparcadas-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  padding-inline-start: 16px;
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: #f59e0b;
+  }
+
+  .aparcadas-header-badge {
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+  }
+}
+
+.btn-aparcadas-cerrar {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+}
+
+.aparcadas-content {
+  --background: #f8fafc;
+}
+
+.aparcadas-panel {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.aparcadas-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  font-size: 0.82rem;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 1.15rem;
+    color: #16a34a;
+    flex-shrink: 0;
+  }
+}
+
+.aparcadas-vacio {
+  text-align: center;
+  padding: 40px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .aparcadas-vacio-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fef3c7;
+    color: #d97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 0 0 20px;
+    font-size: 0.85rem;
+    color: #64748b;
+    max-width: 380px;
+    line-height: 1.5;
+
+    strong {
+      color: #0f172a;
+    }
+  }
+
+  .btn-volver-tpv {
+    padding: 10px 22px;
+    border-radius: 10px;
+    background: $verde-primario;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #135c36;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.aparcadas-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aparcada-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+  }
+
+  .aparcada-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+
+    .aparcada-badge-id {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: monospace;
+
+      ion-icon {
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+    }
+
+    .aparcada-hora {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 0.76rem;
+      font-weight: 500;
+
+      ion-icon {
+        font-size: 0.85rem;
+      }
+    }
+
+    .aparcada-total {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: $verde-primario;
+      letter-spacing: -0.3px;
+    }
+  }
+
+  .aparcada-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .aparcada-cliente-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .avatar-cliente {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e0f2fe;
+        color: #0284c7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .cliente-datos {
+        display: flex;
+        flex-direction: column;
+
+        .cliente-nombre {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .empleado-atendio {
+          font-size: 0.72rem;
+          color: #64748b;
+        }
+      }
+    }
+
+    .aparcada-nota-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #fffbeb;
+      border-left: 3px solid #f59e0b;
+      color: #92400e;
+      font-size: 0.78rem;
+
+      ion-icon {
+        font-size: 0.9rem;
+        color: #d97706;
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+    }
+
+    .aparcada-resumen-box {
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      padding: 8px 12px;
+
+      .resumen-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 6px;
+
+        .count-badge {
+          font-size: 0.76rem;
+          font-weight: 700;
+          color: #334155;
+        }
+
+        .subtotal-desc {
+          font-size: 0.7rem;
+          color: #94a3b8;
+        }
+      }
+
+      .mini-lineas-scroll {
+        max-height: 90px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .mini-linea-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 0.75rem;
+
+          .mini-qty {
+            font-weight: 700;
+            color: #475569;
+            min-width: 24px;
+          }
+
+          .mini-nombre {
+            flex: 1;
+            color: #334155;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .mini-precio {
+            font-weight: 600;
+            color: #0f172a;
+          }
+        }
+      }
+    }
+  }
+
+  .aparcada-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+
+    .btn-accion-recuperar {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: $verde-primario;
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.18s;
+
+      ion-icon {
+        font-size: 1.05rem;
+      }
+
+      &:hover {
+        background: #135c36;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
+    .btn-accion-eliminar {
+      padding: 10px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #dc2626;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.15s;
+
+      &:hover {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #b91c1c;
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // MODAL DE CLIENTE
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1819,6 +2330,47 @@ $bp-desktop-min: 992px;
   ion-icon {
     font-size: 1.2rem;
     color: $verde-primario;
+  }
+}
+
+.cliente-modal-tabs {
+  display: flex;
+  background: $blanco;
+  padding: 8px 16px;
+  gap: 8px;
+  border-bottom: 1px solid $borde;
+
+  .tab-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1.5px solid $borde;
+    background: #f8fafc;
+    color: $gris-texto;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    &.active {
+      background: $verde-claro;
+      color: $verde-primario;
+      border-color: rgba($verde-primario, 0.4);
+      box-shadow: 0 2px 6px rgba($verde-primario, 0.15);
+    }
   }
 }
 
@@ -2035,6 +2587,65 @@ $bp-desktop-min: 992px;
     font-weight: 600;
     margin: 0;
     width: 100%;
+  }
+
+  .btn-cambiar-a-nuevo {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px dashed rgba($verde-primario, 0.6);
+    background: rgba($verde-primario, 0.05);
+    color: $verde-primario;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+
+    &:hover {
+      background: rgba($verde-primario, 0.12);
+      border-color: $verde-primario;
+    }
+  }
+}
+
+.cliente-subtitulo-form {
+  font-size: 0.8rem;
+  color: $gris-texto;
+  margin: -6px 0 16px;
+}
+
+.acciones-nuevo-cliente {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+
+  .btn-volver-buscar {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1.5px solid $borde;
+    background: $blanco;
+    color: $gris-texto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+  }
+
+  .btn-cliente-manual {
+    flex: 1.5;
   }
 }
 
@@ -2332,10 +2943,10 @@ $bp-desktop-min: 992px;
 }
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 1: TOOLBAR
+// RESPONSIVE � SECCI�N 1: TOOLBAR
 // -------------------------------------------------------------------------------
 
-// -- Toolbar � M�vil ----------------------------------------------------------
+// -- Toolbar � M�vil ----------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .tpv-toolbar {
     padding: 2px 6px;
@@ -2348,7 +2959,7 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Toolbar � Tablet ---------------------------------------------------------
+// -- Toolbar � Tablet ---------------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .tpv-toolbar {
     padding: 3px 10px;
@@ -2359,7 +2970,7 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Toolbar � Desktop --------------------------------------------------------
+// -- Toolbar � Desktop --------------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .tpv-toolbar {
     padding: 4px 12px;
@@ -2372,10 +2983,10 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 2: BARRA DE SESIONES MULTIUSUARIO
+// RESPONSIVE � SECCI�N 2: BARRA DE SESIONES MULTIUSUARIO
 // -------------------------------------------------------------------------------
 
-// -- Sesiones � M�vil ---------------------------------------------------------
+// -- Sesiones � M�vil ---------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .sesiones-bar { padding: 6px 8px; gap: 6px; }
 
@@ -2396,14 +3007,14 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Sesiones � Tablet --------------------------------------------------------
+// -- Sesiones � Tablet --------------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .sesiones-bar     { padding: 7px 12px; gap: 8px; }
   .sesion-tab        { font-size: 0.8rem; padding: 6px 12px; }
   .nueva-sesion-btn  { font-size: 0.8rem; padding: 6px 10px; }
 }
 
-// -- Sesiones � Desktop -------------------------------------------------------
+// -- Sesiones � Desktop -------------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .sesiones-bar     { padding: 8px 16px; gap: 10px; }
   .sesion-tab        { font-size: 0.85rem; padding: 6px 14px; }
@@ -2412,39 +3023,65 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 3: LAYOUT PRINCIPAL (panel-catalogo / panel-ticket)
+// RESPONSIVE � SECCI�N 3: LAYOUT PRINCIPAL (panel-catalogo / panel-ticket)
 // -------------------------------------------------------------------------------
 
-// -- Layout � M�vil -----------------------------------------------------------
+// -- Layout � M�vil -----------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .tpv-layout { flex-direction: column; }
 
   .panel-catalogo {
     padding: 10px;
-    max-height: 60vh;
+    max-height: none;
     overflow-y: auto;
+    flex: 1;
+  }
+
+  .panel-catalogo {
+    max-height: none;
+    flex: 1;
   }
 
   .panel-ticket {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
+    height: 100%;
+    max-height: 100%;
     min-width: unset;
-    height: auto;
-    max-height: 40vh;
     border-left: none;
-    border-top: 2px solid $borde;
-    padding: 10px;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    border-top: none;
+    padding: 16px;
+    z-index: 9999;
+    background: $blanco;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.18);
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &.mobile-open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
   }
 }
 
-// -- Layout � Tablet ----------------------------------------------------------
+// -- Layout � Tablet ----------------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .tpv-layout { flex-direction: row; }
   .panel-catalogo { padding: 12px; }
   .panel-ticket { width: 260px; min-width: 240px; padding: 12px; }
 }
 
-// -- Layout � Desktop ---------------------------------------------------------
+// -- Layout � Desktop ---------------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .tpv-layout { flex-direction: row; }
   .panel-catalogo { padding: 16px; }
@@ -2453,10 +3090,10 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 4: GRID DE PRODUCTOS
+// RESPONSIVE � SECCI�N 4: GRID DE PRODUCTOS
 // -------------------------------------------------------------------------------
 
-// -- Productos � M�vil --------------------------------------------------------
+// -- Productos � M�vil --------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
 
@@ -2472,7 +3109,7 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Productos � Tablet -------------------------------------------------------
+// -- Productos � Tablet -------------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
 
@@ -2482,17 +3119,17 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Productos � Desktop ------------------------------------------------------
+// -- Productos � Desktop ------------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .panel-catalogo .productos-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 }
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 5: ENTRADA MANUAL + TECLADO NUM�RICO
+// RESPONSIVE � SECCI�N 5: ENTRADA MANUAL + TECLADO NUM�RICO
 // -------------------------------------------------------------------------------
 
-// -- Entrada Manual � M�vil ---------------------------------------------------
+// -- Entrada Manual � M�vil ---------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .display-manual {
     padding: 10px;
@@ -2509,14 +3146,14 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Entrada Manual � Tablet --------------------------------------------------
+// -- Entrada Manual � Tablet --------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .display-manual { padding: 12px; }
   .valor-texto    { font-size: 1.6rem; }
   .teclado .teclado-grid .key { height: 50px; font-size: 1.15rem; }
 }
 
-// -- Entrada Manual � Desktop -------------------------------------------------
+// -- Entrada Manual � Desktop -------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .display-manual { padding: 16px; }
   .valor-texto    { font-size: 1.8rem; }
@@ -2525,10 +3162,10 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 6: PANEL TICKET
+// RESPONSIVE � SECCI�N 6: PANEL TICKET
 // -------------------------------------------------------------------------------
 
-// -- Panel Ticket � M�vil -----------------------------------------------------
+// -- Panel Ticket � M�vil -----------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .panel-ticket {
     .ticket-header .ticket-titulo  { font-size: 0.9rem; }
@@ -2556,7 +3193,7 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Panel Ticket � Tablet ----------------------------------------------------
+// -- Panel Ticket � Tablet ----------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .panel-ticket {
     .ticket-header .ticket-titulo { font-size: 1rem; }
@@ -2569,7 +3206,7 @@ $bp-desktop-min: 992px;
   }
 }
 
-// -- Panel Ticket � Desktop ---------------------------------------------------
+// -- Panel Ticket � Desktop ---------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .panel-ticket {
     .ticket-header .ticket-titulo { font-size: 1.1rem; }
@@ -2584,10 +3221,10 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 7: MODAL COBRO
+// RESPONSIVE � SECCI�N 7: MODAL COBRO
 // -------------------------------------------------------------------------------
 
-// -- Modal Cobro � M�vil ------------------------------------------------------
+// -- Modal Cobro � M�vil ------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .modal-cobro {
     --width: 100%;
@@ -2603,7 +3240,7 @@ $bp-desktop-min: 992px;
   .btn-confirmar-cobro { padding: 13px; font-size: 0.9rem; }
 }
 
-// -- Modal Cobro � Tablet -----------------------------------------------------
+// -- Modal Cobro � Tablet -----------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .modal-cobro { --width: 90%; --height: 90%; --border-radius: 16px; }
   .cobro-container { padding: 16px; }
@@ -2611,7 +3248,7 @@ $bp-desktop-min: 992px;
   .cobro-tab { padding: 10px 14px; font-size: 0.85rem; }
 }
 
-// -- Modal Cobro � Desktop ----------------------------------------------------
+// -- Modal Cobro � Desktop ----------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .modal-cobro { --width: 520px; --height: auto; --border-radius: 20px; }
   .cobro-container { padding: 20px; }
@@ -2620,10 +3257,10 @@ $bp-desktop-min: 992px;
 
 
 // -------------------------------------------------------------------------------
-// RESPONSIVE � SECCI�N 8: MODALES CLIENTE Y PESO
+// RESPONSIVE � SECCI�N 8: MODALES CLIENTE Y PESO
 // -------------------------------------------------------------------------------
 
-// -- Modales � M�vil ----------------------------------------------------------
+// -- Modales � M�vil ----------------------------------------------------------
 @media (max-width: #{$bp-mobile-max}) {
   .modal-cliente { --width: 100%; --height: 90%; --border-radius: 16px 16px 0 0; }
   .cliente-panel { padding: 12px; gap: 12px; }
@@ -2637,16 +3274,619 @@ $bp-desktop-min: 992px;
   .modal-key-confirmar { padding: 10px 12px; font-size: 0.85rem; }
 }
 
-// -- Modales � Tablet ---------------------------------------------------------
+// -- Modales � Tablet ---------------------------------------------------------
 @media (min-width: #{$bp-tablet-min}) and (max-width: #{$bp-tablet-max}) {
   .modal-cliente { --width: 420px; --height: 85%; --border-radius: 16px; }
   .modal-peso-overlay .modal-peso-card { width: 380px; }
   .modal-teclado-grid .modal-key { height: 50px; font-size: 1.15rem; }
 }
 
-// -- Modales � Desktop --------------------------------------------------------
+// -- Modales � Desktop --------------------------------------------------------
 @media (min-width: #{$bp-desktop-min}) {
   .modal-cliente { --width: 440px; --height: auto; --border-radius: 16px; }
   .modal-peso-overlay .modal-peso-card { width: 400px; }
   .modal-teclado-grid .modal-key { height: 56px; font-size: 1.25rem; }
+}
+
+
+// -------------------------------------------------------------------------------
+// BOTON FLOTANTE "VER TICKET" + BACKDROP + CERRAR (MOBILE ONLY)
+// -------------------------------------------------------------------------------
+
+// Boton flotante - solo visible en movil
+.btn-ver-ticket-mobile {
+  display: none;
+}
+
+// Backdrop - solo visible en movil
+.ticket-mobile-backdrop {
+  display: none;
+}
+
+// Cerrar ticket overlay - solo visible en movil
+.btn-cerrar-ticket-mobile {
+  display: none;
+}
+
+@media (max-width: #{$bp-mobile-max}) {
+
+  // --- Boton flotante "Ver Ticket" ---
+  .btn-ver-ticket-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: fixed;
+    bottom: 20px;
+    right: 16px;
+    left: 16px;
+    z-index: 9990;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, $verde-primario 0%, darken($verde-primario, 8%) 100%);
+    color: $blanco;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba($verde-primario, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:active {
+      transform: scale(0.97);
+      box-shadow: 0 3px 12px rgba($verde-primario, 0.3);
+    }
+
+    ion-icon {
+      font-size: 1.3rem;
+    }
+
+    .badge-items {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 12px;
+      background: $naranja-cobrar;
+      color: $blanco;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+  }
+
+  // --- Backdrop oscuro ---
+  .ticket-mobile-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+
+    &.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+  }
+
+  // --- Boton cerrar dentro del ticket ---
+  .btn-cerrar-ticket-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.06);
+    color: #555;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 4px;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+
+
+// -------------------------------------------------------------------------------
+// MODAL ESCANER DE CODIGOS DE BARRAS
+// -------------------------------------------------------------------------------
+
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  animation: scanner-fade-in 0.3s ease;
+}
+
+@keyframes scanner-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.scanner-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.scanner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  z-index: 2;
+
+  .scanner-header-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $blanco;
+    font-size: 1rem;
+    font-weight: 600;
+
+    ion-icon {
+      font-size: 1.4rem;
+      color: $verde-primario;
+    }
+
+    .scanner-perm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ddd;
+
+      ion-icon {
+        font-size: 0.85rem;
+        color: inherit;
+      }
+
+      &.badge-ok {
+        background: rgba(45, 122, 79, 0.35);
+        color: #69f0ae;
+      }
+
+      &.badge-error {
+        background: rgba(229, 57, 53, 0.35);
+        color: #ff8a80;
+      }
+    }
+  }
+
+  .scanner-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.scanner-action-btn,
+.scanner-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: $blanco;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0.95);
+  }
+
+  &.active {
+    background: #ffb300;
+    color: #000;
+  }
+}
+
+.scanner-close-btn {
+  font-size: 1.4rem;
+}
+
+.scanner-camera-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f1115;
+}
+
+.scanner-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+
+  &.hidden-video {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.scanner-canvas-hidden {
+  display: none;
+}
+
+// ─── Tarjetas de Estado (Cargando / Permiso Requerido) ───────────────
+.scanner-state-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 88%;
+  max-width: 380px;
+  padding: 24px 20px;
+  background: rgba(24, 27, 33, 0.94);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  color: $blanco;
+  text-align: center;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+  z-index: 5;
+  animation: scanner-fade-in 0.25s ease;
+
+  h3 {
+    margin: 12px 0 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  h4 {
+    margin: 12px 0 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.84rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.4;
+  }
+}
+
+.scanner-loading-card {
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    --color: #{$verde-primario};
+  }
+}
+
+.scanner-permission-card {
+  .perm-icon-bubble {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: rgba(229, 57, 53, 0.18);
+    border: 2px solid rgba(229, 57, 53, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 2rem;
+      color: #ff5252;
+    }
+  }
+
+  .perm-description {
+    margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .perm-instrucciones {
+    text-align: left;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .instruccion-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.35;
+
+      .inst-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: $verde-primario;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+    }
+  }
+
+  .btn-dar-permiso {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 18px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, $verde-primario, #1b5e20);
+    color: $blanco;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(45, 122, 79, 0.4);
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 1.3rem;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(45, 122, 79, 0.6);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .perm-error-raw {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #ff8a80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    ion-icon {
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// --- Marco de enfoque ---
+.scanner-focus-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 180px;
+  pointer-events: none;
+}
+
+.scanner-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: $verde-primario;
+  border-style: solid;
+
+  &.tl { top: 0; left: 0; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+  &.tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+  &.bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+  &.br { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+}
+
+// Linea de escaneo animada
+.scanner-line {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, $verde-primario 30%, $verde-primario 70%, transparent 100%);
+  box-shadow: 0 0 8px rgba($verde-primario, 0.6);
+  animation: scanner-sweep 2.2s ease-in-out infinite;
+}
+
+@keyframes scanner-sweep {
+  0%   { top: 8px; opacity: 0.4; }
+  50%  { top: calc(100% - 10px); opacity: 1; }
+  100% { top: 8px; opacity: 0.4; }
+}
+
+// Feedback: producto encontrado
+.scanner-found {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba($verde-primario, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  color: $blanco;
+  animation: scanner-slide-up 0.3s ease;
+  z-index: 3;
+
+  ion-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .scanner-found-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    span {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+@keyframes scanner-slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+// Error banner
+.scanner-error-banner {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba($rojo-anular, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  color: $blanco;
+  font-size: 0.85rem;
+  animation: scanner-slide-up 0.3s ease;
+  z-index: 3;
+
+  ion-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+}
+
+// Instrucciones
+.scanner-instructions {
+  padding: 14px 20px;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  z-index: 2;
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    margin: 0 0 8px;
+  }
+
+  .scanner-error-text {
+    color: #ff6b6b;
+  }
+
+  .scanner-formats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+
+    span {
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+  }
+
+  .scanner-footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    .btn-footer-permiso,
+    .btn-footer-cambiar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+
+      ion-icon {
+        font-size: 1rem;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      &:active {
+        transform: scale(0.96);
+      }
+    }
+
+    .btn-footer-permiso {
+      border-color: rgba(45, 122, 79, 0.6);
+      color: #69f0ae;
+
+      ion-icon {
+        color: #69f0ae;
+      }
+    }
+  }
 }
