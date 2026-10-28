@@ -22,7 +22,7 @@ public class ClienteDTO {
     /**
      * Convierte una entidad en su DTO.
      */
-    public ClienteDTO fromEntity(Cliente entity) {
+    public ClienteDTO toDTO(Cliente entity) {
         if (entity == null) {
             return null;
         }

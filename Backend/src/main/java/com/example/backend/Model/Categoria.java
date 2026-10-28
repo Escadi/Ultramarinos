@@ -15,11 +15,6 @@ public class Categoria {
             strategy = GenerationType.SEQUENCE,
             generator = "categoria_seq"
     )
-    @SequenceGenerator(
-            name = "categoria_seq",
-            sequenceName = "seq_categoria_id",
-            allocationSize = 1
-    )
     private Long id;
 
     @Column(name = "nombre_categoria", nullable = false, unique = true, length = 100)

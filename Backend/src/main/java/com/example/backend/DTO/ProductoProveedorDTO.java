@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class ProductoProveedorDTO {
 
     private Long id;
@@ -24,33 +26,4 @@ public class ProductoProveedorDTO {
     private Long proveedorId;
     private String proveedorNombre;
 
-    /**
-     * Convierte una entidad {@link ProductoProveedor} en su DTO.
-     */
-    public  ProductoProveedorDTO fromEntity(ProductoProveedor entity) {
-        if (entity == null) {
-            return null;
-        }
-        return ProductoProveedorDTO.builder()
-                .id(entity.getId())
-                .precioCompra(entity.getPrecioCompra())
-                .preferente(entity.getPreferente())
-                .productoId(entity.getProducto() != null ? entity.getProducto().getId() : null)
-                .productoNombre(entity.getProducto() != null ? entity.getProducto().getNombre() : null)
-                .proveedorId(entity.getProveedor() != null ? entity.getProveedor().getId() : null)
-                .proveedorNombre(entity.getProveedor() != null ? entity.getProveedor().getNombreProveedor() : null)
-                .build();
-    }
-
-    /**
-     * Convierte el DTO en una entidad {@link ProductoProveedor} (solo campos simples).
-     * Las relaciones (producto, proveedor) deben asignarse en la capa de servicio.
-     */
-    public ProductoProveedor toEntity() {
-        ProductoProveedor entity = new ProductoProveedor();
-        entity.setId(this.id);
-        if (this.precioCompra != null) entity.setPrecioCompra(this.precioCompra);
-        if (this.preferente != null) entity.setPreferente(this.preferente);
-        return entity;
-    }
 }
