@@ -1,7 +1,9 @@
 package com.example.backend.Service.Service;
 
 import com.example.backend.Model.Empleado;
+import com.example.backend.Model.RolTrabajador;
 import com.example.backend.Repository.JPA.EmpleadoJPA;
+import com.example.backend.Repository.JPA.RolTrabajadorJPA;
 import com.example.backend.Service.IMP.EmpleadoServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class EmpleadoService implements EmpleadoServiceImpl {
 
     private final EmpleadoJPA empleadoJPA;
+    private final RolTrabajadorJPA rolTrabajadorJPA;
 
     @Override
     @Transactional(readOnly = true)
@@ -77,5 +80,11 @@ public class EmpleadoService implements EmpleadoServiceImpl {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RolTrabajador> Rollist() {
+        return  rolTrabajadorJPA.findAll();
     }
 }

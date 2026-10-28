@@ -13,8 +13,8 @@ public interface RoltrabajadorMapper {
     RolTrabajadorDTO toDTO (RolTrabajador rolTrabajador);
     RolTrabajador toEntity (RolTrabajadorDTO rolTrabajadorDTO);
 
-    List<RolTrabajadorDTO> toDtoList(List<RolTrabajador> rolTrabajador);
-    List<RolTrabajador> toEntityList(List<RolTrabajadorDTO> rolTrabajadorDTOS);
+    List<RolTrabajadorDTO> toDto(List<RolTrabajador> rolTrabajador);
+    List<RolTrabajador> toEntity(List<RolTrabajadorDTO> rolTrabajadorDTOS);
 
 
 }

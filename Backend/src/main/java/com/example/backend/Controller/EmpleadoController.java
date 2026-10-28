@@ -2,7 +2,10 @@ package com.example.backend.Controller;
 
 import com.example.backend.DTO.EmpleadoDTO;
 import com.example.backend.DTO.Mappers.EmpleadoMapper;
+import com.example.backend.DTO.Mappers.RoltrabajadorMapper;
+import com.example.backend.DTO.RolTrabajadorDTO;
 import com.example.backend.Model.Empleado;
+import com.example.backend.Model.RolTrabajador;
 import com.example.backend.Service.Service.EmpleadoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ public class EmpleadoController {
 
     private final EmpleadoService empleadoService;
     private final EmpleadoMapper empleadoMapper;
+    private final RoltrabajadorMapper roltrabajadorMapper;
 
     // READ ALL: Obtener todos los empleados
     @GetMapping
@@ -74,5 +78,15 @@ public class EmpleadoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * API REST FOR THE ROL TO THE WORKER
+     * */
+
+    @GetMapping("/roltrabajador")
+    public ResponseEntity<List<RolTrabajadorDTO>> roltrabajadoresList() {
+        List<RolTrabajador> rol = empleadoService.Rollist();
+        return ResponseEntity.ok(roltrabajadorMapper.toDto(rol));
     }
 }
