@@ -16,7 +16,6 @@ public class TelefonoClienteDTO {
 
     private Long id;
     private String telefonoCliente;
-
-    private Long clienteId;
+    private ClienteDTO cliente;
 
 }

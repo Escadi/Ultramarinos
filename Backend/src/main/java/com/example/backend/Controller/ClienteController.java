@@ -46,7 +46,7 @@ public class ClienteController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(respuestaDTO);
         }
 
-        @PutMapping("{id}")
+        @PutMapping("/{id}")
         public ResponseEntity<ClienteDTO> clienteUpdate(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO){
                 if (id == null && clienteDTO == null) {
                         throw new IllegalArgumentException("El ID del cliente no pudo ser null");

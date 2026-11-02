@@ -21,6 +21,6 @@ public class TurnoCajaDTO {
     private String estadoCaja;
     private BigDecimal saldoReal;
     private BigDecimal saldoEsperado;
-    private Long empleadoId;
+    private EmpleadoDTO empleado;
 
 }

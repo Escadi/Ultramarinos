@@ -22,10 +22,7 @@ public class MovimientoStockDTO {
     private Integer cantidad;
     private String motivo;
 
-    private Long productoId;
-    private String productoNombre;
-
-    private Long empleadoId;
-    private String empleadoNombre;
+    private ProductoDTO producto;
+    private EmpleadoDTO empleado;
     
 }

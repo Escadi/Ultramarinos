@@ -19,11 +19,7 @@ public class FacturaDTO {
     private Long id;
     private String numeroFactura;
     private LocalDateTime fecha;
-
-    private Long clienteId;
-    private String clienteNombre;
-
-    private Long ventaId;
-    private String ventaNumeroTicket;
+    private ClienteDTO cliente;
+    private VentaDTO venta;
 
 }

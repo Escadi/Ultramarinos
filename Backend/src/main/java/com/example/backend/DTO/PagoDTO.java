@@ -22,6 +22,5 @@ public class PagoDTO {
     private BigDecimal importe;
     private LocalDateTime fechaPago;
 
-    private Long ventaId;
-    private String ventaNumeroTicket;
+    private VentaDTO venta;
 }

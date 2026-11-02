@@ -23,9 +23,7 @@ public class CompraDTO {
     private BigDecimal total;
     private String estado;
 
-    private Long pedidoProveedorId;
-    private String pedidoProveedorNumero;
+    private PedidoProveedorDTO pedidoProveedor;
+    private EmpleadoDTO empleado;
 
-    private Long empleadoId;
-    private String empleadoNombre;
 }

@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,6 @@ public class ClienteService implements ClienteServiceImpl {
     private static final Logger logger =
             LoggerFactory.getLogger(ClienteService.class);
 
-
     @Override
     public List<Cliente> ListadoCliente() {
         return clienteJPA.findAll();
@@ -39,16 +40,25 @@ public class ClienteService implements ClienteServiceImpl {
     @Override
     public Cliente updateCliente(Long id, Cliente cliente) {
         try {
-            if (!id.equals(cliente.getId())) {
+            if (id == null) {
                 logger.warn("El ID {} no coincide con el ID del cliente", id);
                 throw new IllegalArgumentException("Los ID no coinciden");
             }
 
-            Cliente clienteActualizado = clienteJPA.save(cliente);
+            Cliente update = clienteJPA.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Cliente no encontrado con ID: " + id
+                    ));
+            update.setNombre(cliente.getNombre());
+            update.setApellido(cliente.getApellido());
+            update.setId(id);
+            update.setRolCliente(cliente.getRolCliente());
+            update.setCorreoElectronico(cliente.getCorreoElectronico());
 
             logger.info("Cliente actualizado correctamente con ID: {}", id);
+            return clienteJPA.save(update);
 
-            return clienteActualizado;
 
         } catch (Exception e) {
             logger.error("Error al actualizar el cliente con ID: {}", id, e);

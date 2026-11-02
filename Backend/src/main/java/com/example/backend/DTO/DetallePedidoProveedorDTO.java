@@ -22,7 +22,8 @@ public class DetallePedidoProveedorDTO {
     private BigDecimal descuento;
     private BigDecimal subtotal;
 
-    private Long pedidoProveedorId;
+    private PedidoProveedorDTO pedidoProveedor;
 
-    private Long productoProveedorId;
+    private ProductoProveedorDTO productoProveedor;
+
 }

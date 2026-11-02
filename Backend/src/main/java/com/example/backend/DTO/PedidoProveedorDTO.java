@@ -22,8 +22,6 @@ public class PedidoProveedorDTO {
     private LocalDateTime fechaPedido;
     private String estado;
     private BigDecimal totalEstimado;
-
-    private Long empleadoId;
-    private String empleadoNombre;
+    private EmpleadoDTO empleado;
 
 }

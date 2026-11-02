@@ -25,12 +25,8 @@ public class VentaDTO {
     private BigDecimal baseImponible;
     private BigDecimal totalIgic;
 
-    private Long clienteId;
-    private String clienteNombre;
-
-    private Long tpvId;
-    private String tpvNombre;
-
-    private Long turnoCajaId;
+    private ClienteDTO cliente;
+    private TpvDTO tpv;
+    private TurnoCajaDTO turnoCaja;
 
 }

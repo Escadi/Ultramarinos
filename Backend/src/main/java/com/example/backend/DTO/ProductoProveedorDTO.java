@@ -19,11 +19,7 @@ public class ProductoProveedorDTO {
     private Long id;
     private BigDecimal precioCompra;
     private Boolean preferente;
-
-    private Long productoId;
-    private String productoNombre;
-
-    private Long proveedorId;
-    private String proveedorNombre;
+    private ProductoDTO producto;
+   private ProveedorDTO proveedor;
 
 }

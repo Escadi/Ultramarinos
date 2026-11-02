@@ -23,9 +23,9 @@ public class DetalleCompraDTO {
     private BigDecimal descuento;
     private BigDecimal subtotal;
 
-    private Long compraId;
+    private CompraDTO compra;
 
-    private Long productoId;
-    private String productoNombre;
+    private ProductoDTO producto;
+
 
 }
