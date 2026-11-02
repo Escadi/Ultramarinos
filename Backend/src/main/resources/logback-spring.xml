@@ -1,6 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<configuration>
 
-</beans>
+    <property name="LOG_PATH"
+              value="E:/DEV/Ultramarinos/Backend/src/main/java/com/example/backend/Log"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <!-- LOG EMPLEADOS -->
+    <appender name="EMPLEADOS" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/empleados.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOG PRODUCTOS -->
+    <appender name="PRODUCTOS" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/productos.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOG VENTAS -->
+    <appender name="VENTAS" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/ventas.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOG ERRORES -->
+    <appender name="ERRORES" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/errores.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOGGER POR CATEGORÍAS -->
+    <logger name="empleados" level="INFO" additivity="false">
+        <appender-ref ref="EMPLEADOS"/>
+        <appender-ref ref="ERRORES"/>
+    </logger>
+
+    <logger name="productos" level="INFO" additivity="false">
+        <appender-ref ref="PRODUCTOS"/>
+        <appender-ref ref="ERRORES"/>
+    </logger>
+
+    <logger name="ventas" level="INFO" additivity="false">
+        <appender-ref ref="VENTAS"/>
+        <appender-ref ref="ERRORES"/>
+    </logger>
+
+    <!-- RESTO DE LA APLICACIÓN -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ERRORES"/>
+    </root>
+
+</configuration>

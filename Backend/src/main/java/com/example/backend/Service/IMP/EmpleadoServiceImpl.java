@@ -14,13 +14,11 @@ public interface EmpleadoServiceImpl {
      * */
     List<Empleado> listado();
 
-    Optional<Empleado> findById(Long id);
-
     Optional<Empleado> findByCodigoEmpleado(String codigoEmpleado);
 
     Empleado agregarEmpleado(Empleado empleado);
 
-    Optional<Empleado> actualizar(Long id, Empleado empleado);
+    Empleado actualizar(Long id, Empleado empleado);
 
     boolean eliminar(Long id);
 

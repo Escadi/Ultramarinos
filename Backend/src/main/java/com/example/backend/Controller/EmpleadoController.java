@@ -30,15 +30,6 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadoMapper.toDto(empleados));
     }
 
-    // READ BY ID: Obtener empleado por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<EmpleadoDTO> obtenerPorId(@PathVariable Long id) {
-        return empleadoService.findById(id)
-                .map(empleadoMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
     // READ BY CODIGO: Obtener empleado por código de empleado
     @GetMapping("/codigo/{codigoEmpleado}")
     public ResponseEntity<EmpleadoDTO> obtenerPorCodigo(@PathVariable String codigoEmpleado) {
@@ -64,10 +55,8 @@ public class EmpleadoController {
     public ResponseEntity<EmpleadoDTO> actualizarEmpleado(@PathVariable Long id, @RequestBody EmpleadoDTO empleadoDTO) {
         // Conversión en el Controller: DTO -> Entidad
         Empleado entidad = empleadoMapper.toEntity(empleadoDTO);
-        return empleadoService.actualizar(id, entidad)
-                .map(empleadoMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Empleado save = empleadoService.actualizar(id,entidad);
+        return ResponseEntity.ok(empleadoMapper.toDto(save));
     }
 
     // DELETE: Eliminar empleado por ID

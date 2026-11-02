@@ -24,6 +24,6 @@ public class EmpleadoDTO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasenia;
     private Boolean activo;
-    private RolTrabajador rolTrabajador;
+    private RolTrabajadorDTO rolTrabajador;
 
 }
