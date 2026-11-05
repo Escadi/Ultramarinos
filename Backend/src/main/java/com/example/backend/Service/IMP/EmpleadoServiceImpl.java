@@ -8,22 +8,25 @@ import java.util.Optional;
 
 public interface EmpleadoServiceImpl {
 
-
     /**
      * WORKER
-     * */
+     */
     List<Empleado> listado();
 
-    Optional<Empleado> findByCodigoEmpleado(String codigoEmpleado);
+    Optional<Empleado> findById(Long id);
+
+    Empleado findByCodigoEmpleado(String codigoEmpleado);
 
     Empleado agregarEmpleado(Empleado empleado);
 
     Empleado actualizar(Long id, Empleado empleado);
 
+    boolean login (String codigoempleado, String password) throws IllegalAccessException;
+
     boolean eliminar(Long id);
 
     /**
      * ROL FOR THE WORKER
-     * */
+     */
     List<RolTrabajador> Rollist();
 }

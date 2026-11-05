@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface EmpleadoJPA extends JpaRepository<Empleado, Long> {
 
 
-    Optional<Empleado> findByCodigoEmpleado(String codigoEmpleado);
+    Empleado findByCodigoEmpleado(String codigoEmpleado);
 
 
 }

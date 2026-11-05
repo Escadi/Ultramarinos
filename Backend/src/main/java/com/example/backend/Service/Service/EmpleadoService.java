@@ -5,6 +5,7 @@ import com.example.backend.Model.RolTrabajador;
 import com.example.backend.Repository.EmpleadoJPA;
 import com.example.backend.Repository.RolTrabajadorJPA;
 import com.example.backend.Service.IMP.EmpleadoServiceImpl;
+import com.example.backend.Untils.PasswordHash;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class EmpleadoService implements EmpleadoServiceImpl {
     private final EmpleadoJPA empleadoJPA;
     private final RolTrabajadorJPA rolTrabajadorJPA;
     private static final Logger logger =
-            LoggerFactory.getLogger(ClienteService.class);
+            LoggerFactory.getLogger(EmpleadoService.class);
 
     @Override
     @Transactional(readOnly = true)
@@ -33,13 +34,28 @@ public class EmpleadoService implements EmpleadoServiceImpl {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Empleado> findByCodigoEmpleado(String codigoEmpleado) {
+    public Optional<Empleado> findById(Long id) {
+        return empleadoJPA.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Empleado findByCodigoEmpleado(String codigoEmpleado) {
         return empleadoJPA.findByCodigoEmpleado(codigoEmpleado);
     }
 
     @Override
     @Transactional
     public Empleado agregarEmpleado(Empleado empleado) {
+
+        String password = empleado.getContrasenia();
+        if(password == null || password.isEmpty()){
+            throw new RuntimeException("Tiene que insertar la contraseña");
+        }
+
+        String hash = PasswordHash.passwordHash(password);
+        empleado.setContrasenia(hash);
+
         return empleadoJPA.save(empleado);
     }
 
@@ -58,6 +74,15 @@ public class EmpleadoService implements EmpleadoServiceImpl {
             update.setCorreoElectronico(empleadoActualizado.getCorreoElectronico());
             update.setActivo(empleadoActualizado.getActivo());
             return empleadoJPA.save(update);
+    }
+
+    @Override
+    public boolean login(String codigoempleado, String password) throws IllegalAccessException {
+        Empleado empleado = empleadoJPA.findByCodigoEmpleado(codigoempleado);
+            if(empleado.getCodigoEmpleado() == null){
+                throw new IllegalAccessException("El empleado no dispone de codigo de empleado");
+            }
+        return PasswordHash.checkPasswordHash(password, empleado.getContrasenia());
     }
 
     @Override

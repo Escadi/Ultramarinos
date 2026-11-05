@@ -24,12 +24,17 @@ public class ClienteService implements ClienteServiceImpl {
 
     private final ClienteJPA clienteJPA;
     private final RolClienteJPA rolClienteJPA;
-    private static final Logger logger =
-            LoggerFactory.getLogger(ClienteService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClienteService.class);
 
     @Override
     public List<Cliente> ListadoCliente() {
         return clienteJPA.findAll();
+    }
+
+    @Override
+    public Cliente getClienteById(Long id) {
+        return clienteJPA.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con ID: " + id));
     }
 
     @Override
@@ -39,52 +44,31 @@ public class ClienteService implements ClienteServiceImpl {
 
     @Override
     public Cliente updateCliente(Long id, Cliente cliente) {
-        try {
-            if (id == null) {
-                logger.warn("El ID {} no coincide con el ID del cliente", id);
-                throw new IllegalArgumentException("Los ID no coinciden");
-            }
-
-            Cliente update = clienteJPA.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "Cliente no encontrado con ID: " + id
-                    ));
-            update.setNombre(cliente.getNombre());
-            update.setApellido(cliente.getApellido());
-            update.setId(id);
-            update.setRolCliente(cliente.getRolCliente());
-            update.setCorreoElectronico(cliente.getCorreoElectronico());
-
-            logger.info("Cliente actualizado correctamente con ID: {}", id);
-            return clienteJPA.save(update);
-
-
-        } catch (Exception e) {
-            logger.error("Error al actualizar el cliente con ID: {}", id, e);
-            throw e;
-        }
+        Cliente update = clienteJPA.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con ID: " + id));
+        update.setNombre(cliente.getNombre());
+        update.setApellido(cliente.getApellido());
+        update.setRolCliente(cliente.getRolCliente());
+        update.setCorreoElectronico(cliente.getCorreoElectronico());
+        logger.info("Cliente actualizado correctamente con ID: {}", id);
+        return clienteJPA.save(update);
     }
-
 
     @Override
     public void deleteCliente(Long id) {
-        if(!clienteJPA.existsById(id)) {
-            throw new IllegalArgumentException("El ID del cliente no existe");
+        if (!clienteJPA.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con ID: " + id);
         }
         clienteJPA.deleteById(id);
-
     }
 
     @Override
     public Optional<Cliente> findcodigocliente(String codigoCliente) {
-        return null;
+        return Optional.empty();
     }
 
     @Override
     public List<RolCliente> ListadoRolCliente() {
         return rolClienteJPA.findAll();
     }
-
-
 }

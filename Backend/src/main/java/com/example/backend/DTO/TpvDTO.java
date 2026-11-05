@@ -1,6 +1,5 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.Tpv;
 import lombok.*;
 
 /**

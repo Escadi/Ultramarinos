@@ -1,6 +1,5 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.Categoria;
 import lombok.*;
 
 @Data

@@ -10,7 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = RoltrabajadorMapper.class)
 public interface EmpleadoMapper {
 
     // DTO -> Entity

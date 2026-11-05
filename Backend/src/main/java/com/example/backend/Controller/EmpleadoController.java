@@ -33,10 +33,10 @@ public class EmpleadoController {
     // READ BY CODIGO: Obtener empleado por código de empleado
     @GetMapping("/codigo/{codigoEmpleado}")
     public ResponseEntity<EmpleadoDTO> obtenerPorCodigo(@PathVariable String codigoEmpleado) {
-        return empleadoService.findByCodigoEmpleado(codigoEmpleado)
-                .map(empleadoMapper::toDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Empleado codigo = empleadoService.findByCodigoEmpleado(codigoEmpleado);
+        return ResponseEntity.ok(empleadoMapper.toDto(codigo));
+
+
     }
 
     // CREATE: Registrar un nuevo empleado
@@ -76,6 +76,6 @@ public class EmpleadoController {
     @GetMapping("/roltrabajador")
     public ResponseEntity<List<RolTrabajadorDTO>> roltrabajadoresList() {
         List<RolTrabajador> rol = empleadoService.Rollist();
-        return ResponseEntity.ok(roltrabajadorMapper.toDto(rol));
+        return ResponseEntity.ok(roltrabajadorMapper.toDtoList(rol));
     }
 }

@@ -1,6 +1,5 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.Factura;
 import lombok.*;
 
 import java.time.LocalDateTime;

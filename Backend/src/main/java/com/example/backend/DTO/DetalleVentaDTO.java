@@ -1,6 +1,5 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.DetalleVenta;
 import lombok.*;
 
 import java.math.BigDecimal;

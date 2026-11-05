@@ -1,7 +1,5 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.Cliente;
-import com.example.backend.Model.RolCliente;
 import lombok.*;
 
 import java.time.LocalDateTime;

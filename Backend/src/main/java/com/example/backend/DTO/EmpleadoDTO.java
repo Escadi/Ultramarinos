@@ -1,13 +1,8 @@
 package com.example.backend.DTO;
 
-import com.example.backend.Model.Empleado;
-import com.example.backend.Model.RolTrabajador;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
-/**
- * DTO de la entidad {@link Empleado}.
- */
 @Data
 @Builder
 @NoArgsConstructor

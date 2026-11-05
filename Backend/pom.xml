@@ -57,6 +57,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- JBCRYPT -->
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.4</version>
+		</dependency>
+
 		<!-- MAPSTRUCT: ENTITY <-> DTO -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
