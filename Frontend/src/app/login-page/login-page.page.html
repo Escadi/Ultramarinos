@@ -16,14 +16,14 @@
       <!-- Formulario -->
       <div class="form-body">
 
-        <!-- Email -->
+        <!-- Código de Empleado -->
         <div class="campo-grupo" [class.campo-error]="loginError">
-          <label class="campo-label">Correo electrónico</label>
-          <div class="input-wrap" [class.input-focused]="emailFocused">
-            <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-            <input id="login-email" type="email" class="campo-input" placeholder="tu@correo.com" [(ngModel)]="email"
-              (focus)="emailFocused = true" (blur)="emailFocused = false" (keyup.enter)="getlogin()"
-              autocomplete="email" />
+          <label class="campo-label">Código de Empleado</label>
+          <div class="input-wrap" [class.input-focused]="codigoFocused">
+            <ion-icon name="person-outline" class="input-icon"></ion-icon>
+            <input id="login-codigo" type="text" class="campo-input" placeholder="Ej: EMP001" [(ngModel)]="codigoEmpleado"
+              (focus)="codigoFocused = true" (blur)="codigoFocused = false" (keyup.enter)="getlogin()"
+              autocomplete="username" />
           </div>
         </div>
 
